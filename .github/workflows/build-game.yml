@@ -1,5 +1,5 @@
-name: FNF Compiling
-run-name: Compiling FNF...
+name: Friday Night Funkin Compiling
+run-name: Compiling Friday Night Funkin...
 
 on: [ push, pull_request ]
     
@@ -7,7 +7,10 @@ jobs:
   Windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Download Repository
+        uses: actions/checkout@v4
+      - name: Download Submodules
+        run: git submodule update --init --recursive
       - name: Setup Haxe environment
         uses: krdlab/setup-haxe@master
         with:
@@ -17,7 +20,7 @@ jobs:
       - name: Use HMM to install dependencies.
         run: |
             cd ${{ github.workspace }}
-            haxelib run hmm install
+            haxelib run hmm install -q
       - name: Compile The Game
         run: haxelib run lime build windows
       - name: Upload Game Executable
@@ -28,7 +31,10 @@ jobs:
   Linux:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - name: Download Repository
+        uses: actions/checkout@v4
+      - name: Download Submodules
+        run: git submodule update --init --recursive
       - name: Setup Haxe environment
         uses: krdlab/setup-haxe@master
         with:
@@ -55,7 +61,10 @@ jobs:
   MacOS:
     runs-on: macos-12
     steps:
-      - uses: actions/checkout@v4
+      - name: Download Repository
+        uses: actions/checkout@v4
+      - name: Download Submodules
+        run: git submodule update --init --recursive
       - name: Setup Haxe environment
         uses: krdlab/setup-haxe@master
         with:
