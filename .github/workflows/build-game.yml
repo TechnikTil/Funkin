@@ -1,7 +1,7 @@
 name: Friday Night Funkin Compiling
 run-name: Compiling Friday Night Funkin...
 
-on: [ push, pull_request ]
+on: [ push, pull_request, workflow_dispatch ]
     
 jobs:
   Windows:
@@ -48,7 +48,7 @@ jobs:
       - name: Use HMM to install dependencies.
         run: |
             cd ${{ github.workspace }}
-            haxelib run hmm install
+            haxelib run hmm install -q
       - name: Compile The Game
         run: haxelib run lime build linux
       - name: Wait for 1.5 seconds
@@ -74,7 +74,7 @@ jobs:
       - name: Use HMM to install dependencies.
         run: |
             cd ${{ github.workspace }}
-            haxelib run hmm install
+            haxelib run hmm install -q
       - name: Compile The Game
         run: haxelib run lime build mac
       - name: Wait for 1.5 seconds
