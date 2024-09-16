@@ -2,85 +2,119 @@ name: Friday Night Funkin Compiling
 run-name: Compiling Friday Night Funkin...
 
 on: [ push, pull_request, workflow_dispatch ]
-    
+
 jobs:
   Windows:
     runs-on: windows-latest
     steps:
-      - name: Download Repository
-        uses: actions/checkout@v4
-      - name: Download Submodules
-        run: git submodule update --init --recursive
-      - name: Setup Haxe environment
-        uses: krdlab/setup-haxe@master
-        with:
-          haxe-version: 4.3.4
-      - name: Download HMM
-        run: haxelib install --quiet hmm
-      - name: Use HMM to install dependencies.
-        run: |
-            cd ${{ github.workspace }}
-            haxelib run hmm install -q
-      - name: Compile The Game
-        run: haxelib run lime build windows
-      - name: Upload Game Executable
-        uses: actions/upload-artifact@v4
-        with:
-          name: WindowsGame
-          path: ${{ github.workspace }}/export/release/windows/bin/
-  Linux:
-    runs-on: ubuntu-24.04
+    - name: Make git happy
+      run: |
+        git config --global --replace-all safe.directory $GITHUB_WORKSPACE
+
+    - name: Get checkout token
+      uses: actions/create-github-app-token@v1
+      id: app_token
+      with:
+        app-id: ${{ vars.APP_ID }}
+        private-key: ${{ secrets.APP_PEM }}
+        owner: ${{ github.repository_owner }}
+
+    - name: Checkout repo
+      uses: funkincrew/ci-checkout@v6
+      with:
+        submodules: 'recursive'
+        token: ${{ steps.app_token.outputs.token }}
+        persist-credentials: false
+
+    - name: Setup build environment
+      uses: ./.github/actions/setup-haxe
+      with:
+        gh-token: ${{ steps.app_token.outputs.token }}
+    - name: Setup HXCPP dev commit
+      run: |
+        cd .haxelib/hxcpp/git/tools/hxcpp
+        haxe compile.hxml
+        cd ../../../../..
+    - name: Build game
+      if: ${{ matrix.target == 'windows' }}
+      run: |
+        haxelib run lime build windows -v -release -DGITHUB_BUILD
+      timeout-minutes: 120
+    - name: Build game
+      if: ${{ matrix.target != 'windows' }}
+      run: |
+        haxelib run lime build ${{ matrix.target }} -v -release --times -DGITHUB_BUILD
+      timeout-minutes: 120
+
+    - name: Upload build artifacts
+      uses: ./.github/actions/upload-itch
+      with:
+        butler-key: ${{ secrets.BUTLER_API_KEY}}
+        target: ${{ matrix.target }}
+
+  build-game-in-container:
+    runs-on: build-set
+    container: ghcr.io/funkincrew/build-dependencies:latest
+    strategy:
+      matrix:
+        include:
+        - target: linux
+        - target: html5
+    defaults:
+      run:
+        shell: bash
+
     steps:
-      - name: Download Repository
-        uses: actions/checkout@v4
-      - name: Download Submodules
-        run: git submodule update --init --recursive
-      - name: Setup Haxe environment
-        uses: krdlab/setup-haxe@master
-        with:
-          haxe-version: 4.3.4
-      - name: Install Linux dependencies.
-        run: |
-            sudo apt update
-            sudo apt install libvlc-dev libvlccore-dev vlc-bin vlc libc6 libc6-dev -y
-      - name: Download HMM
-        run: haxelib install --quiet hmm
-      - name: Use HMM to install dependencies.
-        run: |
-            cd ${{ github.workspace }}
-            haxelib run hmm install -q
-      - name: Compile The Game
-        run: haxelib run lime build linux
-      - name: Wait for 1.5 seconds
-        run: sleep 1.5
-      - name: Upload Game Executable
-        uses: actions/upload-artifact@v4
-        with:
-          name: LinuxGame
-          path: ${{ github.workspace }}/export/release/linux/bin/
-  MacOS:
-    runs-on: macos-12
-    steps:
-      - name: Download Repository
-        uses: actions/checkout@v4
-      - name: Download Submodules
-        run: git submodule update --init --recursive
-      - name: Setup Haxe environment
-        uses: krdlab/setup-haxe@master
-        with:
-          haxe-version: 4.3.4
-      - name: Download HMM
-        run: haxelib install --quiet hmm
-      - name: Use HMM to install dependencies.
-        run: |
-            cd ${{ github.workspace }}
-            haxelib run hmm install -q
-      - name: Compile The Game
-        run: haxelib run lime build mac
-      - name: Wait for 1.5 seconds
-        run: sleep 1.5
-      - name: Upload Game Executable
-        uses: actions/upload-artifact@v4
-        with:
-          name: MacOSGame
-          path: ${{ github.workspace }}/export/release/macos/bin/
+    - name: Get checkout token
+      uses: actions/create-github-app-token@v1
+      id: app_token
+      with:
+        app-id: ${{ vars.APP_ID }}
+        private-key: ${{ secrets.APP_PEM }}
+        owner: ${{ github.repository_owner }}
+
+    - name: Checkout repo
+      uses: funkincrew/ci-checkout@v6
+      with:
+        submodules: 'recursive'
+        token: ${{ steps.app_token.outputs.token }}
+        persist-credentials: false
+
+    - name: Config haxelib
+      run: |
+        haxelib --never newrepo
+        echo "HAXEPATH=$(haxelib config)" >> "$GITHUB_ENV"
+
+    - name: Restore cached dependencies
+      id: cache-hmm
+      uses: actions/cache@v4
+      with:
+        path: .haxelib
+        key: haxe-hmm-${{ runner.os }}-${{ hashFiles('**/hmm.json') }}
+
+    - if: ${{ steps.cache-hmm.outputs.cache-hit != 'true' }}
+      name: Install dependencies
+      run: |
+        git config --global 'url.https://x-access-token:${{ steps.app_token.outputs.token }}@github.com/.insteadOf' https://github.com/
+        git config --global advice.detachedHead false
+        haxelib --global run hmm install -q
+        cd .haxelib/hxcpp/git/tools/hxcpp && haxe compile.hxml
+
+    - if: ${{ matrix.target != 'html5' }}
+      name: Restore hxcpp cache
+      uses: actions/cache@v4
+      with:
+        path: /usr/share/hxcpp
+        key: haxe-hxcpp-${{ runner.os }}-${{ github.ref_name }}-${{ github.sha }}
+        restore-keys: haxe-hxcpp-${{ runner.os }}-${{ github.ref_name }}
+
+    - name: Build game
+      run: |
+        haxelib run lime build ${{ matrix.target }} -v -release --times -DGITHUB_BUILD
+      timeout-minutes: 120
+
+    - name: Upload build artifacts
+      uses: ./.github/actions/upload-itch
+      with:
+        butler-key: ${{ secrets.BUTLER_API_KEY}}
+        target: ${{ matrix.target }}
