@@ -46,6 +46,7 @@ import funkin.input.TurboActionHandler;
 import funkin.input.TurboButtonHandler;
 import funkin.input.TurboKeyHandler;
 import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.ScriptEventDispatcher;
 import funkin.play.notes.notekind.NoteKindManager;
 import funkin.play.character.BaseCharacter.CharacterType;
 import funkin.play.character.CharacterData;
@@ -2153,41 +2154,37 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     this.params = params;
   }
 
-  public override function dispatchEvent(event:ScriptEvent):Void
+  override public function dispatchEvent(event:ScriptEvent):Void
   {
     super.dispatchEvent(event);
 
-    // We can't use the ScriptedEventDispatcher with currentCharPlayer because we can't use the IScriptedClass interface on it.
-    if (currentPlayerCharacterPlayer != null)
+    if (event.type == SONG_STEP_HIT)
     {
-      switch (event.type)
-      {
-        case UPDATE:
-          currentPlayerCharacterPlayer.onUpdate(cast event);
-        case SONG_BEAT_HIT:
-          currentPlayerCharacterPlayer.onBeatHit(cast event);
-        case SONG_STEP_HIT:
-          currentPlayerCharacterPlayer.onStepHit(cast event);
-        case NOTE_HIT:
-          currentPlayerCharacterPlayer.onNoteHit(cast event);
-        default: // Continue
-      }
+      if (healthIconDad != null) healthIconDad.onStepHit(Conductor.instance.currentStep);
+      if (healthIconBF != null) healthIconBF.onStepHit(Conductor.instance.currentStep);
+    }
+    else if (event.type == SONG_BEAT_HIT)
+    {
+      if (metronomeVolume > 0.0 && this.subState == null) playMetronomeTick(Conductor.instance.currentBeat % Conductor.instance.beatsPerMeasure == 0);
     }
 
-    if (currentOpponentCharacterPlayer != null)
+    if (currentPlayerCharacterPlayer != null && currentPlayerCharacterPlayer.character != null)
     {
       switch (event.type)
       {
         case UPDATE:
-          currentOpponentCharacterPlayer.onUpdate(cast event);
-        case SONG_BEAT_HIT:
-          currentOpponentCharacterPlayer.onBeatHit(cast event);
+          currentPlayerCharacterPlayer.character.onUpdate(cast event);
         case SONG_STEP_HIT:
-          currentOpponentCharacterPlayer.onStepHit(cast event);
-        case NOTE_HIT:
-          currentOpponentCharacterPlayer.onNoteHit(cast event);
-        default: // Continue
+          currentPlayerCharacterPlayer.character.onStepHit(cast event);
+        case SONG_BEAT_HIT:
+          currentPlayerCharacterPlayer.character.onBeatHit(cast event);
       }
+      ScriptEventDispatcher.callEvent(currentPlayerCharacterPlayer.character, event);
+    }
+
+    if (currentOpponentCharacterPlayer != null && currentOpponentCharacterPlayer.character != null)
+    {
+      ScriptEventDispatcher.callEvent(currentOpponentCharacterPlayer.character, event);
     }
   }
 
@@ -3339,19 +3336,17 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   override function beatHit():Bool
   {
-    // dispatchEvent gets called here.
-    if (!super.beatHit()) return false;
-
-    if (metronomeVolume > 0.0 && this.subState == null && (audioInstTrack != null && audioInstTrack.isPlaying))
-    {
-      playMetronomeTick(Conductor.instance.currentBeat % Conductor.instance.beatsPerMeasure == 0);
-    }
-
     // Show the mouse cursor.
     // Just throwing this somewhere convenient and infrequently called because sometimes Flixel's debug thing hides the cursor.
     Cursor.show();
 
-    return true;
+    if (audioInstTrack != null && audioInstTrack.isPlaying)
+    {
+      // dispatchEvent gets called here.
+      return super.beatHit();
+    }
+
+    return false;
   }
 
   /**
@@ -3359,20 +3354,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   override function stepHit():Bool
   {
-    // dispatchEvent gets called here.
-    if (!super.stepHit()) return false;
-
     if (audioInstTrack != null && audioInstTrack.isPlaying)
     {
-      if (healthIconDad != null) healthIconDad.onStepHit(Conductor.instance.currentStep);
-      if (healthIconBF != null) healthIconBF.onStepHit(Conductor.instance.currentStep);
+      // dispatchEvent gets called here.
+      return super.stepHit();
     }
 
-    // Updating these every step keeps it more accurate.
-    // playerPreviewDirty = true;
-    // opponentPreviewDirty = true;
-
-    return true;
+    return false;
   }
 
   /**
