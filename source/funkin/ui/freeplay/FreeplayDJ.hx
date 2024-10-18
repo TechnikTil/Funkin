@@ -8,8 +8,11 @@ import funkin.audio.FunkinSound;
 import flixel.util.FlxTimer;
 import funkin.data.freeplay.player.PlayerRegistry;
 import funkin.data.freeplay.player.PlayerData.PlayerFreeplayDJData;
-import funkin.audio.FunkinSound;
+import flixel.sound.FlxSound;
 import funkin.audio.FlxStreamSound;
+import flixel.graphics.frames.FlxFrame;
+import flixel.math.FlxMatrix;
+import funkin.audio.visualize.VisualizerBase;
 
 class FreeplayDJ extends FlxAtlasSprite
 {
@@ -36,6 +39,13 @@ class FreeplayDJ extends FlxAtlasSprite
   final characterId:String = Constants.DEFAULT_CHARACTER;
   final playableCharData:PlayerFreeplayDJData;
 
+  // disable the lights on the turntables and inject the visualized ones
+  var forceVisualizerOn:Array<FreeplayDJState> = [Idle, NewUnlock, FistPump, IdleEasterEgg, Cartoon];
+
+  public var visualizerHandler:VisualizerBase;
+
+  var turntableVisualizerFrames:flixel.graphics.frames.FlxAtlasFrames;
+
   public function new(x:Float, y:Float, characterId:String)
   {
     this.characterId = characterId;
@@ -44,6 +54,9 @@ class FreeplayDJ extends FlxAtlasSprite
     playableCharData = playableChar.getFreeplayDJData();
 
     super(x, y, playableCharData.getAtlasPath());
+
+    visualizerHandler = new VisualizerBase(null, 3, 4);
+    turntableVisualizerFrames = Paths.getSparrowAtlas('freeplay/turntableViz');
 
     onAnimationFrame.add(function(name, number) {
       if (name == playableCharData.getAnimationPrefix('cartoon'))
@@ -458,6 +471,61 @@ class FreeplayDJ extends FlxAtlasSprite
     currentState = FistPump;
     var animPrefix = playableCharData.getAnimationPrefix('loss');
     playFlashAnimation(animPrefix, true, false, false, playableCharData.getFistPumpLoopBadStartFrame());
+  }
+
+  public function initVisualizer()
+  {
+    visualizerHandler.snd = FlxG.sound.music;
+    visualizerHandler.initAnalyzer(35);
+  }
+
+  // the current symbol being drawn on screen
+  var curSymbolDrawing:String = '';
+
+  override function parseElement(instance:flxanimate.animate.FlxElement, m:flixel.math.FlxMatrix, colorFilter:openfl.geom.ColorTransform,
+      ?filterInstance:{?instance:flxanimate.animate.FlxElement} = null, ?cameras:Array<flixel.FlxCamera> = null, ?scrollFactor:flixel.math.FlxPoint = null):Void
+  {
+    if (instance?.symbol != null && filterInstance == null)
+    {
+      curSymbolDrawing = instance.symbol.name;
+      hasReplacedAlready = false;
+    }
+
+    return super.parseElement(instance, m, colorFilter, filterInstance, cameras, scrollFactor);
+  }
+
+  var hasReplacedAlready:Bool = false;
+
+  static final offsetsByIndex:Array<Array<Float>> = [[0, 0], [30, 0.3], [55.5, 0]];
+  static final indexNames:Array<String> = ['left', 'middle', 'right'];
+
+  override public function drawLimb(limb:FlxFrame, _matrix:flixel.math.FlxMatrix, ?colorTransform:openfl.geom.ColorTransform = null, filterin:Bool = false,
+      ?blendMode:openfl.display.BlendMode, ?scrollFactor:flixel.math.FlxPoint = null, cameras:Array<flixel.FlxCamera> = null):Void
+  {
+    if (curSymbolDrawing == 'turn table'
+      && forceVisualizerOn.contains(currentState)
+      && !hasReplacedAlready
+      && visualizerHandler.ready)
+    {
+      hasReplacedAlready = true;
+
+      visualizerHandler.updateFFT(function(index:Int, frame:Int) {
+        var posFrames:Array<FlxFrame> = turntableVisualizerFrames.frames.filter(function(frame:FlxFrame) {
+          return frame.name.startsWith('turntable lights ' + indexNames[index]);
+        });
+
+        var lightFrame:FlxFrame = posFrames[frame];
+        var lightMatrix:FlxMatrix = lightFrame.prepareMatrix(new FlxMatrix());
+        lightMatrix.translate(_matrix.tx, _matrix.ty);
+        lightMatrix.translate(offsetsByIndex[index][0], offsetsByIndex[index][1]);
+
+        drawLimb(lightFrame, lightMatrix, colorTransform, filterin, blendMode, scrollFactor, cameras);
+      });
+    }
+    else
+    {
+      super.drawLimb(limb, _matrix, colorTransform, filterin, blendMode, scrollFactor, cameras);
+    }
   }
 
   override public function getCurrentAnimation():String

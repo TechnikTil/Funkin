@@ -10,7 +10,7 @@ import funkin.util.FramesJSFLParser.FramesJSFLFrame;
 import funkin.modding.IScriptedClass.IBPMSyncedScriptedClass;
 import flixel.math.FlxMath;
 import funkin.modding.events.ScriptEvent;
-import funkin.vis.dsp.SpectralAnalyzer;
+import funkin.audio.visualize.VisualizerBase;
 import funkin.data.freeplay.player.PlayerRegistry;
 
 class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
@@ -26,7 +26,7 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
   var intendedAlpha:Float = 0;
   var list:Array<String> = [];
 
-  var analyzer:SpectralAnalyzer;
+  var vis:VisualizerBase;
 
   var currentGFPath:Null<String>;
   var enableVisualizer:Bool = false;
@@ -34,6 +34,8 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
   public function new()
   {
     super(0, 0, Paths.animateAtlas("charSelect/gfChill"));
+
+    vis = new VisualizerBase(null, 7, 12);
 
     list = anim.curSymbol.getFrameLabelNames();
 
@@ -91,39 +93,24 @@ class CharSelectGF extends FlxAtlasSprite implements IBPMSyncedScriptedClass
     }
   };
 
+  public function initVisualizer(sound:flixel.sound.FlxSound)
+  {
+    vis.snd = sound;
+    vis.initAnalyzer();
+  }
+
   override public function draw()
   {
-    if (analyzer != null) drawFFT();
+    if (enableVisualizer) vis.updateFFT(drawFFT);
     super.draw();
   }
 
-  function drawFFT()
+  function drawFFT(i:Int, frame:Int):Void
   {
-    if (enableVisualizer)
-    {
-      var levels = analyzer.getLevels();
-      var frame = anim.curSymbol.timeline.get("VIZ_bars").get(anim.curFrame);
-      var elements = frame.getList();
-      var len:Int = cast Math.min(elements.length, 7);
+    var animateFrame = anim.curSymbol.timeline.get("VIZ_bars").get(anim.curFrame);
+    var elements = animateFrame.getList();
 
-      for (i in 0...len)
-      {
-        var animFrame:Int = Math.round(levels[i].value * 12);
-
-        #if desktop
-        // Web version scales with the Flixel volume level.
-        // This line brings platform parity but looks worse.
-        // animFrame = Math.round(animFrame * FlxG.sound.volume);
-        #end
-
-        animFrame = Math.floor(Math.min(12, animFrame));
-        animFrame = Math.floor(Math.max(0, animFrame));
-
-        animFrame = Std.int(Math.abs(animFrame - 12)); // shitty dumbass flip, cuz dave got da shit backwards lol!
-
-        elements[i].symbol.firstFrame = animFrame;
-      }
-    }
+    elements[i].symbol.firstFrame = frame;
   }
 
   /**

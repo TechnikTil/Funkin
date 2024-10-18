@@ -2066,11 +2066,13 @@ class FreeplayState extends MusicBeatSubState
     if (daSongCapsule == null) daSongCapsule = grpCapsules.members[curSelected];
     if (curSelected == 0)
     {
+      @:nullSafety(Off)
       FunkinSound.playMusic('freeplayRandom',
         {
           startingVolume: 0.0,
           overrideExisting: true,
-          restartTrack: false
+          restartTrack: false,
+          onLoad: dj.initVisualizer
         });
       FlxG.sound.music.fadeIn(2, 0, 0.8);
     }
@@ -2110,6 +2112,8 @@ class FreeplayState extends MusicBeatSubState
             },
           onLoad: function() {
             FlxG.sound.music.fadeIn(2, 0, 0.4);
+            @:nullSafety(Off)
+            dj.initVisualizer();
           }
         });
       if (songDifficulty != null)

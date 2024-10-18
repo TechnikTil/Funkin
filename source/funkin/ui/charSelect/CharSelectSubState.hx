@@ -28,7 +28,6 @@ import funkin.ui.freeplay.charselect.PlayableCharacter;
 import funkin.ui.freeplay.FreeplayState;
 import funkin.ui.PixelatedIcon;
 import funkin.util.MathUtil;
-import funkin.vis.dsp.SpectralAnalyzer;
 import openfl.display.BlendMode;
 import funkin.save.Save;
 import openfl.filters.ShaderFilter;
@@ -434,14 +433,7 @@ class CharSelectSubState extends MusicBeatSubState
           onLoad: function() {
             allowInput = true;
 
-            @:privateAccess
-            gfChill.analyzer = new SpectralAnalyzer(FlxG.sound.music._channel.__audioSource, 7, 0.1);
-            #if desktop
-            // On desktop it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
-            // So we want to manually change it!
-            @:privateAccess
-            gfChill.analyzer.fftN = 512;
-            #end
+            gfChill.initVisualizer(FlxG.sound.music);
           }
         });
     }
@@ -580,14 +572,7 @@ class CharSelectSubState extends MusicBeatSubState
               onLoad: function() {
                 allowInput = true;
 
-                @:privateAccess
-                gfChill.analyzer = new SpectralAnalyzer(FlxG.sound.music._channel.__audioSource, 7, 0.1);
-                #if desktop
-                // On desktop it uses FFT stuff that isn't as optimized as the direct browser stuff we use on HTML5
-                // So we want to manually change it!
-                @:privateAccess
-                gfChill.analyzer.fftN = 512;
-                #end
+                gfChill.initVisualizer(FlxG.sound.music);
               }
             });
         }
