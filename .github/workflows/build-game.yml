@@ -55,11 +55,11 @@ jobs:
         uses: krdlab/setup-haxe@master
         with:
           haxe-version: latest
-      - name: Install Haxe Libraries using HxPKG
+      - name: Install Haxe Libraries using HMM
         run: |
           haxelib install hxcpp --quiet
-          haxelib install hxpkg --quiet
-          haxelib run hxpkg install --force
+          haxelib install hmm --quiet
+          haxelib run hmm install
       - name: Compile Application
         run: haxelib run lime build windows
       - name: Upload Artifact
@@ -86,11 +86,11 @@ jobs:
         uses: krdlab/setup-haxe@master
         with:
           haxe-version: latest
-      - name: Install Haxe Libraries using HxPKG
+      - name: Install Haxe Libraries using HMM
         run: |
           haxelib install hxcpp --quiet
-          haxelib install hxpkg --quiet
-          haxelib run hxpkg install --force
+          haxelib install hmm --quiet
+          haxelib run hmm install
       - name: Compile Application
         run: haxelib run lime build macos
       - name: Upload Artifact
