@@ -23,12 +23,12 @@ jobs:
         uses: krdlab/setup-haxe@master
         with:
           haxe-version: latest
-      - name: Install Haxe Libraries using HxPKG
+      - name: Install Haxe Libraries using HMM
         run: |
           sudo apt install libvlccore-dev libvlc-dev -y -q
           haxelib install hxcpp --quiet
-          haxelib install hxpkg --quiet
-          haxelib run hxpkg install --force
+          haxelib install hmm --quiet
+          haxelib run hmm install
       - name: Compile Application
         run: haxelib run lime build linux
       - name: Upload Artifact
