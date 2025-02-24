@@ -195,6 +195,25 @@ class OptionsMenu extends Page<OptionsMenuPageName>
       codex.switchPage(Offsets);
     });
     #end
+
+    #if sys
+    createItem("MODS", function() {
+      FlxG.sound.music.fadeOut(0.5, 0, function(tw) {
+        FunkinSound.playMusic('feelingOf2018',
+          {
+            startingVolume: 0,
+            overrideExisting: true,
+            restartTrack: true,
+            loop: true
+          });
+        OptionsState.instance.drumsBG.play(true);
+        FlxG.sound.music.fadeIn(1, 1);
+      });
+
+      FlxG.state.openSubState(new funkin.ui.debug.mods.ModsSelectState());
+    });
+    #end
+
     #if FEATURE_MOBILE_IAP
     createItem("RESTORE PURCHASES", function() {
       InAppPurchasesUtil.restorePurchases();

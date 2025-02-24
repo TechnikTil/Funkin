@@ -51,7 +51,7 @@ class PolymodHandler
   /**
    * Where relative to the executable that mods are located.
    */
-  static final MOD_FOLDER:String =
+  public static final MOD_FOLDER:String =
     #if (REDIRECT_ASSETS_FOLDER && macos)
     '../../../../../../../example_mods'
     #elseif REDIRECT_ASSETS_FOLDER
@@ -567,8 +567,7 @@ class PolymodHandler
 
     // Forcibly reload Polymod so it finds any new files.
     // This will also register all scripts.
-    // TODO: Replace this with loadEnabledMods().
-    funkin.modding.PolymodHandler.loadAllMods();
+    funkin.modding.PolymodHandler.loadEnabledMods();
 
     // Reload everything that is cached.
     // Currently this freezes the game for a second but I guess that's tolerable?
