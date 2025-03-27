@@ -17,7 +17,6 @@ using funkin.data.animation.AnimationData.AnimationDataUtil;
  * Holds the data for what assets to use for a note style,
  * and provides convenience methods for building sprites based on them.
  */
-@:nullSafety
 class NoteStyle implements IRegistryEntry<NoteStyleData>
 {
   /**
@@ -36,7 +35,8 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
    */
   var fallback(get, never):Null<NoteStyle>;
 
-  function get_fallback():Null<NoteStyle> {
+  function get_fallback():Null<NoteStyle>
+  {
     if (_data == null || _data.fallback == null) return null;
     return NoteStyleRegistry.instance.fetchEntry(_data.fallback);
   }
@@ -290,6 +290,45 @@ class NoteStyle implements IRegistryEntry<NoteStyleData>
     var data = _data?.assets?.noteSplash;
     if (data == null) return fallback.fetchSplashPixel();
     return data.isPixel;
+  }
+
+  public function fetchSplashOffsets():Array<Float>
+  {
+    var data = _data?.assets?.noteSplash;
+    if (data == null) return fallback.fetchSplashOffsets();
+    return data.offsets;
+  }
+
+  public function applySplashAnimations(target:NoteSplash, dir:NoteDirection):Void
+  {
+    FlxAnimationUtil.addAtlasAnimations(target, fetchSplashAnimationData(dir));
+  }
+
+  function fetchSplashAnimationData(dir:NoteDirection):Array<AnimationData>
+  {
+    var result:Null<Array<AnimationData>> = switch (dir)
+    {
+      case LEFT: [
+          _data?.assets?.noteSplash?.data?.splash1Left?.toNamed('splash1Left'),
+          _data?.assets?.noteSplash?.data?.splash2Left?.toNamed('splash2Left')
+        ];
+      case DOWN: [
+          _data?.assets?.noteSplash?.data?.splash1Down?.toNamed('splash1Down'),
+          _data?.assets?.noteSplash?.data?.splash2Down?.toNamed('splash2Down')
+        ];
+      case UP: [
+          _data?.assets?.noteSplash?.data?.splash1Up?.toNamed('splash1Up'),
+          _data?.assets?.noteSplash?.data?.splash2Up?.toNamed('splash2Up')
+        ];
+      case RIGHT: [
+          _data?.assets?.noteSplash?.data?.splash1Right?.toNamed('splash1Right'),
+          _data?.assets?.noteSplash?.data?.splash2Right?.toNamed('splash2Right')
+        ];
+    };
+
+    // TODO: Null check doesn't work here.
+    if (result == null) return fallback.fetchSplashAnimationData(dir);
+    return result;
   }
 
   public function getHoldNoteAssetPath(raw:Bool = false):String
