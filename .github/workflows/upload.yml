@@ -1,0 +1,39 @@
+name: Build
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  buildLinux:
+    name: Build Linux Application
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Haxe
+        uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: latest
+
+      - name: Install Haxe Libraries using HxPKG
+        run: |
+          haxelib install hmm --quiet
+          haxelib run hmm install
+
+      - name: Compile Application
+        run: haxelib run lime build html5
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5.0.0
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3.0.1
+        with:
+          path: "./export/release/html5/bin/"
+
+      - name: Deploy Website
+        id: deployment
+        uses: actions/deploy-pages@v4.0.5
