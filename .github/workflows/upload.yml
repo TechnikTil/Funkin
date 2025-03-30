@@ -5,23 +5,27 @@ on:
   workflow_dispatch:
 
 jobs:
-  buildLinux:
-    name: Build Linux Application
+  build:
+    name: "Deploy the Funkin' Website"
     runs-on: ubuntu-latest
 
     steps:
       - name: Download Source Code
         uses: actions/checkout@v4
+        with:
+          submodules: 'true'
 
       - name: Setup Haxe
         uses: krdlab/setup-haxe@master
         with:
           haxe-version: latest
 
-      - name: Install Haxe Libraries using HxPKG
+      - name: Install Haxe Libraries using HMM
         run: |
           haxelib install hmm --quiet
-          haxelib run hmm install
+          haxelib install hxcpp --quiet
+          haxelib install lime --quiet
+          haxelib run hmm install --quiet
 
       - name: Compile Application
         run: haxelib run lime build html5
