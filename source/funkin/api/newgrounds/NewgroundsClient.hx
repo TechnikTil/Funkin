@@ -13,8 +13,8 @@ import io.newgrounds.utils.MedalList;
 import io.newgrounds.utils.SaveSlotList;
 import io.newgrounds.utils.ScoreBoardList;
 import io.newgrounds.objects.User;
-#if mobile
-import extension.webviewcore.WebView;
+#if FEATURE_MOBILE_WEBVIEW
+import funkin.mobile.util.WebViewUtil;
 #end
 
 @:build(funkin.util.macro.EnvironmentMacro.build())
@@ -115,12 +115,14 @@ class NewgroundsClient
 
     var passportHandler:String->Void = function(passportUrl:String) {
       // This exists so we can create a popup on mobile but with a WebView instead.
-      #if mobile
+      #if FEATURE_MOBILE_WEBVIEW
       if (passportUrl != null)
       {
         NG.core.logVerbose('Loading passport from WebView: ${passportUrl}');
 
-        WebView.openWithURL(passportUrl);
+        WebViewUtil.openURL(passportUrl, function():Void {
+          NG.core.cancelLoginRequest();
+        });
 
         NG.core.onPassportUrlOpen();
       }
@@ -215,11 +217,8 @@ class NewgroundsClient
 
   function onLoginResolved(outcome:LoginOutcome):Void
   {
-    #if mobile
-    if (WebView.isOpened())
-    {
-      WebView.close();
-    }
+    #if FEATURE_MOBILE_WEBVIEW
+    WebViewUtil.close();
     #end
 
     switch (outcome)

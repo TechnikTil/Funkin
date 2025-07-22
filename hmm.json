@@ -42,6 +42,11 @@
       "version": "1.0.3"
     },
     {
+      "name": "extension-webviewcore",
+      "type": "haxelib",
+      "version": "1.0.0"
+    },
+    {
       "name": "flixel",
       "type": "git",
       "dir": null,
