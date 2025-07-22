@@ -13,6 +13,9 @@ import io.newgrounds.utils.MedalList;
 import io.newgrounds.utils.SaveSlotList;
 import io.newgrounds.utils.ScoreBoardList;
 import io.newgrounds.objects.User;
+#if mobile
+import extension.webviewcore.WebView;
+#end
 
 @:build(funkin.util.macro.EnvironmentMacro.build())
 @:nullSafety
@@ -104,20 +107,37 @@ class NewgroundsClient
       FlxG.log.warn("No Newgrounds client initialized! Are your credentials invalid?");
       return;
     }
-
     if (NG.core.attemptingLogin)
     {
       trace(" NEWGROUNDS '.bold().bg_orange() + ' Login attempt ongoing, will not login until finished.");
       return;
     }
 
+    var passportHandler:String->Void = function(passportUrl:String) {
+      // This exists so we can create a popup on mobile but with a WebView instead.
+      #if mobile
+      if (passportUrl != null)
+      {
+        NG.core.logVerbose('Loading passport from WebView: ${passportUrl}');
+
+        WebView.openWithURL(passportUrl);
+
+        NG.core.onPassportUrlOpen();
+      }
+      else
+        NG.core.logError("Cannot open passport");
+      #else
+      NG.core.openPassportUrl();
+      #end
+    };
+
     if (onSuccess != null && onError != null)
     {
-      NG.core.requestLogin(onLoginResolvedWithCallbacks.bind(_, onSuccess, onError));
+      NG.core.requestLogin(onLoginResolvedWithCallbacks.bind(_, onSuccess, onError), passportHandler);
     }
     else
     {
-      NG.core.requestLogin(onLoginResolved);
+      NG.core.requestLogin(onLoginResolved, passportHandler);
     }
   }
 
@@ -195,6 +215,13 @@ class NewgroundsClient
 
   function onLoginResolved(outcome:LoginOutcome):Void
   {
+    #if mobile
+    if (WebView.isOpened())
+    {
+      WebView.close();
+    }
+    #end
+
     switch (outcome)
     {
       case SUCCESS:
