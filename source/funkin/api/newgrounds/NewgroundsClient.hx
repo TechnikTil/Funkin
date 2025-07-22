@@ -250,6 +250,8 @@ class NewgroundsClient
     // Persist the session ID.
     Save.instance.ngSessionId.value = NG.core.sessionId;
 
+    trace(NG.core.sessionId);
+
     trace(' NEWGROUNDS '.bold().bg_orange() + ' Submitting medal request...');
     NG.core.requestMedals(onFetchedMedals);
 
