@@ -386,6 +386,12 @@ class Project extends HXProject
   static final FEATURE_MOBILE_IAR:FeatureFlag = "FEATURE_MOBILE_IAR";
 
   /**
+   * `-DFEATURE_MOBILE_WEBVIEW`
+   * If this feature flag is enabled, the user may sometimes be prompted to review the app on their respective store.
+   */
+  static final FEATURE_MOBILE_WEBVIEW:FeatureFlag = "FEATURE_MOBILE_WEBVIEW";
+
+  /**
    * `-DFEATURE_NAUGHTYNESS`
    * If this feature flag is enabled, naughtyness will be a toggleable option in the Options Menu.
    * If disabled, the option will be hidden and the game will always be censored.
@@ -921,6 +927,7 @@ class Project extends HXProject
     FEATURE_MOBILE_ADVERTISEMENTS.apply(this, (isMobile() && isRelease() && !isIOSSimulator()) && envConfig != null);
     FEATURE_MOBILE_IAP.apply(this, (isMobile() && isRelease() && !isIOSSimulator()) && envConfig != null);
     FEATURE_MOBILE_IAR.apply(this, isMobile() && isRelease() && !isIOSSimulator());
+    FEATURE_MOBILE_WEBVIEW.apply(this, isMobile() && FEATURE_NEWGROUNDS.isEnabled(this));
 
     // The coveted ghost tapping feature.
     // Essential on mobile but delayed on desktop.
@@ -1365,9 +1372,6 @@ class Project extends HXProject
     if (FEATURE_NEWGROUNDS.isEnabled(this))
     {
       addHaxelib('newgrounds'); // Newgrounds API
-
-      if (isMobile())
-        addHaxelib('extension-webviewcore'); // WebView Extension
     }
 
     if (FEATURE_FUNKVIS.isEnabled(this))
@@ -1381,14 +1385,14 @@ class Project extends HXProject
       addHaxelib('FlxPartialSound'); // Partial sound
     }
 
-    if (FEATURE_MOBILE_ADVERTISEMENTS.isEnabled(this))
-    {
-      addHaxelib('extension-admob'); // Ads Extension
-    }
-
     if (FEATURE_HAPTICS.isEnabled(this))
     {
       addHaxelib('extension-haptics'); // Haptic feedback
+    }
+
+    if (FEATURE_MOBILE_ADVERTISEMENTS.isEnabled(this))
+    {
+      addHaxelib('extension-admob'); // Ads Extension
     }
 
     if (FEATURE_MOBILE_IAP.isEnabled(this))
@@ -1399,6 +1403,11 @@ class Project extends HXProject
     if (FEATURE_MOBILE_IAR.isEnabled(this))
     {
       addHaxelib('extension-iarcore'); // In-app reviews Extension
+    }
+
+    if (FEATURE_MOBILE_WEBVIEW.isEnabled(this))
+    {
+      addHaxelib('extension-webviewcore'); // WebView Extension
     }
   }
 
