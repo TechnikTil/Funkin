@@ -26,28 +26,22 @@ class Save implements ConsoleClass
   public static final SAVE_DATA_VERSION:thx.semver.Version = "2.1.1";
   public static final SAVE_DATA_VERSION_RULE:thx.semver.VersionRule = ">=2.1.0 <2.2.0";
 
-  // We load this version's saves from a new save path, to maintain SOME level of backwards compatibility.
-  static final SAVE_PATH:String = 'FunkinCrew';
-  static final SAVE_NAME:String = 'Funkin';
-
-  static final SAVE_PATH_LEGACY:String = 'ninjamuffin99';
-  static final SAVE_NAME_LEGACY:String = 'funkin';
-
   /**
    * We always use this save slot.
    * Alter this if you want to use a different save slot.
    */
   static final BASE_SAVE_SLOT:Int = 1;
 
+  /**
+   * Singleton for our Save class
+   */
   public static var instance(get, never):Save;
+
   static var _instance:Null<Save> = null;
 
   static function get_instance():Save
   {
-    if (_instance == null)
-    {
-      return load();
-    }
+    if (_instance == null) return load();
     return _instance;
   }
 
@@ -1177,7 +1171,7 @@ class Save implements ConsoleClass
   {
     trace('[SAVE] Loading save from slot $slot...');
 
-    FlxG.save.bind('$SAVE_NAME${slot}', SAVE_PATH);
+    FlxG.save.bind(Constants.SAVE_NAME + slot, Constants.SAVE_PATH);
 
     switch (FlxG.save.status)
     {
@@ -1215,7 +1209,7 @@ class Save implements ConsoleClass
 
   static function clearSlot(slot:Int):Save
   {
-    FlxG.save.bind('$SAVE_NAME${slot}', SAVE_PATH);
+    FlxG.save.bind(Constants.SAVE_NAME + slot, Constants.SAVE_PATH);
 
     if (FlxG.save.status != EMPTY)
     {
@@ -1283,7 +1277,7 @@ class Save implements ConsoleClass
   static function fetchFromSlotRaw(slot:Int):Null<Dynamic>
   {
     var targetSaveData = new FlxSave();
-    targetSaveData.bind('$SAVE_NAME${slot}', SAVE_PATH);
+    targetSaveData.bind(Constants.SAVE_NAME + slot, Constants.SAVE_PATH);
     if (targetSaveData.isEmpty()) return null;
     return targetSaveData.data;
   }
@@ -1293,13 +1287,13 @@ class Save implements ConsoleClass
     trace('[SAVE] Finding slot to write data to (starting with ${slot})...');
 
     var targetSaveData = new FlxSave();
-    targetSaveData.bind('$SAVE_NAME${slot}', SAVE_PATH);
+    targetSaveData.bind(Constants.SAVE_NAME + slot, Constants.SAVE_PATH);
     while (!targetSaveData.isEmpty())
     {
       // Keep trying to bind to slots until we find an empty slot.
       trace('[SAVE] Slot ${slot} is taken, continuing...');
       slot++;
-      targetSaveData.bind('$SAVE_NAME${slot}', SAVE_PATH);
+      targetSaveData.bind(Constants.SAVE_NAME + slot, Constants.SAVE_PATH);
     }
 
     trace('[SAVE] Writing data to slot ${slot}...');
@@ -1318,7 +1312,7 @@ class Save implements ConsoleClass
   static function querySlot(slot:Int):Bool
   {
     var targetSaveData = new FlxSave();
-    targetSaveData.bind('$SAVE_NAME${slot}', SAVE_PATH);
+    targetSaveData.bind(Constants.SAVE_NAME + slot, Constants.SAVE_PATH);
     switch (targetSaveData.status)
     {
       case EMPTY:
@@ -1356,7 +1350,7 @@ class Save implements ConsoleClass
   {
     trace("[SAVE] Checking for legacy save data...");
     var legacySave:FlxSave = new FlxSave();
-    legacySave.bind(SAVE_NAME_LEGACY, SAVE_PATH_LEGACY);
+    legacySave.bind(Constants.SAVE_NAME_LEGACY, Constants.SAVE_PATH_LEGACY);
     if (legacySave.isEmpty())
     {
       trace("[SAVE] No legacy save data found.");
@@ -1410,7 +1404,7 @@ class Save implements ConsoleClass
   {
     trace('[SAVE] Loading Save Data from Newgrounds...');
     funkin.api.newgrounds.NGSaveSlot.instance.load(function(data:Dynamic) {
-      FlxG.save.bind('$SAVE_NAME${BASE_SAVE_SLOT}', SAVE_PATH);
+      FlxG.save.bind(Constants.SAVE_NAME + BASE_SAVE_SLOT, Constants.SAVE_PATH);
 
       if (FlxG.save.status != EMPTY)
       {
@@ -1420,7 +1414,7 @@ class Save implements ConsoleClass
       }
 
       FlxG.save.erase();
-      FlxG.save.bind('$SAVE_NAME${BASE_SAVE_SLOT}', SAVE_PATH); // forces regeneration of the file as erase deletes it
+      FlxG.save.bind(Constants.SAVE_NAME + BASE_SAVE_SLOT, Constants.SAVE_PATH); // forces regeneration of the file as erase deletes it
 
       var gameSave = SaveDataMigrator.migrate(data);
       FlxG.save.mergeData(gameSave.data, true);

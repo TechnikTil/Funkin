@@ -640,4 +640,24 @@ class Constants
    * Default vibration sharpness.
    */
   public inline static final DEFAULT_VIBRATION_SHARPNESS:Float = 1;
+
+  /**
+   * The path where our save data will be stored.
+   */
+  public inline static final SAVE_PATH:String = 'FunkinCrew';
+
+  /**
+   * The name of our save slot.
+   */
+  public inline static final SAVE_NAME:String = 'Funkin';
+
+  /**
+   * The legacy path where our save data was saved. Used for backwards compatibility.
+   */
+  public inline static final SAVE_PATH_LEGACY:String = 'ninjamuffin99';
+
+  /**
+   * The legacy save slot name, used for backwards compatibility.
+   */
+  public inline static final SAVE_NAME_LEGACY:String = 'funkin';
 }
