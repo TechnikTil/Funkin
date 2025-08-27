@@ -44,7 +44,7 @@ class Preferences
     #else
     var save:Save = Save.instance;
     save.options.framerate = value;
-    save.flush();
+    Save.system.flush();
     FlxG.updateFramerate = value;
     FlxG.drawFramerate = value;
     return value;
@@ -74,7 +74,7 @@ class Preferences
 
     var save:Save = Save.instance;
     save.options.naughtyness = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -93,7 +93,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.downscroll = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -112,7 +112,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.flashingLights = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -131,7 +131,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.zoomCamera = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -156,8 +156,9 @@ class Preferences
     if (value != Save.instance.options.debugDisplay) setDebugDisplayMode(value);
 
     var save = Save.instance;
+
     save.options.debugDisplay = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -178,7 +179,7 @@ class Preferences
 
     var save:Save = Save.instance;
     save.options.debugDisplayBGOpacity = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -219,7 +220,7 @@ class Preferences
 
     var save:Save = Save.instance;
     save.options.hapticsMode = string;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -238,7 +239,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.hapticsIntensityMultiplier = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -263,7 +264,7 @@ class Preferences
 
     var save:Save = Save.instance;
     save.options.autoPause = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -282,7 +283,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.autoFullscreen = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -302,7 +303,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.globalOffset = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -349,7 +350,7 @@ class Preferences
 
     var save:Save = Save.instance;
     save.options.vsyncMode = string;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -371,7 +372,7 @@ class Preferences
 
     var save:Save = Save.instance;
     save.options.unlockedFramerate = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -411,7 +412,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.strumlineBackgroundOpacity = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -430,7 +431,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.screenshot.shouldHideMouse = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -449,7 +450,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.screenshot.fancyPreview = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -468,7 +469,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.screenshot.previewOnSave = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -557,7 +558,7 @@ class Preferences
 
     var save:Save = Save.instance;
     save.mobileOptions.screenTimeout = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -576,7 +577,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.mobileOptions.controlsScheme = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
@@ -601,7 +602,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.mobileOptions.noAds = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
   #end

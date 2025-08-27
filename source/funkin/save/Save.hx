@@ -26,11 +26,7 @@ class Save implements ConsoleClass
   public static final SAVE_DATA_VERSION:thx.semver.Version = "2.1.1";
   public static final SAVE_DATA_VERSION_RULE:thx.semver.VersionRule = ">=2.1.0 <2.2.0";
 
-  /**
-   * We always use this save slot.
-   * Alter this if you want to use a different save slot.
-   */
-  static final BASE_SAVE_SLOT:Int = 1;
+  public static var system:SaveSystem = new SaveSystem();
 
   /**
    * Singleton for our Save class
@@ -52,7 +48,7 @@ class Save implements ConsoleClass
     trace("[SAVE] Loading save...");
 
     // Bind save data.
-    final loadedSave:Save = loadFromSlot(BASE_SAVE_SLOT);
+    final loadedSave:Save = loadFromSlot(Constants.BASE_SAVE_SLOT);
     _instance ??= loadedSave;
 
     return loadedSave;
@@ -60,7 +56,7 @@ class Save implements ConsoleClass
 
   public static function clearData():Void
   {
-    _instance = clearSlot(BASE_SAVE_SLOT);
+    _instance = Save.system.clearSlot(Constants.BASE_SAVE_SLOT);
   }
 
   /**
@@ -68,13 +64,13 @@ class Save implements ConsoleClass
    */
   public function new(?data:RawSaveData)
   {
-    this.data = data ?? Save.getDefault();
+    this.data = data ?? Save.getDefaultData();
 
     // Make sure the verison number is up to date before we flush.
     updateVersionToLatest();
   }
 
-  public static function getDefault():RawSaveData
+  public static function getDefaultData():RawSaveData
   {
     #if mobile
     var refreshRate:Int = FlxG.stage.window.displayMode.refreshRate;
@@ -251,7 +247,7 @@ class Save implements ConsoleClass
   function set_ngSessionId(value:Null<String>):Null<String>
   {
     data.api.newgrounds.sessionId = value;
-    flush();
+    Save.system.flush();
     return data.api.newgrounds.sessionId;
   }
 
@@ -265,7 +261,7 @@ class Save implements ConsoleClass
   function set_enabledModIds(value:Array<String>):Array<String>
   {
     data.mods.enabledMods = value;
-    flush();
+    Save.system.flush();
     return data.mods.enabledMods;
   }
 
@@ -282,7 +278,7 @@ class Save implements ConsoleClass
   {
     // Set and apply.
     data.optionsChartEditor.previousFiles = value;
-    flush();
+    Save.system.flush();
     return data.optionsChartEditor.previousFiles;
   }
 
@@ -299,7 +295,7 @@ class Save implements ConsoleClass
   {
     // Set and apply.
     data.optionsChartEditor.hasBackup = value;
-    flush();
+    Save.system.flush();
     return data.optionsChartEditor.hasBackup;
   }
 
@@ -316,7 +312,7 @@ class Save implements ConsoleClass
   {
     // Set and apply.
     data.optionsChartEditor.noteQuant = value;
-    flush();
+    Save.system.flush();
     return data.optionsChartEditor.noteQuant;
   }
 
@@ -333,7 +329,7 @@ class Save implements ConsoleClass
   {
     // Set and apply.
     data.optionsChartEditor.chartEditorLiveInputStyle = value;
-    flush();
+    Save.system.flush();
     return data.optionsChartEditor.chartEditorLiveInputStyle;
   }
 
@@ -350,7 +346,7 @@ class Save implements ConsoleClass
   {
     // Set and apply.
     data.optionsChartEditor.downscroll = value;
-    flush();
+    Save.system.flush();
     return data.optionsChartEditor.downscroll;
   }
 
@@ -367,7 +363,7 @@ class Save implements ConsoleClass
   {
     // Set and apply.
     data.optionsChartEditor.showNoteKinds = value;
-    flush();
+    Save.system.flush();
     return data.optionsChartEditor.showNoteKinds;
   }
 
@@ -401,7 +397,7 @@ class Save implements ConsoleClass
   {
     // Set and apply.
     data.optionsChartEditor.playtestStartTime = value;
-    flush();
+    Save.system.flush();
     return data.optionsChartEditor.playtestStartTime;
   }
 
@@ -418,7 +414,7 @@ class Save implements ConsoleClass
   {
     // Set and apply.
     data.optionsChartEditor.theme = value;
-    flush();
+    Save.system.flush();
     return data.optionsChartEditor.theme;
   }
 
@@ -435,7 +431,7 @@ class Save implements ConsoleClass
   {
     // Set and apply.
     data.optionsChartEditor.metronomeVolume = value;
-    flush();
+    Save.system.flush();
     return data.optionsChartEditor.metronomeVolume;
   }
 
@@ -452,7 +448,7 @@ class Save implements ConsoleClass
   {
     // Set and apply.
     data.optionsChartEditor.hitsoundVolumePlayer = value;
-    flush();
+    Save.system.flush();
     return data.optionsChartEditor.hitsoundVolumePlayer;
   }
 
@@ -469,7 +465,7 @@ class Save implements ConsoleClass
   {
     // Set and apply.
     data.optionsChartEditor.hitsoundVolumeOpponent = value;
-    flush();
+    Save.system.flush();
     return data.optionsChartEditor.hitsoundVolumeOpponent;
   }
 
@@ -486,7 +482,7 @@ class Save implements ConsoleClass
   {
     // Set and apply.
     data.optionsChartEditor.instVolume = value;
-    flush();
+    Save.system.flush();
     return data.optionsChartEditor.instVolume;
   }
 
@@ -503,7 +499,7 @@ class Save implements ConsoleClass
   {
     // Set and apply.
     data.optionsChartEditor.playerVoiceVolume = value;
-    flush();
+    Save.system.flush();
     return data.optionsChartEditor.playerVoiceVolume;
   }
 
@@ -520,7 +516,7 @@ class Save implements ConsoleClass
   {
     // Set and apply.
     data.optionsChartEditor.opponentVoiceVolume = value;
-    flush();
+    Save.system.flush();
     return data.optionsChartEditor.opponentVoiceVolume;
   }
 
@@ -537,7 +533,7 @@ class Save implements ConsoleClass
   {
     // Set and apply.
     data.optionsChartEditor.themeMusic = value;
-    flush();
+    Save.system.flush();
     return data.optionsChartEditor.themeMusic;
   }
 
@@ -554,7 +550,7 @@ class Save implements ConsoleClass
   {
     // Set and apply.
     data.optionsChartEditor.playbackSpeed = value;
-    flush();
+    Save.system.flush();
     return data.optionsChartEditor.playbackSpeed;
   }
 
@@ -578,7 +574,7 @@ class Save implements ConsoleClass
   function set_oldChar(value:Bool):Bool
   {
     data.unlocks.oldChar = value;
-    flush();
+    Save.system.flush();
     return data.unlocks.oldChar;
   }
 
@@ -595,7 +591,7 @@ class Save implements ConsoleClass
   {
     // Set and apply.
     data.optionsStageEditor.previousFiles = value;
-    flush();
+    Save.system.flush();
     return data.optionsStageEditor.previousFiles;
   }
 
@@ -612,7 +608,7 @@ class Save implements ConsoleClass
   {
     // Set and apply.
     data.optionsStageEditor.hasBackup = value;
-    flush();
+    Save.system.flush();
     return data.optionsStageEditor.hasBackup;
   }
 
@@ -629,7 +625,7 @@ class Save implements ConsoleClass
   {
     // Set and apply.
     data.optionsStageEditor.moveStep = value;
-    flush();
+    Save.system.flush();
     return data.optionsStageEditor.moveStep;
   }
 
@@ -646,7 +642,7 @@ class Save implements ConsoleClass
   {
     // Set and apply.
     data.optionsStageEditor.angleStep = value;
-    flush();
+    Save.system.flush();
     return data.optionsStageEditor.angleStep;
   }
 
@@ -663,7 +659,7 @@ class Save implements ConsoleClass
   {
     // Set and apply.
     data.optionsStageEditor.theme = value;
-    flush();
+    Save.system.flush();
     return data.optionsStageEditor.theme;
   }
 
@@ -681,7 +677,7 @@ class Save implements ConsoleClass
   {
     // Set and apply.
     data.optionsStageEditor.bfChar = value;
-    flush();
+    Save.system.flush();
     return data.optionsStageEditor.bfChar;
   }
 
@@ -699,7 +695,7 @@ class Save implements ConsoleClass
   {
     // Set and apply.
     data.optionsStageEditor.gfChar = value;
-    flush();
+    Save.system.flush();
     return data.optionsStageEditor.gfChar;
   }
 
@@ -717,7 +713,7 @@ class Save implements ConsoleClass
   {
     // Set and apply.
     data.optionsStageEditor.dadChar = value;
-    flush();
+    Save.system.flush();
     return data.optionsStageEditor.dadChar;
   }
 
@@ -732,7 +728,7 @@ class Save implements ConsoleClass
       trace('Character seen: ' + character);
       data.unlocks.charactersSeen.push(character);
       trace('New characters seen list: ' + data.unlocks.charactersSeen);
-      flush();
+      Save.system.flush();
     }
   }
 
@@ -784,7 +780,7 @@ class Save implements ConsoleClass
     }
     level.set(difficultyId, score);
 
-    flush();
+    Save.system.flush();
   }
 
   public function isLevelHighScore(levelId:String, difficultyId:String = 'normal', score:SaveScoreData):Bool
@@ -882,7 +878,7 @@ class Save implements ConsoleClass
     }
     song.set(difficultyId, score);
 
-    flush();
+    Save.system.flush();
   }
 
   /**
@@ -922,7 +918,7 @@ class Save implements ConsoleClass
 
     song.set(difficultyId, newScore);
 
-    flush();
+    Save.system.flush();
   }
 
   /**
@@ -1037,7 +1033,7 @@ class Save implements ConsoleClass
     if (data.favoriteSongs == null)
     {
       data.favoriteSongs = [];
-      flush();
+      Save.system.flush();
     };
 
     return data.favoriteSongs.contains(id);
@@ -1048,7 +1044,7 @@ class Save implements ConsoleClass
     if (!isSongFavorited(id))
     {
       data.favoriteSongs.push(id);
-      flush();
+      Save.system.flush();
     }
   }
 
@@ -1057,7 +1053,7 @@ class Save implements ConsoleClass
     if (isSongFavorited(id))
     {
       data.favoriteSongs.remove(id);
-      flush();
+      Save.system.flush();
     }
   }
 
@@ -1083,7 +1079,7 @@ class Save implements ConsoleClass
 
   public function setControls(playerId:Int, inputType:Device, controls:SaveControlsData):Void
   {
-    var getPlayer:String->PlayerControlData = function(id) return id == 0 ? data.options.controls.p1 : data.options.controls.p2;
+    final getPlayer:Int->PlayerControlData = function(id) return id == 0 ? data.options.controls.p1 : data.options.controls.p2;
 
     switch (inputType)
     {
@@ -1092,8 +1088,6 @@ class Save implements ConsoleClass
       case Gamepad(_):
         getPlayer(playerId).gamepad = controls;
     }
-
-    flush();
   }
 
   public function isCharacterUnlocked(characterId:String):Bool
@@ -1141,14 +1135,6 @@ class Save implements ConsoleClass
   }
 
   /**
-   * Call this to make sure the save data is written to disk.
-   */
-  public function flush():Void
-  {
-    FlxG.save.flush();
-  }
-
-  /**
    * If you set slot to `2`, it will load an independent save file from slot 2.
    * @param slot
    */
@@ -1164,7 +1150,7 @@ class Save implements ConsoleClass
       case EMPTY:
         trace('[SAVE] Save data in slot ${slot} is empty, checking for legacy save data...');
 
-        switch (fetchLegacySaveData())
+        switch (Save.system.fetchLegacySaveData())
         {
           case None:
             trace('[SAVE] No legacy save data found.');
@@ -1194,20 +1180,6 @@ class Save implements ConsoleClass
     }
   }
 
-  static function clearSlot(slot:Int):Save
-  {
-    FlxG.save.bind(Constants.SAVE_NAME + slot, Constants.SAVE_PATH);
-
-    if (FlxG.save.status == EMPTY) return new Save();
-
-    // Archive the save data just in case.
-    // Not reliable but better than nothing.
-    var backupSlot:Int = Save.archiveBadSaveData(FlxG.save.data);
-
-    FlxG.save.erase();
-    return new Save();
-  }
-
   /**
    * Call this when there is an error loading the save data in slot X.
    */
@@ -1223,15 +1195,6 @@ class Save implements ConsoleClass
     if (nextSlot > 1000) throw "End of save data slots. Can't load any more.";
 
     return loadFromSlot(nextSlot);
-  }
-
-  public static function archiveBadSaveData(data:Dynamic):Int
-  {
-    // We want to save this somewhere so we can try to recover it for the user in the future!
-
-    final RECOVERY_SLOT_START = 1000;
-
-    return writeToAvailableSlot(RECOVERY_SLOT_START, data);
   }
 
   public static function debug_queryBadSaveData():Void
@@ -1254,27 +1217,6 @@ class Save implements ConsoleClass
     targetSaveData.bind(Constants.SAVE_NAME + slot, Constants.SAVE_PATH);
     if (targetSaveData.isEmpty()) return null;
     return targetSaveData.data;
-  }
-
-  static function writeToAvailableSlot(slot:Int, data:Dynamic):Int
-  {
-    trace('[SAVE] Finding slot to write data to (starting with ${slot})...');
-
-    var targetSaveData:FlxSave = new FlxSave();
-    targetSaveData.bind(Constants.SAVE_NAME + slot, Constants.SAVE_PATH);
-    while (!targetSaveData.isEmpty())
-    {
-      // Keep trying to bind to slots until we find an empty slot.
-      trace('[SAVE] Slot ${slot} is taken, continuing...');
-      slot++;
-      targetSaveData.bind(Constants.SAVE_NAME + slot, Constants.SAVE_PATH);
-    }
-
-    trace('[SAVE] Writing data to slot ${slot}...');
-    targetSaveData.mergeData(data, true);
-
-    trace('[SAVE] Data written to slot ${slot}!');
-    return slot;
   }
 
   /**
@@ -1318,31 +1260,13 @@ class Save implements ConsoleClass
     return -1;
   }
 
-  static function fetchLegacySaveData():Option<RawSaveData_v1_0_0>
-  {
-    trace("[SAVE] Checking for legacy save data...");
-    var legacySave:FlxSave = new FlxSave();
-    legacySave.bind(Constants.SAVE_NAME_LEGACY, Constants.SAVE_PATH_LEGACY);
-
-    if (legacySave.isEmpty())
-    {
-      trace("[SAVE] No legacy save data found.");
-      return None;
-    }
-    else
-    {
-      trace("[SAVE] Legacy save data found.");
-      return Some(cast legacySave.data);
-    }
-  }
-
   /**
    * Serialize this Save into a JSON string.
    * @param pretty Whether the JSON should be big ol string (false),
    *        or pretty printed formatted with tabs (true)
    * @return The JSON string.
    */
-  public function serialize(pretty:Bool = true):String
+  public function serializeJson(pretty:Bool = true):String
   {
     var ignoreNullOptionals:Bool = true;
     var writer = new json2object.JsonWriter<RawSaveData>(ignoreNullOptionals);
@@ -1356,12 +1280,12 @@ class Save implements ConsoleClass
 
   public function debug_dumpSaveJsonSave():Void
   {
-    FileUtil.saveFile(haxe.io.Bytes.ofString(this.serialize()), [FileUtil.FILE_FILTER_JSON], null, null, './save.json', 'Write save data as JSON...');
+    FileUtil.saveFile(haxe.io.Bytes.ofString(this.serializeJson()), [FileUtil.FILE_FILTER_JSON], null, null, './save.json', 'Write save data as JSON...');
   }
 
   public function debug_dumpSaveJsonPrint():Void
   {
-    trace(this.serialize());
+    trace(this.serializeJson());
   }
 
   #if FEATURE_NEWGROUNDS
@@ -1375,24 +1299,25 @@ class Save implements ConsoleClass
   public static function loadFromNewgrounds(onFinish:Void->Void):Void
   {
     trace('[SAVE] Loading Save Data from Newgrounds...');
-    funkin.api.newgrounds.NGSaveSlot.instance.load(function(data:Dynamic) {
-      FlxG.save.bind(Constants.SAVE_NAME + BASE_SAVE_SLOT, Constants.SAVE_PATH);
+
+    funkin.api.newgrounds.NGSaveSlot.instance.load((data:Dynamic) -> {
+      FlxG.save.bind(Constants.SAVE_NAME + Constants.BASE_SAVE_SLOT, Constants.SAVE_PATH);
 
       if (FlxG.save.status != EMPTY)
       {
         // best i can do in case the NG file is corrupted or something along those lines
-        var backupSlot:Int = Save.archiveBadSaveData(FlxG.save.data);
+        var backupSlot:Int = Save.system.archiveBadSaveData(FlxG.save.data);
         trace('[SAVE] Backed up current save data in case of emergency to $backupSlot!');
       }
 
       FlxG.save.erase();
-      FlxG.save.bind(Constants.SAVE_NAME + BASE_SAVE_SLOT, Constants.SAVE_PATH); // forces regeneration of the file as erase deletes it
+      FlxG.save.bind(Constants.SAVE_NAME + Constants.BASE_SAVE_SLOT, Constants.SAVE_PATH); // forces regeneration of the file as erase deletes it
 
       var gameSave = SaveDataMigrator.migrate(data);
       FlxG.save.mergeData(gameSave.data, true);
       _instance = gameSave;
       onFinish();
-    }, function(error:io.newgrounds.Call.CallError) {
+    }, (error:io.newgrounds.Call.CallError) -> {
       var errorMsg:String = io.newgrounds.Call.CallErrorTools.toString(error);
 
       var msg = 'There was an error loading your save data from Newgrounds.';

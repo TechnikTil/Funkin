@@ -660,4 +660,10 @@ class Constants
    * The legacy save slot name, used for backwards compatibility.
    */
   public inline static final SAVE_NAME_LEGACY:String = 'funkin';
+
+  /**
+   * We always use this save slot.
+   * Alter this if you want to use a different save slot.
+   */
+  public inline static final BASE_SAVE_SLOT:Int = 1;
 }

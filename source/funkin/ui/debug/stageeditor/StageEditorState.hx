@@ -856,7 +856,7 @@ class StageEditorState extends UIState
       files.pop();
 
     Save.instance.stageEditorPreviousFiles = files;
-    Save.instance.flush();
+    Save.system.flush();
   }
 
   public function updateMarkerPos()
@@ -1487,7 +1487,7 @@ class StageEditorState extends UIState
     saved = true;
 
     Save.instance.stageEditorHasBackup = true;
-    Save.instance.flush();
+    Save.system.flush();
 
     notifyChange("Auto-Save", "A Backup of this Stage has been made.");
   }
