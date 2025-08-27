@@ -52,8 +52,8 @@ class Save implements ConsoleClass
     trace("[SAVE] Loading save...");
 
     // Bind save data.
-    var loadedSave:Save = loadFromSlot(BASE_SAVE_SLOT);
-    if (_instance == null) _instance = loadedSave;
+    final loadedSave:Save = loadFromSlot(BASE_SAVE_SLOT);
+    _instance ??= loadedSave;
 
     return loadedSave;
   }
@@ -68,9 +68,7 @@ class Save implements ConsoleClass
    */
   public function new(?data:RawSaveData)
   {
-    if (data == null) this.data = Save.getDefault();
-    else
-      this.data = data;
+    this.data = data ?? Save.getDefault();
 
     // Make sure the verison number is up to date before we flush.
     updateVersionToLatest();
@@ -1085,26 +1083,14 @@ class Save implements ConsoleClass
 
   public function setControls(playerId:Int, inputType:Device, controls:SaveControlsData):Void
   {
+    var getPlayer:String->PlayerControlData = function(id) return id == 0 ? data.options.controls.p1 : data.options.controls.p2;
+
     switch (inputType)
     {
       case Keys:
-        if (playerId == 0)
-        {
-          data.options.controls.p1.keyboard = controls;
-        }
-        else
-        {
-          data.options.controls.p2.keyboard = controls;
-        }
+        getPlayer(playerId).keyboard = controls;
       case Gamepad(_):
-        if (playerId == 0)
-        {
-          data.options.controls.p1.gamepad = controls;
-        }
-        else
-        {
-          data.options.controls.p2.gamepad = controls;
-        }
+        getPlayer(playerId).gamepad = controls;
     }
 
     flush();
@@ -1177,21 +1163,22 @@ class Save implements ConsoleClass
     {
       case EMPTY:
         trace('[SAVE] Save data in slot ${slot} is empty, checking for legacy save data...');
-        var legacySaveData = fetchLegacySaveData();
-        if (legacySaveData != null)
+
+        switch (fetchLegacySaveData())
         {
-          trace('[SAVE] Found legacy save data, converting...');
-          var gameSave = SaveDataMigrator.migrateFromLegacy(legacySaveData);
-          FlxG.save.mergeData(gameSave.data, true);
-          return gameSave;
+          case None:
+            trace('[SAVE] No legacy save data found.');
+            var gameSave:Save = new Save();
+            FlxG.save.mergeData(gameSave.data, true);
+            return gameSave;
+
+          case Some(legacySaveData):
+            trace('[SAVE] Found legacy save data, converting...');
+            var gameSave = SaveDataMigrator.migrateFromLegacy(legacySaveData);
+            FlxG.save.mergeData(gameSave.data, true);
+            return gameSave;
         }
-        else
-        {
-          trace('[SAVE] No legacy save data found.');
-          var gameSave = new Save();
-          FlxG.save.mergeData(gameSave.data, true);
-          return gameSave;
-        }
+
       case ERROR(_): // DEPRECATED: Unused
         return handleSaveDataError(slot);
       case SAVE_ERROR(_):
@@ -1211,20 +1198,14 @@ class Save implements ConsoleClass
   {
     FlxG.save.bind(Constants.SAVE_NAME + slot, Constants.SAVE_PATH);
 
-    if (FlxG.save.status != EMPTY)
-    {
-      // Archive the save data just in case.
-      // Not reliable but better than nothing.
-      var backupSlot:Int = Save.archiveBadSaveData(FlxG.save.data);
+    if (FlxG.save.status == EMPTY) return new Save();
 
-      FlxG.save.erase();
+    // Archive the save data just in case.
+    // Not reliable but better than nothing.
+    var backupSlot:Int = Save.archiveBadSaveData(FlxG.save.data);
 
-      return new Save();
-    }
-    else
-    {
-      return new Save();
-    }
+    FlxG.save.erase();
+    return new Save();
   }
 
   /**
@@ -1238,17 +1219,10 @@ class Save implements ConsoleClass
 
     // Don't touch that slot anymore.
     // Instead, load the next available slot.
+    var nextSlot:Int = slot + 1;
+    if (nextSlot > 1000) throw "End of save data slots. Can't load any more.";
 
-    var nextSlot = slot + 1;
-
-    if (nextSlot < 1000)
-    {
-      return loadFromSlot(nextSlot);
-    }
-    else
-    {
-      throw "End of save data slots. Can't load any more.";
-    }
+    return loadFromSlot(nextSlot);
   }
 
   public static function archiveBadSaveData(data:Dynamic):Int
@@ -1286,7 +1260,7 @@ class Save implements ConsoleClass
   {
     trace('[SAVE] Finding slot to write data to (starting with ${slot})...');
 
-    var targetSaveData = new FlxSave();
+    var targetSaveData:FlxSave = new FlxSave();
     targetSaveData.bind(Constants.SAVE_NAME + slot, Constants.SAVE_PATH);
     while (!targetSaveData.isEmpty())
     {
@@ -1311,7 +1285,7 @@ class Save implements ConsoleClass
   @:haxe.warning("-WDeprecated")
   static function querySlot(slot:Int):Bool
   {
-    var targetSaveData = new FlxSave();
+    var targetSaveData:FlxSave = new FlxSave();
     targetSaveData.bind(Constants.SAVE_NAME + slot, Constants.SAVE_PATH);
     switch (targetSaveData.status)
     {
@@ -1338,41 +1312,39 @@ class Save implements ConsoleClass
   {
     for (i in start...end)
     {
-      if (querySlot(i))
-      {
-        return i;
-      }
+      if (querySlot(i)) return i;
     }
+
     return -1;
   }
 
-  static function fetchLegacySaveData():Null<RawSaveData_v1_0_0>
+  static function fetchLegacySaveData():Option<RawSaveData_v1_0_0>
   {
     trace("[SAVE] Checking for legacy save data...");
     var legacySave:FlxSave = new FlxSave();
     legacySave.bind(Constants.SAVE_NAME_LEGACY, Constants.SAVE_PATH_LEGACY);
+
     if (legacySave.isEmpty())
     {
       trace("[SAVE] No legacy save data found.");
-      return null;
+      return None;
     }
     else
     {
       trace("[SAVE] Legacy save data found.");
-      trace(legacySave.data);
-      return cast legacySave.data;
+      return Some(cast legacySave.data);
     }
   }
 
   /**
    * Serialize this Save into a JSON string.
    * @param pretty Whether the JSON should be big ol string (false),
-   * or formatted with tabs (true)
+   *        or pretty printed formatted with tabs (true)
    * @return The JSON string.
    */
   public function serialize(pretty:Bool = true):String
   {
-    var ignoreNullOptionals = true;
+    var ignoreNullOptionals:Bool = true;
     var writer = new json2object.JsonWriter<RawSaveData>(ignoreNullOptionals);
     return writer.write(data, pretty ? ' ' : null);
   }
@@ -1706,18 +1678,16 @@ typedef SaveDataOptions =
 
   var controls:
     {
-      var p1:
-        {
-          var keyboard:SaveControlsData;
-          var gamepad:SaveControlsData;
-        };
-      var p2:
-        {
-          var keyboard:SaveControlsData;
-          var gamepad:SaveControlsData;
-        };
+      var p1:PlayerControlData;
+      var p2:PlayerControlData;
     };
-};
+}
+
+typedef PlayerControlData =
+{
+  var keyboard:SaveControlsData;
+  var gamepad:SaveControlsData;
+}
 
 #if mobile
 typedef SaveDataMobileOptions =
@@ -1739,8 +1709,7 @@ typedef SaveDataMobileOptions =
    * @default `false`
    */
   var noAds:Bool;
-};
-
+}
 #end
 
 /**
@@ -1956,7 +1925,7 @@ typedef SaveDataChartEditorOptions =
    * @default `1.0`
    */
   var ?playbackSpeed:Float;
-};
+}
 
 typedef SaveDataStageEditorOptions =
 {
@@ -2010,4 +1979,4 @@ typedef SaveDataStageEditorOptions =
    * @default dad
    */
   var ?dadChar:String;
-};
+}
