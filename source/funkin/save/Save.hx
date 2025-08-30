@@ -269,8 +269,7 @@ class Save implements ConsoleClass
 
   function get_chartEditorPreviousFiles():Array<String>
   {
-    if (data.optionsChartEditor.previousFiles == null) data.optionsChartEditor.previousFiles = [];
-
+    data.optionsChartEditor.previousFiles ??= [];
     return data.optionsChartEditor.previousFiles;
   }
 
@@ -286,8 +285,7 @@ class Save implements ConsoleClass
 
   function get_chartEditorHasBackup():Bool
   {
-    if (data.optionsChartEditor.hasBackup == null) data.optionsChartEditor.hasBackup = false;
-
+    data.optionsChartEditor.hasBackup ??= false;
     return data.optionsChartEditor.hasBackup;
   }
 
@@ -303,8 +301,7 @@ class Save implements ConsoleClass
 
   function get_chartEditorNoteQuant():Int
   {
-    if (data.optionsChartEditor.noteQuant == null) data.optionsChartEditor.noteQuant = 3;
-
+    data.optionsChartEditor.noteQuant ??= 3;
     return data.optionsChartEditor.noteQuant;
   }
 
@@ -320,8 +317,7 @@ class Save implements ConsoleClass
 
   function get_chartEditorLiveInputStyle():ChartEditorLiveInputStyle
   {
-    if (data.optionsChartEditor.chartEditorLiveInputStyle == null) data.optionsChartEditor.chartEditorLiveInputStyle = ChartEditorLiveInputStyle.None;
-
+    data.optionsChartEditor.chartEditorLiveInputStyle ??= ChartEditorLiveInputStyle.None;
     return data.optionsChartEditor.chartEditorLiveInputStyle;
   }
 
@@ -337,8 +333,7 @@ class Save implements ConsoleClass
 
   function get_chartEditorDownscroll():Bool
   {
-    if (data.optionsChartEditor.downscroll == null) data.optionsChartEditor.downscroll = false;
-
+    data.optionsChartEditor.downscroll ??= false;
     return data.optionsChartEditor.downscroll;
   }
 
@@ -354,8 +349,7 @@ class Save implements ConsoleClass
 
   function get_chartEditorShowNoteKinds():Bool
   {
-    if (data.optionsChartEditor.showNoteKinds == null) data.optionsChartEditor.showNoteKinds = true;
-
+    data.optionsChartEditor.showNoteKinds ??= true;
     return data.optionsChartEditor.showNoteKinds;
   }
 
@@ -388,8 +382,7 @@ class Save implements ConsoleClass
 
   function get_chartEditorPlaytestStartTime():Bool
   {
-    if (data.optionsChartEditor.playtestStartTime == null) data.optionsChartEditor.playtestStartTime = false;
-
+    data.optionsChartEditor.playtestStartTime ??= false;
     return data.optionsChartEditor.playtestStartTime;
   }
 
@@ -405,7 +398,7 @@ class Save implements ConsoleClass
 
   function get_chartEditorTheme():ChartEditorTheme
   {
-    if (data.optionsChartEditor.theme == null) data.optionsChartEditor.theme = ChartEditorTheme.Light;
+    data.optionsChartEditor.theme ??= ChartEditorTheme.Light;
 
     return data.optionsChartEditor.theme;
   }
@@ -422,8 +415,7 @@ class Save implements ConsoleClass
 
   function get_chartEditorMetronomeVolume():Float
   {
-    if (data.optionsChartEditor.metronomeVolume == null) data.optionsChartEditor.metronomeVolume = 1.0;
-
+    data.optionsChartEditor.metronomeVolume ??= 1.0;
     return data.optionsChartEditor.metronomeVolume;
   }
 
@@ -439,8 +431,7 @@ class Save implements ConsoleClass
 
   function get_chartEditorHitsoundVolumePlayer():Float
   {
-    if (data.optionsChartEditor.hitsoundVolumePlayer == null) data.optionsChartEditor.hitsoundVolumePlayer = 1.0;
-
+    data.optionsChartEditor.hitsoundVolumePlayer ??= 1.0;
     return data.optionsChartEditor.hitsoundVolumePlayer;
   }
 
@@ -456,8 +447,7 @@ class Save implements ConsoleClass
 
   function get_chartEditorHitsoundVolumeOpponent():Float
   {
-    if (data.optionsChartEditor.hitsoundVolumeOpponent == null) data.optionsChartEditor.hitsoundVolumeOpponent = 1.0;
-
+    data.optionsChartEditor.hitsoundVolumeOpponent ??= 1.0;
     return data.optionsChartEditor.hitsoundVolumeOpponent;
   }
 
@@ -473,8 +463,7 @@ class Save implements ConsoleClass
 
   function get_chartEditorInstVolume():Float
   {
-    if (data.optionsChartEditor.instVolume == null) data.optionsChartEditor.instVolume = 1.0;
-
+    data.optionsChartEditor.instVolume ??= 1.0;
     return data.optionsChartEditor.instVolume;
   }
 
@@ -490,8 +479,7 @@ class Save implements ConsoleClass
 
   function get_chartEditorPlayerVoiceVolume():Float
   {
-    if (data.optionsChartEditor.playerVoiceVolume == null) data.optionsChartEditor.playerVoiceVolume = 1.0;
-
+    data.optionsChartEditor.playerVoiceVolume ??= 1.0;
     return data.optionsChartEditor.playerVoiceVolume;
   }
 
@@ -507,8 +495,7 @@ class Save implements ConsoleClass
 
   function get_chartEditorOpponentVoiceVolume():Float
   {
-    if (data.optionsChartEditor.opponentVoiceVolume == null) data.optionsChartEditor.opponentVoiceVolume = 1.0;
-
+    data.optionsChartEditor.opponentVoiceVolume ??= 1.0;
     return data.optionsChartEditor.opponentVoiceVolume;
   }
 
@@ -524,8 +511,7 @@ class Save implements ConsoleClass
 
   function get_chartEditorThemeMusic():Bool
   {
-    if (data.optionsChartEditor.themeMusic == null) data.optionsChartEditor.themeMusic = true;
-
+    data.optionsChartEditor.themeMusic ??= true;
     return data.optionsChartEditor.themeMusic;
   }
 
@@ -541,8 +527,7 @@ class Save implements ConsoleClass
 
   function get_chartEditorPlaybackSpeed():Float
   {
-    if (data.optionsChartEditor.playbackSpeed == null) data.optionsChartEditor.playbackSpeed = 0.5;
-
+    data.optionsChartEditor.playbackSpeed ??= 0.5;
     return data.optionsChartEditor.playbackSpeed;
   }
 
@@ -582,8 +567,7 @@ class Save implements ConsoleClass
 
   function get_stageEditorPreviousFiles():Array<String>
   {
-    if (data.optionsStageEditor.previousFiles == null) data.optionsStageEditor.previousFiles = [];
-
+    data.optionsStageEditor.previousFiles ??= [];
     return data.optionsStageEditor.previousFiles;
   }
 
@@ -599,8 +583,7 @@ class Save implements ConsoleClass
 
   function get_stageEditorHasBackup():Bool
   {
-    if (data.optionsStageEditor.hasBackup == null) data.optionsStageEditor.hasBackup = false;
-
+    data.optionsStageEditor.hasBackup ??= false;
     return data.optionsStageEditor.hasBackup;
   }
 
@@ -616,8 +599,7 @@ class Save implements ConsoleClass
 
   function get_stageEditorMoveStep():String
   {
-    if (data.optionsStageEditor.moveStep == null) data.optionsStageEditor.moveStep = "1px";
-
+    data.optionsStageEditor.moveStep ??= "1px";
     return data.optionsStageEditor.moveStep;
   }
 
@@ -633,8 +615,7 @@ class Save implements ConsoleClass
 
   function get_stageEditorAngleStep():Float
   {
-    if (data.optionsStageEditor.angleStep == null) data.optionsStageEditor.angleStep = 5;
-
+    data.optionsStageEditor.angleStep ??= 5;
     return data.optionsStageEditor.angleStep;
   }
 
@@ -650,8 +631,7 @@ class Save implements ConsoleClass
 
   function get_stageEditorTheme():StageEditorTheme
   {
-    if (data.optionsStageEditor.theme == null) data.optionsStageEditor.theme = StageEditorTheme.Light;
-
+    data.optionsStageEditor.theme ??= StageEditorTheme.Light;
     return data.optionsStageEditor.theme;
   }
 
