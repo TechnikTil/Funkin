@@ -235,6 +235,36 @@ class Save implements ConsoleClass
   }
 
   /**
+   * The user's current volume setting.
+   */
+  public var volume(get, set):Float;
+
+  function get_volume():Float
+  {
+    return data.volume;
+  }
+
+  function set_volume(value:Float):Float
+  {
+    return data.volume = value;
+  }
+
+  /**
+   * Whether the user's volume is currently muted.
+   */
+  public var mute(get, set):Bool;
+
+  function get_mute():Bool
+  {
+    return data.mute;
+  }
+
+  function set_mute(value:Bool):Bool
+  {
+    return data.mute = value;
+  }
+
+  /**
    * The current session ID for the logged-in Newgrounds user, or null if the user is cringe.
    */
   public var ngSessionId(get, set):Null<String>;
@@ -1082,36 +1112,6 @@ class Save implements ConsoleClass
         trace('Unknown character ID: ' + characterId);
         return true;
     }
-  }
-
-  /**
-   * The user's current volume setting.
-   */
-  public var volume(get, set):Float;
-
-  function get_volume():Float
-  {
-    return data.volume;
-  }
-
-  function set_volume(value:Float):Float
-  {
-    return data.volume = value;
-  }
-
-  /**
-   * Whether the user's volume is currently muted.
-   */
-  public var mute(get, set):Bool;
-
-  function get_mute():Bool
-  {
-    return data.mute;
-  }
-
-  function set_mute(value:Bool):Bool
-  {
-    return data.mute = value;
   }
 
   /**
