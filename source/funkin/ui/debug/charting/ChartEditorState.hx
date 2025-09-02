@@ -1015,12 +1015,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function get_shouldShowBackupAvailableDialog():Bool
   {
-    return Save.instance.chartEditorHasBackup && ChartEditorImportExportHandler.getLatestBackupPath() != null;
+    return Save.instance.chartEditorHasBackup.value && ChartEditorImportExportHandler.getLatestBackupPath() != null;
   }
 
   function set_shouldShowBackupAvailableDialog(value:Bool):Bool
   {
-    return Save.instance.chartEditorHasBackup = value;
+    return Save.instance.chartEditorHasBackup.value = value;
   }
 
   /**
@@ -2474,28 +2474,29 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     if (previousWorkingFilePaths[0] == null)
     {
-      previousWorkingFilePaths = [null].concat(save.chartEditorPreviousFiles);
+      previousWorkingFilePaths = [null].concat(save.chartEditorPreviousFiles.value);
     }
     else
     {
-      previousWorkingFilePaths = [currentWorkingFilePath].concat(save.chartEditorPreviousFiles);
+      previousWorkingFilePaths = [currentWorkingFilePath].concat(save.chartEditorPreviousFiles.value);
     }
-    noteSnapQuantIndex = save.chartEditorNoteQuant;
-    currentLiveInputStyle = save.chartEditorLiveInputStyle;
-    isViewDownscroll = save.chartEditorDownscroll;
-    showNoteKindIndicators = save.chartEditorShowNoteKinds;
-    showSubtitles = save.chartEditorShowSubtitles;
-    playtestStartTime = save.chartEditorPlaytestStartTime;
-    currentTheme = save.chartEditorTheme;
-    metronomeVolume = save.chartEditorMetronomeVolume;
-    hitsoundVolumePlayer = save.chartEditorHitsoundVolumePlayer;
-    hitsoundVolumeOpponent = save.chartEditorHitsoundVolumeOpponent;
-    this.welcomeMusic.active = save.chartEditorThemeMusic;
 
-    menubarItemVolumeInstrumental.value = Std.int(save.chartEditorInstVolume * 100);
-    menubarItemVolumeVocalsPlayer.value = Std.int(save.chartEditorPlayerVoiceVolume * 100);
-    menubarItemVolumeVocalsOpponent.value = Std.int(save.chartEditorOpponentVoiceVolume * 100);
-    menubarItemPlaybackSpeed.value = Std.int(save.chartEditorPlaybackSpeed * 100.0);
+    noteSnapQuantIndex = save.chartEditorNoteQuant.value;
+    currentLiveInputStyle = save.chartEditorLiveInputStyle.value;
+    isViewDownscroll = save.chartEditorDownscroll.value;
+    showNoteKindIndicators = save.chartEditorShowNoteKinds.value;
+    showSubtitles = save.chartEditorShowSubtitles.value;
+    playtestStartTime = save.chartEditorPlaytestStartTime.value;
+    currentTheme = save.chartEditorTheme.value;
+    metronomeVolume = save.chartEditorMetronomeVolume.value;
+    hitsoundVolumePlayer = save.chartEditorHitsoundVolumePlayer.value;
+    hitsoundVolumeOpponent = save.chartEditorHitsoundVolumeOpponent.value;
+    this.welcomeMusic.active = save.chartEditorThemeMusic.value;
+
+    menubarItemVolumeInstrumental.value = Std.int(save.chartEditorInstVolume.value * 100);
+    menubarItemVolumeVocalsPlayer.value = Std.int(save.chartEditorPlayerVoiceVolume.value * 100);
+    menubarItemVolumeVocalsOpponent.value = Std.int(save.chartEditorOpponentVoiceVolume.value * 100);
+    menubarItemPlaybackSpeed.value = Std.int(save.chartEditorPlaybackSpeed.value * 100.0);
   }
 
   public function writePreferences(hasBackup:Bool):Void
@@ -2506,26 +2507,26 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var filteredWorkingFilePaths:Array<String> = [];
     for (chartPath in previousWorkingFilePaths)
       if (chartPath != null) filteredWorkingFilePaths.push(chartPath);
-    save.chartEditorPreviousFiles = filteredWorkingFilePaths;
+    save.chartEditorPreviousFiles.value = filteredWorkingFilePaths;
 
     if (hasBackup) trace('Queuing backup prompt for next time!');
-    save.chartEditorHasBackup = hasBackup;
+    save.chartEditorHasBackup.value = hasBackup;
 
-    save.chartEditorNoteQuant = noteSnapQuantIndex;
-    save.chartEditorLiveInputStyle = currentLiveInputStyle;
-    save.chartEditorDownscroll = isViewDownscroll;
-    save.chartEditorShowNoteKinds = showNoteKindIndicators;
-    save.chartEditorPlaytestStartTime = playtestStartTime;
-    save.chartEditorTheme = currentTheme;
-    save.chartEditorMetronomeVolume = metronomeVolume;
-    save.chartEditorHitsoundVolumePlayer = hitsoundVolumePlayer;
-    save.chartEditorHitsoundVolumeOpponent = hitsoundVolumeOpponent;
-    save.chartEditorThemeMusic = this.welcomeMusic.active;
+    save.chartEditorNoteQuant.value = noteSnapQuantIndex;
+    save.chartEditorLiveInputStyle.value = currentLiveInputStyle;
+    save.chartEditorDownscroll.value = isViewDownscroll;
+    save.chartEditorShowNoteKinds.value = showNoteKindIndicators;
+    save.chartEditorPlaytestStartTime.value = playtestStartTime;
+    save.chartEditorTheme.value = currentTheme;
+    save.chartEditorMetronomeVolume.value = metronomeVolume;
+    save.chartEditorHitsoundVolumePlayer.value = hitsoundVolumePlayer;
+    save.chartEditorHitsoundVolumeOpponent.value = hitsoundVolumeOpponent;
+    save.chartEditorThemeMusic.value = this.welcomeMusic.active;
 
-    save.chartEditorInstVolume = menubarItemVolumeInstrumental.value / 100.0;
-    save.chartEditorPlayerVoiceVolume = menubarItemVolumeVocalsPlayer.value / 100.0;
-    save.chartEditorOpponentVoiceVolume = menubarItemVolumeVocalsOpponent.value / 100.0;
-    save.chartEditorPlaybackSpeed = menubarItemPlaybackSpeed.value / 100.0;
+    save.chartEditorInstVolume.value = menubarItemVolumeInstrumental.value / 100.0;
+    save.chartEditorPlayerVoiceVolume.value = menubarItemVolumeVocalsPlayer.value / 100.0;
+    save.chartEditorOpponentVoiceVolume.value = menubarItemVolumeVocalsOpponent.value / 100.0;
+    save.chartEditorPlaybackSpeed.value = menubarItemPlaybackSpeed.value / 100.0;
   }
 
   public function populateOpenRecentMenu():Void

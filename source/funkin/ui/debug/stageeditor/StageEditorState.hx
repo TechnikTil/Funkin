@@ -480,7 +480,7 @@ class StageEditorState extends UIState
       welcomeDialog.closable = false;
 
       #if sys
-      if (Save.instance.stageEditorHasBackup)
+      if (Save.instance.stageEditorHasBackup.value)
       {
         FileUtil.createDirIfNotExists(BACKUPS_PATH);
 
@@ -522,7 +522,7 @@ class StageEditorState extends UIState
     CrashHandler.errorSignal.add(autosavePerCrash);
     CrashHandler.criticalErrorSignal.add(autosavePerCrash);
 
-    Save.instance.stageEditorHasBackup = false;
+    Save.instance.stageEditorHasBackup.value = false;
 
     Cursor.show();
     FunkinSound.playMusic('chartEditorLoop',
@@ -737,8 +737,8 @@ class StageEditorState extends UIState
           this.createAndPushAction(OBJECT_ROTATED);
         }
 
-        if (FlxG.keys.justPressed.LEFT) selectedSprite.angle -= Save.instance.stageEditorAngleStep;
-        if (FlxG.keys.justPressed.RIGHT) selectedSprite.angle += Save.instance.stageEditorAngleStep;
+        if (FlxG.keys.justPressed.LEFT) selectedSprite.angle -= Save.instance.stageEditorAngleStep.value;
+        if (FlxG.keys.justPressed.RIGHT) selectedSprite.angle += Save.instance.stageEditorAngleStep.value;
       }
 
       arrowMovement(selectedSprite);
@@ -848,14 +848,14 @@ class StageEditorState extends UIState
 
   public function updateRecentFiles()
   {
-    var files = Save.instance.stageEditorPreviousFiles;
+    var files = Save.instance.stageEditorPreviousFiles.value;
     files.remove(currentFile);
     files.unshift(currentFile);
 
     while (files.length > Constants.MAX_PREVIOUS_WORKING_FILES)
       files.pop();
 
-    Save.instance.stageEditorPreviousFiles = files;
+    Save.instance.stageEditorPreviousFiles.value = files;
     Save.system.flush();
   }
 
@@ -994,7 +994,7 @@ class StageEditorState extends UIState
 
   function updateBGColors():Void
   {
-    var colArray = Save.instance.stageEditorTheme == StageEditorTheme.Dark ? DARK_MODE_COLORS : LIGHT_MODE_COLORS;
+    var colArray = Save.instance.stageEditorTheme.value == StageEditorTheme.Dark ? DARK_MODE_COLORS : LIGHT_MODE_COLORS;
 
     var index = members.indexOf(bg);
     bg.kill();
@@ -1051,7 +1051,7 @@ class StageEditorState extends UIState
     bottomBarSelectText.onClick = function(_) onMenuItemClick("switch focus");
 
     var stepOptions = ["1px", "2px", "3px", "5px", "10px", "25px", "50px", "100px"];
-    bottomBarMoveStepText.text = stepOptions.contains(Save.instance.stageEditorMoveStep) ? Save.instance.stageEditorMoveStep : "1px";
+    bottomBarMoveStepText.text = stepOptions.contains(Save.instance.stageEditorMoveStep.value) ? Save.instance.stageEditorMoveStep.value : "1px";
 
     var changeStep = function(change:Int = 0) {
       var id = stepOptions.indexOf(bottomBarMoveStepText.text);
@@ -1060,7 +1060,7 @@ class StageEditorState extends UIState
       if (id >= stepOptions.length) id = stepOptions.length - 1;
       else if (id < 0) id = 0;
 
-      bottomBarMoveStepText.text = Save.instance.stageEditorMoveStep = stepOptions[id];
+      bottomBarMoveStepText.text = Save.instance.stageEditorMoveStep.value = stepOptions[id];
       var shit = Std.parseInt(StringTools.replace(bottomBarMoveStepText.text, "px", ""));
       moveStep = shit;
 
@@ -1075,17 +1075,17 @@ class StageEditorState extends UIState
     changeStep(); // update
 
     var angleOptions = [0.5, 1, 2, 5, 10, 15, 45, 75, 90, 180];
-    bottomBarAngleStepText.text = (angleOptions.contains(Save.instance.stageEditorAngleStep) ? Save.instance.stageEditorAngleStep : 5) + "°";
+    bottomBarAngleStepText.text = (angleOptions.contains(Save.instance.stageEditorAngleStep.value) ? Save.instance.stageEditorAngleStep.value : 5) + "°";
 
     var changeAngle = function(change:Int = 0) {
-      var id = angleOptions.indexOf(Save.instance.stageEditorAngleStep);
+      var id = angleOptions.indexOf(Save.instance.stageEditorAngleStep.value);
       id += change;
 
       if (id >= angleOptions.length) id = angleOptions.length - 1;
       else if (id < 0) id = 0;
 
-      Save.instance.stageEditorAngleStep = angleOptions[id];
-      bottomBarAngleStepText.text = (angleOptions.contains(Save.instance.stageEditorAngleStep) ? Save.instance.stageEditorAngleStep : 5) + "°";
+      Save.instance.stageEditorAngleStep.value = angleOptions[id];
+      bottomBarAngleStepText.text = (angleOptions.contains(Save.instance.stageEditorAngleStep.value) ? Save.instance.stageEditorAngleStep.value : 5) + "°";
 
       updateDialog(StageEditorDialogType.OBJECT_PROPERTIES);
     }
@@ -1108,17 +1108,17 @@ class StageEditorState extends UIState
     menubarItemWindowStage.onChange = function(_) toggleDialog(StageEditorDialogType.STAGE, menubarItemWindowStage.selected);
 
     menubarItemThemeLight.onClick = function(_) {
-      Save.instance.stageEditorTheme = StageEditorTheme.Light;
+      Save.instance.stageEditorTheme.value = StageEditorTheme.Light;
       updateBGColors();
     }
 
     menubarItemThemeDark.onClick = function(_) {
-      Save.instance.stageEditorTheme = StageEditorTheme.Dark;
+      Save.instance.stageEditorTheme.value = StageEditorTheme.Dark;
       updateBGColors();
     }
 
-    menubarItemThemeDark.selected = Save.instance.stageEditorTheme == StageEditorTheme.Dark;
-    menubarItemThemeLight.selected = Save.instance.stageEditorTheme == StageEditorTheme.Light;
+    menubarItemThemeDark.selected = Save.instance.stageEditorTheme.value == StageEditorTheme.Dark;
+    menubarItemThemeLight.selected = Save.instance.stageEditorTheme.value == StageEditorTheme.Light;
 
     menubarItemViewChars.onChange = function(_) showChars = menubarItemViewChars.selected;
     menubarItemViewNameText.onChange = function(_) nameTxt.visible = menubarItemViewNameText.selected;
@@ -1143,7 +1143,7 @@ class StageEditorState extends UIState
     for (a in menubarItemOpenRecent.childComponents)
       menubarItemOpenRecent.removeComponent(a);
 
-    for (file in Save.instance.stageEditorPreviousFiles)
+    for (file in Save.instance.stageEditorPreviousFiles.value)
     {
       var filePath = new haxe.io.Path(file);
       var item = new MenuItem();
@@ -1486,7 +1486,7 @@ class StageEditorState extends UIState
     FileUtil.writeBytesToPath(path, data);
     saved = true;
 
-    Save.instance.stageEditorHasBackup = true;
+    Save.instance.stageEditorHasBackup.value = true;
     Save.system.flush();
 
     notifyChange("Auto-Save", "A Backup of this Stage has been made.");

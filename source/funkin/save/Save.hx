@@ -12,6 +12,7 @@ import funkin.ui.debug.charting.ChartEditorState.ChartEditorTheme;
 import funkin.ui.debug.stageeditor.StageEditorState.StageEditorTheme;
 import funkin.util.FileUtil;
 import funkin.util.macro.ConsoleMacro;
+import funkin.util.macro.SaveMacro;
 import funkin.util.SerializerUtil;
 import funkin.mobile.ui.FunkinHitbox;
 import thx.semver.Version;
@@ -21,6 +22,7 @@ import funkin.api.newgrounds.Leaderboards;
 #end
 
 @:nullSafety
+@:build(funkin.util.macro.SaveMacro.buildSaveProperties())
 class Save implements ConsoleClass
 {
   public static final SAVE_DATA_VERSION:thx.semver.Version = "2.1.1";
@@ -62,36 +64,28 @@ class Save implements ConsoleClass
   /**
    * Constructing a new Save will load the default values.
    */
+  @:nullSafety(Off)
   public function new(?data:RawSaveData)
   {
     this.data = data ?? Save.getDefaultData();
-    initSaveProperties();
+    // Build macro will inject SaveProperty initialization here automatically
 
     // Make sure the verison number is up to date before we flush.
     updateVersionToLatest();
-  }
-
-  inline function initSaveProperties():Void
-  {
-    oldChar = new SaveProperty(data.unlocks.oldChar, () -> data.unlocks.oldChar, (value) -> data.unlocks.oldChar = value);
   }
 
   public static function getDefaultData():RawSaveData
   {
     #if mobile
     var refreshRate:Int = FlxG.stage.window.displayMode.refreshRate;
-
     if (refreshRate < 60) refreshRate = 60;
     #end
-
     return {
       // Version number is an abstract(Array) internally.
       // This means it copies by reference, so merging save data overides the version number lol.
       version: thx.Dynamics.clone(Save.SAVE_DATA_VERSION),
-
       volume: 1.0,
       mute: false,
-
       api:
         {
           newgrounds:
@@ -105,9 +99,7 @@ class Save implements ConsoleClass
           levels: [],
           songs: [],
         },
-
       favoriteSongs: [],
-
       options:
         {
           // Reasonable defaults.
@@ -128,14 +120,12 @@ class Save implements ConsoleClass
           globalOffset: 0,
           audioVisualOffset: 0,
           unlockedFramerate: false,
-
           screenshot:
             {
               shouldHideMouse: true,
               fancyPreview: true,
               previewOnSave: true,
             },
-
           controls:
             {
               // Leave controls blank so defaults are loaded.
@@ -160,21 +150,18 @@ class Save implements ConsoleClass
           noAds: false
         },
       #end
-
       mods:
         {
           // No mods enabled.
           enabledMods: [],
           modOptions: [],
         },
-
       unlocks:
         {
           // Default to having seen the default character.
           charactersSeen: ["bf"],
           oldChar: false
         },
-
       optionsChartEditor:
         {
           // Reasonable defaults.
@@ -194,7 +181,6 @@ class Save implements ConsoleClass
           playbackSpeed: 0.5,
           themeMusic: true
         },
-
       optionsStageEditor:
         {
           previousFiles: [],
@@ -243,428 +229,107 @@ class Save implements ConsoleClass
   /**
    * The user's current volume setting.
    */
-  public var volume(get, set):Float;
-
-  function get_volume():Float
-  {
-    return data.volume;
-  }
-
-  function set_volume(value:Float):Float
-  {
-    return data.volume = value;
-  }
+  @:saveProperty(data.volume)
+  public var volume:SaveProperty<Float>;
 
   /**
    * Whether the user's volume is currently muted.
    */
-  public var mute(get, set):Bool;
+  @:saveProperty(data.mute)
+  public var mute:SaveProperty<Bool>;
 
-  function get_mute():Bool
-  {
-    return data.mute;
-  }
-
-  function set_mute(value:Bool):Bool
-  {
-    return data.mute = value;
-  }
+  ///
+  /// API
+  ///
 
   /**
    * The current session ID for the logged-in Newgrounds user, or null if the user is cringe.
    */
-  public var ngSessionId(get, set):Null<String>;
+  @:saveProperty(data.api.newgrounds.sessionId)
+  public var ngSessionId:SaveProperty<Null<String>>;
 
-  function get_ngSessionId():Null<String>
-  {
-    return data.api.newgrounds.sessionId;
-  }
+  ///
+  /// MODS
+  ///
+  @:saveProperty(data.mods.enabledMods)
+  public var enabledModIds:SaveProperty<Array<String>>;
 
-  function set_ngSessionId(value:Null<String>):Null<String>
-  {
-    data.api.newgrounds.sessionId = value;
-    Save.system.flush();
-    return data.api.newgrounds.sessionId;
-  }
+  ///
+  /// CHART EDITOR OPTIONS
+  ///
+  @:saveProperty(data.optionsChartEditor.previousFiles, [])
+  public var chartEditorPreviousFiles:SaveProperty<Array<String>>;
 
-  public var enabledModIds(get, set):Array<String>;
+  @:saveProperty(data.optionsChartEditor.hasBackup, false)
+  public var chartEditorHasBackup:SaveProperty<Bool>;
 
-  function get_enabledModIds():Array<String>
-  {
-    return data.mods.enabledMods;
-  }
+  @:saveProperty(data.optionsChartEditor.noteQuant, 3)
+  public var chartEditorNoteQuant:SaveProperty<Int>;
 
-  function set_enabledModIds(value:Array<String>):Array<String>
-  {
-    data.mods.enabledMods = value;
-    Save.system.flush();
-    return data.mods.enabledMods;
-  }
+  @:saveProperty(data.optionsChartEditor.chartEditorLiveInputStyle, ChartEditorLiveInputStyle.None)
+  public var chartEditorLiveInputStyle:SaveProperty<ChartEditorLiveInputStyle>;
 
-  public var chartEditorPreviousFiles(get, set):Array<String>;
+  @:saveProperty(data.optionsChartEditor.downscroll, false)
+  public var chartEditorDownscroll:SaveProperty<Bool>;
 
-  function get_chartEditorPreviousFiles():Array<String>
-  {
-    data.optionsChartEditor.previousFiles ??= [];
-    return data.optionsChartEditor.previousFiles;
-  }
+  @:saveProperty(data.optionsChartEditor.showNoteKinds, true)
+  public var chartEditorShowNoteKinds:SaveProperty<Bool>;
 
-  function set_chartEditorPreviousFiles(value:Array<String>):Array<String>
-  {
-    // Set and apply.
-    data.optionsChartEditor.previousFiles = value;
-    Save.system.flush();
-    return data.optionsChartEditor.previousFiles;
-  }
+  @:saveProperty(data.optionsChartEditor.showSubtitles, true)
+  public var chartEditorShowSubtitles:SaveProperty<Bool>;
 
-  public var chartEditorHasBackup(get, set):Bool;
+  @:saveProperty(data.optionsChartEditor.playtestStartTime, false)
+  public var chartEditorPlaytestStartTime:SaveProperty<Bool>;
 
-  function get_chartEditorHasBackup():Bool
-  {
-    data.optionsChartEditor.hasBackup ??= false;
-    return data.optionsChartEditor.hasBackup;
-  }
+  @:saveProperty(data.optionsChartEditor.theme, ChartEditorTheme.Light)
+  public var chartEditorTheme:SaveProperty<ChartEditorTheme>;
 
-  function set_chartEditorHasBackup(value:Bool):Bool
-  {
-    // Set and apply.
-    data.optionsChartEditor.hasBackup = value;
-    Save.system.flush();
-    return data.optionsChartEditor.hasBackup;
-  }
+  @:saveProperty(data.optionsChartEditor.metronomeVolume, 1.0)
+  public var chartEditorMetronomeVolume:SaveProperty<Float>;
 
-  public var chartEditorNoteQuant(get, set):Int;
+  @:saveProperty(data.optionsChartEditor.hitsoundVolumePlayer, 1.0)
+  public var chartEditorHitsoundVolumePlayer:SaveProperty<Float>;
 
-  function get_chartEditorNoteQuant():Int
-  {
-    data.optionsChartEditor.noteQuant ??= 3;
-    return data.optionsChartEditor.noteQuant;
-  }
+  @:saveProperty(data.optionsChartEditor.hitsoundVolumeOpponent, 1.0)
+  public var chartEditorHitsoundVolumeOpponent:SaveProperty<Float>;
 
-  function set_chartEditorNoteQuant(value:Int):Int
-  {
-    // Set and apply.
-    data.optionsChartEditor.noteQuant = value;
-    Save.system.flush();
-    return data.optionsChartEditor.noteQuant;
-  }
+  @:saveProperty(data.optionsChartEditor.instVolume, 1.0)
+  public var chartEditorInstVolume:SaveProperty<Float>;
 
-  public var chartEditorLiveInputStyle(get, set):ChartEditorLiveInputStyle;
+  @:saveProperty(data.optionsChartEditor.playerVoiceVolume, 1.0)
+  public var chartEditorPlayerVoiceVolume:SaveProperty<Float>;
 
-  function get_chartEditorLiveInputStyle():ChartEditorLiveInputStyle
-  {
-    data.optionsChartEditor.chartEditorLiveInputStyle ??= ChartEditorLiveInputStyle.None;
-    return data.optionsChartEditor.chartEditorLiveInputStyle;
-  }
+  @:saveProperty(data.optionsChartEditor.opponentVoiceVolume, 1.0)
+  public var chartEditorOpponentVoiceVolume:SaveProperty<Float>;
 
-  function set_chartEditorLiveInputStyle(value:ChartEditorLiveInputStyle):ChartEditorLiveInputStyle
-  {
-    // Set and apply.
-    data.optionsChartEditor.chartEditorLiveInputStyle = value;
-    Save.system.flush();
-    return data.optionsChartEditor.chartEditorLiveInputStyle;
-  }
+  @:saveProperty(data.optionsChartEditor.themeMusic, true)
+  public var chartEditorThemeMusic:SaveProperty<Bool>;
 
-  public var chartEditorDownscroll(get, set):Bool;
+  @:saveProperty(data.optionsChartEditor.playbackSpeed, 0.5)
+  public var chartEditorPlaybackSpeed:SaveProperty<Float>;
 
-  function get_chartEditorDownscroll():Bool
-  {
-    data.optionsChartEditor.downscroll ??= false;
-    return data.optionsChartEditor.downscroll;
-  }
-
-  function set_chartEditorDownscroll(value:Bool):Bool
-  {
-    // Set and apply.
-    data.optionsChartEditor.downscroll = value;
-    Save.system.flush();
-    return data.optionsChartEditor.downscroll;
-  }
-
-  public var chartEditorShowNoteKinds(get, set):Bool;
-
-  function get_chartEditorShowNoteKinds():Bool
-  {
-    data.optionsChartEditor.showNoteKinds ??= true;
-    return data.optionsChartEditor.showNoteKinds;
-  }
-
-  function set_chartEditorShowNoteKinds(value:Bool):Bool
-  {
-    // Set and apply.
-    data.optionsChartEditor.showNoteKinds = value;
-    Save.system.flush();
-    return data.optionsChartEditor.showNoteKinds;
-  }
-
-  public var chartEditorShowSubtitles(get, set):Bool;
-
-  function get_chartEditorShowSubtitles():Bool
-  {
-    if (data.optionsChartEditor.showSubtitles == null) data.optionsChartEditor.showSubtitles = true;
-
-    return data.optionsChartEditor.showSubtitles;
-  }
-
-  function set_chartEditorShowSubtitles(value:Bool):Bool
-  {
-    // Set and apply.
-    data.optionsChartEditor.showSubtitles = value;
-    flush();
-    return data.optionsChartEditor.showSubtitles;
-  }
-
-  public var chartEditorPlaytestStartTime(get, set):Bool;
-
-  function get_chartEditorPlaytestStartTime():Bool
-  {
-    data.optionsChartEditor.playtestStartTime ??= false;
-    return data.optionsChartEditor.playtestStartTime;
-  }
-
-  function set_chartEditorPlaytestStartTime(value:Bool):Bool
-  {
-    // Set and apply.
-    data.optionsChartEditor.playtestStartTime = value;
-    Save.system.flush();
-    return data.optionsChartEditor.playtestStartTime;
-  }
-
-  public var chartEditorTheme(get, set):ChartEditorTheme;
-
-  function get_chartEditorTheme():ChartEditorTheme
-  {
-    data.optionsChartEditor.theme ??= ChartEditorTheme.Light;
-    return data.optionsChartEditor.theme;
-  }
-
-  function set_chartEditorTheme(value:ChartEditorTheme):ChartEditorTheme
-  {
-    // Set and apply.
-    data.optionsChartEditor.theme = value;
-    Save.system.flush();
-    return data.optionsChartEditor.theme;
-  }
-
-  public var chartEditorMetronomeVolume(get, set):Float;
-
-  function get_chartEditorMetronomeVolume():Float
-  {
-    data.optionsChartEditor.metronomeVolume ??= 1.0;
-    return data.optionsChartEditor.metronomeVolume;
-  }
-
-  function set_chartEditorMetronomeVolume(value:Float):Float
-  {
-    // Set and apply.
-    data.optionsChartEditor.metronomeVolume = value;
-    Save.system.flush();
-    return data.optionsChartEditor.metronomeVolume;
-  }
-
-  public var chartEditorHitsoundVolumePlayer(get, set):Float;
-
-  function get_chartEditorHitsoundVolumePlayer():Float
-  {
-    data.optionsChartEditor.hitsoundVolumePlayer ??= 1.0;
-    return data.optionsChartEditor.hitsoundVolumePlayer;
-  }
-
-  function set_chartEditorHitsoundVolumePlayer(value:Float):Float
-  {
-    // Set and apply.
-    data.optionsChartEditor.hitsoundVolumePlayer = value;
-    Save.system.flush();
-    return data.optionsChartEditor.hitsoundVolumePlayer;
-  }
-
-  public var chartEditorHitsoundVolumeOpponent(get, set):Float;
-
-  function get_chartEditorHitsoundVolumeOpponent():Float
-  {
-    data.optionsChartEditor.hitsoundVolumeOpponent ??= 1.0;
-    return data.optionsChartEditor.hitsoundVolumeOpponent;
-  }
-
-  function set_chartEditorHitsoundVolumeOpponent(value:Float):Float
-  {
-    // Set and apply.
-    data.optionsChartEditor.hitsoundVolumeOpponent = value;
-    Save.system.flush();
-    return data.optionsChartEditor.hitsoundVolumeOpponent;
-  }
-
-  public var chartEditorInstVolume(get, set):Float;
-
-  function get_chartEditorInstVolume():Float
-  {
-    data.optionsChartEditor.instVolume ??= 1.0;
-    return data.optionsChartEditor.instVolume;
-  }
-
-  function set_chartEditorInstVolume(value:Float):Float
-  {
-    // Set and apply.
-    data.optionsChartEditor.instVolume = value;
-    Save.system.flush();
-    return data.optionsChartEditor.instVolume;
-  }
-
-  public var chartEditorPlayerVoiceVolume(get, set):Float;
-
-  function get_chartEditorPlayerVoiceVolume():Float
-  {
-    data.optionsChartEditor.playerVoiceVolume ??= 1.0;
-    return data.optionsChartEditor.playerVoiceVolume;
-  }
-
-  function set_chartEditorPlayerVoiceVolume(value:Float):Float
-  {
-    // Set and apply.
-    data.optionsChartEditor.playerVoiceVolume = value;
-    Save.system.flush();
-    return data.optionsChartEditor.playerVoiceVolume;
-  }
-
-  public var chartEditorOpponentVoiceVolume(get, set):Float;
-
-  function get_chartEditorOpponentVoiceVolume():Float
-  {
-    data.optionsChartEditor.opponentVoiceVolume ??= 1.0;
-    return data.optionsChartEditor.opponentVoiceVolume;
-  }
-
-  function set_chartEditorOpponentVoiceVolume(value:Float):Float
-  {
-    // Set and apply.
-    data.optionsChartEditor.opponentVoiceVolume = value;
-    Save.system.flush();
-    return data.optionsChartEditor.opponentVoiceVolume;
-  }
-
-  public var chartEditorThemeMusic(get, set):Bool;
-
-  function get_chartEditorThemeMusic():Bool
-  {
-    data.optionsChartEditor.themeMusic ??= true;
-    return data.optionsChartEditor.themeMusic;
-  }
-
-  function set_chartEditorThemeMusic(value:Bool):Bool
-  {
-    // Set and apply.
-    data.optionsChartEditor.themeMusic = value;
-    Save.system.flush();
-    return data.optionsChartEditor.themeMusic;
-  }
-
-  public var chartEditorPlaybackSpeed(get, set):Float;
-
-  function get_chartEditorPlaybackSpeed():Float
-  {
-    data.optionsChartEditor.playbackSpeed ??= 0.5;
-    return data.optionsChartEditor.playbackSpeed;
-  }
-
-  function set_chartEditorPlaybackSpeed(value:Float):Float
-  {
-    // Set and apply.
-    data.optionsChartEditor.playbackSpeed = value;
-    Save.system.flush();
-    return data.optionsChartEditor.playbackSpeed;
-  }
-
-  public var charactersSeen(get, never):Array<String>;
-
-  function get_charactersSeen():Array<String>
-  {
-    return data.unlocks.charactersSeen;
-  }
+  @:saveProperty(data.unlocks.charactersSeen, ["bf"])
+  public var charactersSeen:SaveProperty<Array<String>>;
 
   /**
    * Marks whether the player has seen the spotlight animation, which should only display once per save file ever.
    */
-  public var oldChar(default, null):SaveProperty<Bool>;
+  @:saveProperty(data.unlocks.oldChar)
+  public var oldChar:SaveProperty<Bool>;
 
-  public var stageEditorPreviousFiles(get, set):Array<String>;
-
-  function get_stageEditorPreviousFiles():Array<String>
-  {
-    data.optionsStageEditor.previousFiles ??= [];
-    return data.optionsStageEditor.previousFiles;
-  }
-
-  function set_stageEditorPreviousFiles(value:Array<String>):Array<String>
-  {
-    // Set and apply.
-    data.optionsStageEditor.previousFiles = value;
-    Save.system.flush();
-    return data.optionsStageEditor.previousFiles;
-  }
-
-  public var stageEditorHasBackup(get, set):Bool;
-
-  function get_stageEditorHasBackup():Bool
-  {
-    data.optionsStageEditor.hasBackup ??= false;
-    return data.optionsStageEditor.hasBackup;
-  }
-
-  function set_stageEditorHasBackup(value:Bool):Bool
-  {
-    // Set and apply.
-    data.optionsStageEditor.hasBackup = value;
-    Save.system.flush();
-    return data.optionsStageEditor.hasBackup;
-  }
-
-  public var stageEditorMoveStep(get, set):String;
-
-  function get_stageEditorMoveStep():String
-  {
-    data.optionsStageEditor.moveStep ??= "1px";
-    return data.optionsStageEditor.moveStep;
-  }
-
-  function set_stageEditorMoveStep(value:String):String
-  {
-    // Set and apply.
-    data.optionsStageEditor.moveStep = value;
-    Save.system.flush();
-    return data.optionsStageEditor.moveStep;
-  }
-
-  public var stageEditorAngleStep(get, set):Float;
-
-  function get_stageEditorAngleStep():Float
-  {
-    data.optionsStageEditor.angleStep ??= 5;
-    return data.optionsStageEditor.angleStep;
-  }
-
-  function set_stageEditorAngleStep(value:Float):Float
-  {
-    // Set and apply.
-    data.optionsStageEditor.angleStep = value;
-    Save.system.flush();
-    return data.optionsStageEditor.angleStep;
-  }
-
-  public var stageEditorTheme(get, set):StageEditorTheme;
-
-  function get_stageEditorTheme():StageEditorTheme
-  {
-    data.optionsStageEditor.theme ??= StageEditorTheme.Light;
-    return data.optionsStageEditor.theme;
-  }
-
-  function set_stageEditorTheme(value:StageEditorTheme):StageEditorTheme
-  {
-    // Set and apply.
-    data.optionsStageEditor.theme = value;
-    Save.system.flush();
-    return data.optionsStageEditor.theme;
-  }
+  ///
+  /// STAGE EDITOR
+  ///
+  @:saveProperty(data.optionsStageEditor.previousFiles, [])
+  public var stageEditorPreviousFiles:SaveProperty<Array<String>>;
+  @:saveProperty(data.optionsStageEditor.hasBackup, false)
+  public var stageEditorHasBackup:SaveProperty<Bool>;
+  @:saveProperty(data.optionsStageEditor.moveStep, "1px")
+  public var stageEditorMoveStep:SaveProperty<String>;
+  @:saveProperty(data.optionsStageEditor.angleStep, 5.0)
+  public var stageEditorAngleStep:SaveProperty<Float>;
+  @:saveProperty(data.optionsStageEditor.theme, StageEditorTheme.Light)
+  public var stageEditorTheme:SaveProperty<StageEditorTheme>;
 
   public var stageBoyfriendChar(get, set):String;
 
@@ -672,7 +337,6 @@ class Save implements ConsoleClass
   {
     if (data.optionsStageEditor.bfChar == null
       || CharacterDataParser.fetchCharacterData(data.optionsStageEditor.bfChar) == null) data.optionsStageEditor.bfChar = "bf";
-
     return data.optionsStageEditor.bfChar;
   }
 
@@ -690,7 +354,6 @@ class Save implements ConsoleClass
   {
     if (data.optionsStageEditor.gfChar == null
       || CharacterDataParser.fetchCharacterData(data.optionsStageEditor.gfChar ?? "") == null) data.optionsStageEditor.gfChar = "gf";
-
     return data.optionsStageEditor.gfChar;
   }
 
@@ -708,7 +371,6 @@ class Save implements ConsoleClass
   {
     if (data.optionsStageEditor.dadChar == null
       || CharacterDataParser.fetchCharacterData(data.optionsStageEditor.dadChar ?? "") == null) data.optionsStageEditor.dadChar = "dad";
-
     return data.optionsStageEditor.dadChar;
   }
 
@@ -719,6 +381,8 @@ class Save implements ConsoleClass
     Save.system.flush();
     return data.optionsStageEditor.dadChar;
   }
+
+  /// UTIL FUNCITONS
 
   /**
    * When we've seen a character unlock, add it to the list of characters seen.
@@ -759,14 +423,12 @@ class Save implements ConsoleClass
         data.scores.levels = [];
       }
     }
-
     var level = data.scores.levels.get(levelId);
     if (level == null)
     {
       level = [];
       data.scores.levels.set(levelId, level);
     }
-
     return level.get(difficultyId);
   }
 
@@ -782,7 +444,6 @@ class Save implements ConsoleClass
       data.scores.levels.set(levelId, level);
     }
     level.set(difficultyId, score);
-
     Save.system.flush();
   }
 
@@ -794,13 +455,11 @@ class Save implements ConsoleClass
       level = [];
       data.scores.levels.set(levelId, level);
     }
-
     var currentScore = level.get(difficultyId);
     if (currentScore == null)
     {
       return true;
     }
-
     return score.score > currentScore.score;
   }
 
@@ -809,7 +468,6 @@ class Save implements ConsoleClass
     #if UNLOCK_EVERYTHING
     return true;
     #end
-
     if (difficultyList == null)
     {
       difficultyList = ['easy', 'normal', 'hard'];
@@ -851,7 +509,6 @@ class Save implements ConsoleClass
       song = [];
       data.scores.songs.set(songId, song);
     }
-
     // 'default' variations are left with no suffix ('easy', 'normal', 'hard'),
     // along with 'erect' variations ('erect', 'nightmare')
     // otherwise, we want to add a suffix of our current variation to get the save data.
@@ -859,7 +516,6 @@ class Save implements ConsoleClass
     {
       difficultyId = '${difficultyId}-${variation}';
     }
-
     return song.get(difficultyId);
   }
 
@@ -880,7 +536,6 @@ class Save implements ConsoleClass
       data.scores.songs.set(songId, song);
     }
     song.set(difficultyId, score);
-
     Save.system.flush();
   }
 
@@ -891,26 +546,20 @@ class Save implements ConsoleClass
   {
     var newRank = Scoring.calculateRank(newScoreData);
     if (newScoreData == null || newRank == null) return;
-
     var song = data.scores.songs.get(songId);
     if (song == null)
     {
       song = [];
       data.scores.songs.set(songId, song);
     }
-
     var previousScoreData = song.get(difficultyId);
-
     var previousRank = Scoring.calculateRank(previousScoreData);
-
     if (previousScoreData == null || previousRank == null)
     {
       // Directly set the highscore.
       setSongScore(songId, difficultyId, newScoreData);
-
       return;
     }
-
     // Set the high score and the high rank separately.
     var newScore:SaveScoreData =
       {
@@ -918,9 +567,7 @@ class Save implements ConsoleClass
         tallies: (previousRank > newRank
           || Scoring.tallyCompletion(previousScoreData.tallies) > Scoring.tallyCompletion(newScoreData.tallies)) ? previousScoreData.tallies : newScoreData.tallies
       };
-
     song.set(difficultyId, newScore);
-
     Save.system.flush();
   }
 
@@ -939,13 +586,11 @@ class Save implements ConsoleClass
       song = [];
       data.scores.songs.set(songId, song);
     }
-
     var currentScore = song.get(difficultyId);
     if (currentScore == null)
     {
       return true;
     }
-
     return score.score > currentScore.score;
   }
 
@@ -964,7 +609,6 @@ class Save implements ConsoleClass
       // The provided score is invalid.
       return false;
     }
-
     var song = data.scores.songs.get(songId);
     if (song == null)
     {
@@ -978,7 +622,6 @@ class Save implements ConsoleClass
       // There is no primary highscore for this song.
       return true;
     }
-
     return newScoreRank > currentScoreRank;
   }
 
@@ -1002,13 +645,10 @@ class Save implements ConsoleClass
     {
       difficultyList = ['easy', 'normal', 'hard'];
     }
-
     if (variation == null) variation = '';
-
     for (difficulty in difficultyList)
     {
       if (variation != '') difficulty = '${difficulty}-${variation}';
-
       var score:Null<SaveScoreData> = getSongScore(songId, difficulty);
       if (score != null)
       {
@@ -1038,7 +678,6 @@ class Save implements ConsoleClass
       data.favoriteSongs = [];
       Save.system.flush();
     };
-
     return data.favoriteSongs.contains(id);
   }
 
@@ -1075,7 +714,6 @@ class Save implements ConsoleClass
   {
     var controls = getControls(playerId, inputType);
     if (controls == null) return false;
-
     var controlsFields = Reflect.fields(controls);
     return controlsFields.length > 0;
   }
@@ -1083,7 +721,6 @@ class Save implements ConsoleClass
   public function setControls(playerId:Int, inputType:Device, controls:SaveControlsData):Void
   {
     final getPlayer:Int->PlayerControlData = function(id) return id == 0 ? data.options.controls.p1 : data.options.controls.p2;
-
     switch (inputType)
     {
       case Keys:
@@ -1115,14 +752,11 @@ class Save implements ConsoleClass
   static function loadFromSlot(slot:Int):Save
   {
     trace('[SAVE] Loading save from slot $slot...');
-
     FlxG.save.bind(Constants.SAVE_NAME + slot, Constants.SAVE_PATH);
-
     switch (FlxG.save.status)
     {
       case EMPTY:
         trace('[SAVE] Save data in slot ${slot} is empty, checking for legacy save data...');
-
         switch (Save.system.fetchLegacySaveData())
         {
           case None:
@@ -1130,14 +764,12 @@ class Save implements ConsoleClass
             var gameSave:Save = new Save();
             FlxG.save.mergeData(gameSave.data, true);
             return gameSave;
-
           case Some(legacySaveData):
             trace('[SAVE] Found legacy save data, converting...');
             var gameSave = SaveDataMigrator.migrateFromLegacy(legacySaveData);
             FlxG.save.mergeData(gameSave.data, true);
             return gameSave;
         }
-
       case ERROR(_): // DEPRECATED: Unused
         return handleSaveDataError(slot);
       case SAVE_ERROR(_):
@@ -1148,7 +780,6 @@ class Save implements ConsoleClass
         trace('[SAVE] Loaded existing save data in slot ${slot}.');
         var gameSave = SaveDataMigrator.migrate(FlxG.save.data);
         FlxG.save.mergeData(gameSave.data, true);
-
         return gameSave;
     }
   }
@@ -1161,12 +792,10 @@ class Save implements ConsoleClass
     var msg = 'There was an error loading your save data in slot ${slot}.';
     msg += '\nPlease report this issue to the developers.';
     funkin.util.WindowUtil.showError("Save Data Failure", msg);
-
     // Don't touch that slot anymore.
     // Instead, load the next available slot.
     var nextSlot:Int = slot + 1;
     if (nextSlot > 1000) throw "End of save data slots. Can't load any more.";
-
     return loadFromSlot(nextSlot);
   }
 
@@ -1179,7 +808,6 @@ class Save implements ConsoleClass
     {
       trace('[SAVE] Found bad save data in slot ${firstBadSaveData}!');
       trace('We should look into recovery...');
-
       trace(haxe.Json.stringify(fetchFromSlotRaw(firstBadSaveData)));
     }
   }
@@ -1229,7 +857,6 @@ class Save implements ConsoleClass
     {
       if (querySlot(i)) return i;
     }
-
     return -1;
   }
 
@@ -1401,7 +1028,6 @@ typedef SaveHighScoresData =
 typedef SaveDataMods =
 {
   var enabledMods:Array<String>;
-
   // TODO: Make this not trip up the serializer when debugging.
   @:jignored
   var modOptions:Map<String, Dynamic>;

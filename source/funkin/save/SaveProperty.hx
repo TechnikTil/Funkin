@@ -31,6 +31,8 @@ class SaveProperty<T>
 
       if (_autoFlush) Save.system.flush();
 
+      trace('[Save Property]: Changing value of $oldValue TO $newValue');
+
       onChange.dispatch(newValue);
     }
 

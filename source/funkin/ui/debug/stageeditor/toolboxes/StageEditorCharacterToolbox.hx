@@ -96,7 +96,7 @@ class StageEditorCharacterToolbox extends StageEditorDefaultToolbox
 
     charPosX.step = charPosY.step = stageEditorState.moveStep;
     charCamX.step = charCamY.step = stageEditorState.moveStep;
-    charAngle.step = funkin.save.Save.instance.stageEditorAngleStep;
+    charAngle.step = funkin.save.Save.instance.stageEditorAngleStep.value;
 
     // Always update the displays, since selectedChar is never null.
 
