@@ -464,7 +464,7 @@ class CharSelectSubState extends MusicBeatSubState
     openSubState(new IntroSubState());
     subStateClosed.addOnce((_) -> {
       remove(blackScreen);
-      if (!Save.instance.oldChar)
+      if (!Save.instance.oldChar.value)
       {
         camera.flash();
 
@@ -473,7 +473,7 @@ class CharSelectSubState extends MusicBeatSubState
       }
       checkNewChar();
 
-      Save.instance.oldChar = true;
+      Save.instance.oldChar.value = true;
     });
   }
 

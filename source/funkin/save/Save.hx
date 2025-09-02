@@ -65,9 +65,15 @@ class Save implements ConsoleClass
   public function new(?data:RawSaveData)
   {
     this.data = data ?? Save.getDefaultData();
+    initSaveProperties();
 
     // Make sure the verison number is up to date before we flush.
     updateVersionToLatest();
+  }
+
+  inline function initSaveProperties():Void
+  {
+    oldChar = new SaveProperty(data.unlocks.oldChar, () -> data.unlocks.oldChar, (value) -> data.unlocks.oldChar = value);
   }
 
   public static function getDefaultData():RawSaveData
@@ -429,7 +435,6 @@ class Save implements ConsoleClass
   function get_chartEditorTheme():ChartEditorTheme
   {
     data.optionsChartEditor.theme ??= ChartEditorTheme.Light;
-
     return data.optionsChartEditor.theme;
   }
 
@@ -579,19 +584,7 @@ class Save implements ConsoleClass
   /**
    * Marks whether the player has seen the spotlight animation, which should only display once per save file ever.
    */
-  public var oldChar(get, set):Bool;
-
-  function get_oldChar():Bool
-  {
-    return data.unlocks.oldChar;
-  }
-
-  function set_oldChar(value:Bool):Bool
-  {
-    data.unlocks.oldChar = value;
-    Save.system.flush();
-    return data.unlocks.oldChar;
-  }
+  public var oldChar(default, null):SaveProperty<Bool>;
 
   public var stageEditorPreviousFiles(get, set):Array<String>;
 
