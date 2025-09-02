@@ -2521,7 +2521,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     save.chartEditorMetronomeVolume.value = metronomeVolume;
     save.chartEditorHitsoundVolumePlayer.value = hitsoundVolumePlayer;
     save.chartEditorHitsoundVolumeOpponent.value = hitsoundVolumeOpponent;
-    save.chartEditorThemeMusic.value = this.welcomeMusic.active;
 
     save.chartEditorInstVolume.value = menubarItemVolumeInstrumental.value / 100.0;
     save.chartEditorPlayerVoiceVolume.value = menubarItemVolumeVocalsPlayer.value / 100.0;
@@ -3286,6 +3285,8 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     menubarItemThemeMusic.onChange = event -> {
       this.welcomeMusic.active = event.value;
+      Save.instance.chartEditorThemeMusic.value = event.value;
+
       fadeInWelcomeMusic(WELCOME_MUSIC_FADE_IN_DELAY, WELCOME_MUSIC_FADE_IN_DURATION);
     };
     menubarItemThemeMusic.selected = this.welcomeMusic.active;

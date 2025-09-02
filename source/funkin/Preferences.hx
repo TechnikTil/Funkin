@@ -156,7 +156,6 @@ class Preferences
     if (value != Save.instance.options.debugDisplay) setDebugDisplayMode(value);
 
     var save = Save.instance;
-
     save.options.debugDisplay = value;
     Save.system.flush();
     return value;
