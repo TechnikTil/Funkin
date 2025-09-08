@@ -236,7 +236,7 @@ class ChartEditorDropdowns
   {
     dropDown.dataSource.clear();
 
-    var returnValue:DropDownEntry = lookupNoteKind('');
+    var returnValue:DropDownEntry = lookupNoteKind(startingKindId);
 
     for (noteKindId in NOTE_KINDS.keys())
     {
