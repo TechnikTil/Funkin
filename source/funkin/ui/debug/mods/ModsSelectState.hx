@@ -49,11 +49,6 @@ class ModsSelectState extends UISubState
    */
   var changeableModList:Array<String> = [];
 
-  /**
-   * A list for all disabled mods.
-   */
-  var changeableDisabledModList:Array<String> = [];
-
   override public function create()
   {
     super.create();
@@ -295,7 +290,16 @@ class ModsSelectState extends UISubState
   {
     trace("[MODMENU] Loading Mods: " + changeableModList);
 
-    writeModsList(changeableModList);
+    var modList:Array<ModListEntry> = [];
+    for (modID in changeableModList)
+      modList.push(new ModListEntry(modID, true));
+
+    for (modID in PolymodHandler.getAllModIds())
+    {
+      if (!changeableModList.contains(modID)) modList.push(new ModListEntry(modID, false));
+    }
+
+    writeModsList(modList);
     PolymodHandler.forceReloadAssets();
     modListApplyButton.disabled = true;
   }
@@ -358,7 +362,7 @@ class ModsSelectState extends UISubState
     }
 
     var originalLength:Int = toReturn.length;
-    var modListIds:Array<String> = modsListToIdList(toReturn);
+    var modListIds:Array<String> = modsListToIdList(toReturn, false);
 
     for (mod in allMods)
     {
@@ -372,6 +376,8 @@ class ModsSelectState extends UISubState
     {
       writeModsList(toReturn);
     }
+
+    trace(toReturn);
 
     return toReturn;
   }
@@ -404,12 +410,20 @@ class ModsSelectState extends UISubState
   /**
    * Converts a mod list into an ID list.
    * @param list The mod list. If `null`, a mods list will be searched for.
+   * @param onlyEnabled If the list should only return enabled mods.
    * @return The ID List.
    */
-  public static function modsListToIdList(?list:Null<Array<ModListEntry>>):Array<String>
+  public static function modsListToIdList(?list:Null<Array<ModListEntry>>, ?onlyEnabled:Bool = true):Array<String>
   {
     if (list == null) list = ModsSelectState.getModsList();
-    return [for (i in list ?? []) i.modID];
+    var toReturn:Array<String> = [];
+
+    for (mod in list)
+    {
+      if (onlyEnabled ? mod.enabled : true) toReturn.push(mod.modID);
+    }
+
+    return toReturn;
   }
 }
 

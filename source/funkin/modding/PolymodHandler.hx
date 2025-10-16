@@ -106,7 +106,7 @@ class PolymodHandler
     #end
     trace('Initializing Polymod (using configured mods)...');
     // loadModsById(Save.instance.enabledModIds);
-    loadModsById(getEnabledModIds());
+    loadModsById(funkin.ui.debug.mods.ModsSelectState.modsListToIdList());
   }
 
   /**

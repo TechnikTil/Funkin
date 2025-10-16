@@ -1374,7 +1374,7 @@ class Project extends HXProject
   function configureAssets()
   {
     // Delete the assets folder from the export folder before adding anything.
-    clearAssets();
+   // clearAssets();
 
     var exclude = EXCLUDE_ASSETS.concat(isWeb() ? EXCLUDE_ASSETS_WEB : EXCLUDE_ASSETS_NATIVE);
     var shouldPreload = PRELOAD_ALL.isEnabled(this);
