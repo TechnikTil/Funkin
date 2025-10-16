@@ -105,7 +105,8 @@ class PolymodHandler
     createModRoot();
     #end
     trace('Initializing Polymod (using configured mods)...');
-    loadModsById(Save.instance.enabledModIds);
+    // loadModsById(Save.instance.enabledModIds);
+    loadModsById(getEnabledModIds());
   }
 
   /**
@@ -542,7 +543,8 @@ class PolymodHandler
    */
   public static function getEnabledMods():Array<ModMetadata>
   {
-    var modIds:Array<String> = Save.instance.enabledModIds;
+    // var modIds:Array<String> = Save.instance.enabledModIds;
+    var modIds:Array<String> = funkin.ui.debug.mods.ModsSelectState.modsListToIdList();
     var modMetadata:Array<ModMetadata> = getAllMods();
     var enabledMods:Array<ModMetadata> = [];
     for (item in modMetadata)
@@ -553,6 +555,16 @@ class PolymodHandler
       }
     }
     return enabledMods;
+  }
+
+  /**
+   * Retrieve a list of ALL mod IDs, including disabled mods.
+   * @return An array of mod IDs
+   */
+  public static function getEnabledModIds():Array<String>
+  {
+    var modIds:Array<String> = [for (i in getEnabledMods()) i.id];
+    return modIds;
   }
 
   /**

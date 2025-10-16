@@ -11,6 +11,7 @@ import haxe.ui.backend.flixel.UISubState;
 import haxe.ui.events.UIEvent;
 import haxe.ui.components.Button;
 import haxe.ui.containers.VBox;
+import funkin.util.FileUtil;
 import haxe.ui.containers.windows.WindowManager;
 import haxe.ui.tooltips.ToolTipManager;
 import polymod.util.DependencyUtil;
@@ -22,6 +23,16 @@ using StringTools;
 @:build(haxe.ui.ComponentBuilder.build("modmenu_assets/data/ui/mod-select/main-view.xml"))
 class ModsSelectState extends UISubState
 {
+  /**
+   * The path that the mod list pulls from.
+   */
+  public static final MOD_LIST_PATH:String = "mods.json";
+
+  /**
+   * If new mods should be enabled by default.
+   */
+  public static final NEW_MOD_ENABLE_DEFAULT:Bool = true;
+
   var modListLoadedBox:VBox;
   var modListUnloadedBox:VBox;
   var modListLoadAll:Button;
@@ -38,6 +49,11 @@ class ModsSelectState extends UISubState
    */
   var changeableModList:Array<String> = [];
 
+  /**
+   * A list for all disabled mods.
+   */
+  var changeableDisabledModList:Array<String> = [];
+
   override public function create()
   {
     super.create();
@@ -51,7 +67,7 @@ class ModsSelectState extends UISubState
     Cursor.show();
     WindowManager.instance.reset();
 
-    changeableModList = Save.instance.enabledModIds.copy();
+    changeableModList = PolymodHandler.getEnabledModIds().copy();
     reloadModOrder();
 
     modListLoadAll.onClick = function(_) {
@@ -277,9 +293,9 @@ class ModsSelectState extends UISubState
    */
   function save()
   {
-    trace("Loading Mods: " + changeableModList);
+    trace("[MODMENU] Loading Mods: " + changeableModList);
 
-    Save.instance.enabledModIds = changeableModList;
+    writeModsList(changeableModList);
     PolymodHandler.forceReloadAssets();
     modListApplyButton.disabled = true;
   }
@@ -300,5 +316,185 @@ class ModsSelectState extends UISubState
 
     if (controls.BACK) close();
     if (controls.ACCEPT) save();
+  }
+
+  /**
+   * Reads the mods list, and adds new mods if they exist.
+   * @return The
+   */
+  public static function getModsList():Array<ModListEntry>
+  {
+    var allMods:Array<ModMetadata> = PolymodHandler.getAllMods();
+    var toReturn:Array<ModListEntry> = [];
+
+    if (!FileUtil.fileExists(MOD_LIST_PATH))
+    {
+      // Compatability to other mod menus. (+ the original)
+      for (mod in allMods)
+      {
+        toReturn.push(new ModListEntry(mod.id, Save.instance.enabledModIds.contains(mod.id)));
+      }
+
+      writeModsList(toReturn);
+      return toReturn;
+    }
+
+    var parser = new json2object.JsonParser<Array<ModListEntry>>();
+    parser.ignoreUnknownVariables = true;
+    trace('[MODMENU] Parsing mod list...');
+
+    var contents:String = FileUtil.readStringFromPath(MOD_LIST_PATH);
+    parser.fromJson(contents, haxe.io.Path.withoutExtension(MOD_LIST_PATH));
+
+    if (parser.errors.length > 0)
+    {
+      trace('[MODMENU] Failed to parse mod list!');
+      for (error in parser.errors)
+        funkin.data.DataError.printError(error);
+    }
+    else
+    {
+      toReturn = parser.value;
+    }
+
+    var originalLength:Int = toReturn.length;
+    var modListIds:Array<String> = modsListToIdList(toReturn);
+
+    for (mod in allMods)
+    {
+      if (!modListIds.contains(mod.id))
+      {
+        toReturn.push(new ModListEntry(mod.id, NEW_MOD_ENABLE_DEFAULT));
+      }
+    }
+
+    if (toReturn.length != originalLength)
+    {
+      writeModsList(toReturn);
+    }
+
+    return toReturn;
+  }
+
+  /**
+   * Writes the mod list.
+   * @param list The mod list to write.
+   * @param pretty If this should be formatted pretty or not.
+   */
+  public static function writeModsList(list:Array<ModListEntry>, ?pretty:Bool = true):Void
+  {
+    // That errors. Cool!
+    var writer = new json2object.JsonWriter<Array<ModListEntry>>();
+    var content:String = writer.write(list, pretty ? '  ' : null);
+
+    FileUtil.writeStringToPath(MOD_LIST_PATH, content, Force);
+
+    // Compatability to other mod menus. (+ the original)
+    var enabledModIds:Array<String> = [];
+    for (entry in list)
+    {
+      if (entry.enabled)
+      {
+        enabledModIds.push(entry.modID);
+      }
+    }
+    Save.instance.enabledModIds = enabledModIds;
+  }
+
+  /**
+   * Converts a mod list into an ID list.
+   * @param list The mod list. If `null`, a mods list will be searched for.
+   * @return The ID List.
+   */
+  public static function modsListToIdList(?list:Null<Array<ModListEntry>>):Array<String>
+  {
+    if (list == null) list = ModsSelectState.getModsList();
+    return [for (i in list ?? []) i.modID];
+  }
+}
+
+/**
+ * Entry for the mod list.
+ */
+class ModListEntry
+{
+  /**
+   * The internal ID of the mod.
+   * This is used to get further mod data.
+   */
+  public var modID(default, set):String;
+
+  /**
+   * If the mod is enabled or not.
+   */
+  @:default(true)
+  @:optional
+  public var enabled:Bool;
+
+  /**
+   * The Polymod Metadata.
+   * Heavily linked to `modID`.
+   */
+  @:jignored
+  public var metadata(get, never):ModMetadata;
+
+  /**
+   * Creates the mod list entry item.
+   * @param modID The internal ID of the mod.
+   * @param enabled If the mod should be enabled or not.
+   */
+  public function new(modID:String, enabled:Bool)
+  {
+    _metadata = null;
+
+    this.modID = modID;
+    this.enabled = enabled;
+  }
+
+  /**
+   * Clones this entry.
+   * @return Cloned entry.
+   */
+  public function clone():ModListEntry
+  {
+    var result:ModListEntry = new ModListEntry(this.modID, this.enabled);
+    result._metadata = this.metadata;
+    return result;
+  }
+
+  public function toString():String
+  {
+    return 'ModListEntry(${this.modID}, is ${this.enabled ? 'enabled' : 'disabled'})';
+  }
+
+  /**
+   * Internal, metadata cache.
+   */
+  @:jignored
+  var _metadata:ModMetadata;
+
+  function set_modID(value:String):String
+  {
+    this._metadata = null;
+    this.modID = value;
+    return value;
+  }
+
+  function get_metadata():ModMetadata
+  {
+    if (this._metadata == null)
+    {
+      var mods:Array<ModMetadata> = PolymodHandler.getAllMods();
+      for (mod in mods)
+      {
+        if (mod.id == modID)
+        {
+          this._metadata = mod;
+          break;
+        }
+      }
+    }
+
+    return this._metadata;
   }
 }
