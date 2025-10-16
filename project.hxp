@@ -1450,6 +1450,9 @@ class Project extends HXProject
     addAssetLibrary("weekend1", shouldEmbed, shouldPreload);
     addAssetPath("assets/weekend1", "assets/weekend1", "weekend1", ["*"], exclude, shouldEmbed, "assets");
 
+    // Mod Menu
+    addAssetPath("modmenu_assets", "assets", "default", ["*"], exclude.concat(['modmenu_assets/data/ui/mod-select']), shouldEmbed, "assets");
+
     // Art asset library (where README and CHANGELOG pull from)
     var shouldEmbedArt = false;
     var shouldPreloadArt = false;
