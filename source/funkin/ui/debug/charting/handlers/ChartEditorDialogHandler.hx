@@ -6,6 +6,8 @@ import funkin.data.song.importer.FNFLegacyData;
 import funkin.data.song.importer.FNFLegacyImporter;
 import funkin.data.song.importer.OsuManiaData;
 import funkin.data.song.importer.OsuManiaImporter;
+import funkin.data.song.importer.StepManiaData;
+import funkin.data.song.importer.StepManiaImporter;
 import funkin.data.song.SongData.SongCharacterData;
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongMetadata;
@@ -1059,6 +1061,7 @@ class ChartEditorDialogHandler
     var prettyFormat:String = switch (format)
     {
       case 'legacy': 'FNF Legacy';
+      case 'stepmania': 'StepMania';
       case 'osumania': 'Osu!Mania';
       default: 'Unknown';
     }
@@ -1068,6 +1071,9 @@ class ChartEditorDialogHandler
       case 'legacy':
         [
           {label: 'JSON Data File (.json)', extension: 'json'}];
+      case 'stepmania':
+        [
+          {label: 'StepMania File (.sm)', extension: 'sm'}];
       case 'osumania':
         [
           {label: 'OSU! Beatmap File (.osu)', extension: 'osu'}];
@@ -1078,7 +1084,8 @@ class ChartEditorDialogHandler
     {
       case 'osumania':
         "osu";
-
+      case 'stepmania':
+        "sm";
       default: "json";
     }
 
@@ -1147,6 +1154,21 @@ class ChartEditorDialogHandler
           songChartData = FNFLegacyImporter.migrateChartData(fnfLegacyData);
 
           loadedText = 'Loaded chart file';
+        case 'stepmania':
+          var stepmaniaData:Null<StepManiaData> = StepManiaImporter.parseStepManiaFile(content);
+
+          if (stepmaniaData == null)
+          {
+            state.error('Failure', 'Failed to parse StepMania step file (${path.file}.${path.ext})');
+            return;
+          }
+
+          trace('Parsed StepMania data for ' + stepmaniaData.Metadata.Title);
+
+          songMetadata = StepManiaImporter.migrateChartMetadata(stepmaniaData);
+          songChartData = StepManiaImporter.migrateChartData(stepmaniaData);
+
+          loadedText = 'Loaded step file';
 
         case 'osumania':
           var osuManiaData:Null<OsuManiaData> = OsuManiaImporter.parseOsuFile(content);
