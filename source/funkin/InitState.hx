@@ -558,19 +558,6 @@ class InitState extends FlxState
     // Disable using ~ to open the console (we use that for the Editor menu)
     FlxG.debugger.toggleKeys = [F2];
     TrackerUtil.initTrackers();
-    // Adds an additional Close Debugger button.
-    // This big obnoxious white button is for MOBILE, so that you can press it
-    // easily with your finger when debug bullshit pops up during testing lol!
-    FlxG.debugger.addButton(LEFT, new BitmapData(200, 200), function() {
-      FlxG.debugger.visible = false;
-
-      // Make errors and warnings less annoying.
-      // Forcing this always since I have never been happy to have the debugger to pop up
-      LogStyle.ERROR.openConsole = false;
-      LogStyle.ERROR.errorSound = null;
-      LogStyle.WARNING.openConsole = false;
-      LogStyle.WARNING.errorSound = null;
-    });
 
     // Adds a red button to the debugger.
     // This pauses the game AND the music! This ensures the Conductor stops.
@@ -613,6 +600,22 @@ class InitState extends FlxState
       FlxG.sound.music.pause();
       FlxG.sound.music.time += FlxG.elapsed * 1000;
     });
+
+    // Adds an additional Close Debugger button.
+    // This big obnoxious white button is for MOBILE, so that you can press it
+    // easily with your finger when debug bullshit pops up during testing lol!
+    #if mobile
+    FlxG.debugger.addButton(LEFT, new BitmapData(200, 200), function() {
+      FlxG.debugger.visible = false;
+
+      // Make errors and warnings less annoying.
+      // Forcing this always since I have never been happy to have the debugger to pop up
+      LogStyle.ERROR.openConsole = false;
+      LogStyle.ERROR.errorSound = null;
+      LogStyle.WARNING.openConsole = false;
+      LogStyle.WARNING.errorSound = null;
+    });
+    #end // mobile big butotn crap
     #end
   }
 
