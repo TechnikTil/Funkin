@@ -2063,7 +2063,7 @@ class Project extends HXProject
             outdatedLibraries.set(libraryName, [libraryCurrentVersion, library.version]);
           }
         case 'git':
-          if (libraryDev != "")
+          if (libraryDev != "" && !isLibraryGitDev(libraryName))
           {
             outdatedLibraries.set(libraryName, [libraryDev, library.ref]);
           }
@@ -2071,16 +2071,21 @@ class Project extends HXProject
           {
             var commitHash:String = readLibraryGitCommitHash(libraryName);
 
-            if (commitHash != library.ref && commitHash != "") outdatedLibraries.set(libraryName, [commitHash, library.ref]);
+            if (commitHash != library.ref && commitHash != "")
+            {
+              outdatedLibraries.set(libraryName, [commitHash, library.ref]);
+            }
           }
       }
     }
 
     if (Lambda.count(outdatedLibraries) > 0)
     {
-      warn(("The following haxelibs diverge from the versions set in hmm.json."
-        + "\n\nThey may be outdated, so it is recommended to abort compilation and run `hmm reinstall [library]` to update each library."
-        + "\n\nYou may ignore this warning if your libraries are newer than the versions in hmm.json, or if you know what you're doing.\n").bold().yellow());
+      warn("The following haxelibs diverge from the versions set in hmm.json.".bold().yellow());
+      warn("They may be outdated, so it is recommended to abort compilation and run `hmm reinstall [library]` to update each library.".bold().yellow());
+      warn("You may ignore this warning if your libraries are newer than the versions in hmm.json, or if you know what you're doing.".bold().yellow());
+
+      Sys.println('');
 
       for (libraryName in outdatedLibraries.keys())
       {
@@ -2090,18 +2095,18 @@ class Project extends HXProject
         var outdatedVersion:String = versions[0];
         var expectedVersion:String = versions[1];
 
-        var isDev:Bool = outdatedVersion.contains("/");
-
-        Sys.println("- " + libraryName.replace(",", ".") + (isDev ? " (Development Build)".blue().bold() : ""));
+        Sys.println("- " + libraryName.replace(",", ".") + (haxe.io.Path.isAbsolute(outdatedVersion) ? " (Development Build)".blue().bold() : ""));
         Sys.println(("   Current version: " + outdatedVersion).red());
         Sys.println(("   Expected version: " + expectedVersion).green());
       }
+
+      Sys.println('');
     }
   }
 
   static function readLibraryCurrentVersion(libraryName:String):String
   {
-    var path = haxe.io.Path.join([haxe.io.Path.addTrailingSlash(Sys.getCwd()), '.haxelib', libraryName, '.current']);
+    var path = getLibraryCurrentFile(libraryName);
 
     if (sys.FileSystem.exists(path)) return sys.io.File.getContent(path);
 
@@ -2110,7 +2115,7 @@ class Project extends HXProject
 
   static function readLibraryDev(libraryName:String):String
   {
-    var path = haxe.io.Path.join([haxe.io.Path.addTrailingSlash(Sys.getCwd()), '.haxelib', libraryName, '.dev']);
+    var path = getLibraryDevFile(libraryName);
 
     if (sys.FileSystem.exists(path)) return sys.io.File.getContent(path);
 
@@ -2119,11 +2124,39 @@ class Project extends HXProject
 
   static function readLibraryGitCommitHash(libraryName:String):String
   {
-    var gitProccess = new sys.io.Process("git", ["-C", ".haxelib/" + libraryName + "/git", "rev-parse", "HEAD"]);
+    var gitProccess = new sys.io.Process("git", ["-C", getLibraryGitPath(libraryName), "rev-parse", "HEAD"]);
 
     gitProccess.exitCode(true);
 
     return gitProccess.stdout.readAll().toString().trim();
+  }
+
+  static function getLibraryCurrentFile(libraryName:String):String
+  {
+    return haxe.io.Path.join([haxe.io.Path.addTrailingSlash(Sys.getCwd()), '.haxelib', libraryName, '.current']);
+  }
+
+  static function getLibraryDevFile(libraryName:String):String
+  {
+    return haxe.io.Path.join([haxe.io.Path.addTrailingSlash(Sys.getCwd()), '.haxelib', libraryName, '.dev']);
+  }
+
+  static function getLibraryGitPath(libraryName:String):String
+  {
+    return haxe.io.Path.join([haxe.io.Path.addTrailingSlash(Sys.getCwd()), '.haxelib', libraryName, 'git']);
+  }
+
+  static function isLibraryGitDev(libraryName:String):Bool
+  {
+    final gitPath:String = getLibraryGitPath(libraryName);
+    final devFile:String = getLibraryDevFile(libraryName);
+
+    if (FileSystem.exists(gitPath) && FileSystem.exists(devFile))
+    {
+      return Path.normalize(readLibraryDev(libraryName)).startsWith(gitPath);
+    }
+
+    return false;
   }
 
   static function getLibraryPath(libraryName:String):String
