@@ -535,7 +535,7 @@ class Preferences
   {
     var save:Save = Save.instance;
     save.options.subtitles = value;
-    save.flush();
+    Save.system.flush();
     return value;
   }
 
