@@ -505,8 +505,6 @@ class StepManiaImporter
 
     for (stepNote in stepNotes)
     {
-      if (stepNote.type == StepManiaNoteType.Mine || stepNote.type == StepManiaNoteType.Fake) continue;
-
       var time = beatToTime(stepNote.beat, offset, stepTimingPoints, stepStops);
 
       if (stepNote.type == StepManiaNoteType.Head || stepNote.type == StepManiaNoteType.Roll)
@@ -516,6 +514,8 @@ class StepManiaImporter
       }
 
       var snd:SongNoteData = new SongNoteData(time, stepNote.column, 0);
+      if (stepNote.type == StepManiaNoteType.Mine) snd.kind = "mine";
+      else if (stepNote.type == StepManiaNoteType.Fake) snd.kind = "fake";
       if (stepNote.type == StepManiaNoteType.Tail)
       {
         var length:Float = 0;
