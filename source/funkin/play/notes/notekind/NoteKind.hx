@@ -43,7 +43,7 @@ class NoteKind implements INoteScriptedClass
    * Only accessible in scripts
    * Defaults to true
    */
-  public var scoreable:Bool = true;
+  public var scoreable(default, default):Bool = true;
 
   public function new(noteKind:String, description:String = "", ?noteStyleId:String, ?params:Array<NoteKindParam>, ?noanim:Bool, ?suffix:String)
   {
@@ -69,6 +69,18 @@ class NoteKind implements INoteScriptedClass
     var allNotes:Array<NoteSprite> = PlayState.instance.playerStrumline.notes.members.concat(PlayState.instance.opponentStrumline.notes.members);
     return allNotes.filter(function(note:NoteSprite) {
       return note != null && note.noteData.kind == this.noteKind;
+    });
+  }
+
+  /**
+   * Retrieve all notes NOT of this kind
+   * @return Array<NoteSprite>
+   */
+  function getOtherNotes():Array<NoteSprite>
+  {
+    var allNotes:Array<NoteSprite> = PlayState.instance.playerStrumline.notes.members.concat(PlayState.instance.opponentStrumline.notes.members);
+    return allNotes.filter(function(note:NoteSprite) {
+      return note != null && note.noteData.kind != this.noteKind;
     });
   }
 
