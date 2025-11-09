@@ -334,6 +334,16 @@ class PlayState extends MusicBeatSubState
   public var isInCountdown:Bool = false;
 
   /**
+   * When opening a substate, whether the game should treat it as a pause.
+   */
+  public var shouldPause:Bool = false;
+
+  /**
+   * Whether the game is currently in the Game Over state.
+   */
+  public var isGameOverState:Bool = false;
+
+  /**
    * Whether the game is currently in Practice Mode.
    * If true, player will not gain or lose score from notes.
    */
@@ -1320,6 +1330,7 @@ class PlayState extends MusicBeatSubState
 
         if (!event.eventCanceled)
         {
+          shouldPause = true;
           persistentUpdate = false;
           persistentDraw = true;
 
@@ -1397,6 +1408,8 @@ class PlayState extends MusicBeatSubState
       iconP2?.updatePosition();
     }
 
+    isGameOverState = true;
+    shouldPause = true;
     // Transition to the game over substate.
     var gameOverSubState = new GameOverSubState(
       {
@@ -1471,10 +1484,6 @@ class PlayState extends MusicBeatSubState
      */
   public override function openSubState(subState:FlxSubState):Void
   {
-    // If there is a substate which requires the game to continue,
-    // then make this a condition.
-    var shouldPause:Bool = (Std.isOfType(subState, PauseSubState) || Std.isOfType(subState, GameOverSubState));
-
     if (shouldPause)
     {
       // Pause the music.
@@ -1554,13 +1563,40 @@ class PlayState extends MusicBeatSubState
      */
   public override function closeSubState():Void
   {
-    if (Std.isOfType(subState, PauseSubState))
+    if (shouldPause)
     {
+      shouldPause = false;
       var event:ScriptEvent = new ScriptEvent(RESUME, true);
 
       dispatchEvent(event);
 
       if (event.eventCanceled) return;
+
+      // Pause any sounds that are playing and keep track of them.
+      // Vocals are also paused here but are not included as they are handled separately.
+      if (!isGameOverState)
+      {
+        FlxG.sound.list.forEachAlive(function(sound:FlxSound) {
+          if (!sound.active || sound == FlxG.sound.music) return;
+          // In case it's a scheduled sound
+          if (Std.isOfType(sound, FunkinSound))
+          {
+            var funkinSound:FunkinSound = cast sound;
+            if (funkinSound != null && !funkinSound.isPlaying) return;
+          }
+          if (!sound.playing && sound.time >= 0) return;
+          sound.pause();
+          soundsPausedBySubState.add(sound);
+        });
+
+        vocals?.forEach(function(voice:FunkinSound) {
+          soundsPausedBySubState.remove(voice);
+        });
+      }
+      else
+      {
+        vocals?.pause();
+      }
 
       // Resume vwooshTimer
       if (!vwooshTimer.finished) vwooshTimer.active = true;
@@ -1568,7 +1604,7 @@ class PlayState extends MusicBeatSubState
       // Resume music if we paused it.
       if (musicPausedBySubState)
       {
-        FlxG.sound.music.play();
+        if (FlxG.sound.music != null) FlxG.sound.music.play();
         musicPausedBySubState = false;
       }
 
@@ -1629,10 +1665,7 @@ class PlayState extends MusicBeatSubState
 
       justUnpaused = true;
     }
-    else if (Std.isOfType(subState, Transition))
-    {
-      // Do nothing.
-    }
+    isGameOverState = false;
 
     super.closeSubState();
   }
