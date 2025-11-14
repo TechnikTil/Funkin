@@ -90,8 +90,8 @@
       "name": "haxeui-core",
       "type": "git",
       "dir": null,
-      "ref": "578d61bc275cf71f473647eeb5aab002e45338be",
-      "url": "https://github.com/haxeui/haxeui-core"
+      "ref": "7e6567dc8a428004f58556fd199997d8296b58d0",
+      "url": "https://github.com/FunkinCrew/haxeui-core"
     },
     {
       "name": "haxeui-flixel",
