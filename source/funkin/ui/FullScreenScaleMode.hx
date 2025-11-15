@@ -427,7 +427,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
         var gameHeight:Float = gameSize.y / scale.y;
 
         #if desktop
-        if (MathUtil.gcd(FlxG.width, Math.ceil(gameHeight)) == 1)
+        if (MathUtil.gcd(FlxG.width, Math.ceil(gameHeight)) == 1 || maxRatioAxis != ratioAxis)
         {
           gameSize.y -= cutoutSize.y;
           offset.y = Math.ceil((deviceSize.y - gameSize.y) * 0.5);
@@ -465,7 +465,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
         var gameWidth:Float = gameSize.x / scale.x;
 
         #if desktop
-        if (MathUtil.gcd(Math.ceil(gameWidth), FlxG.height) == 1)
+        if (MathUtil.gcd(Math.ceil(gameWidth), FlxG.height) == 1 || maxRatioAxis != ratioAxis)
         {
           gameSize.x -= cutoutSize.x;
           offset.x = Math.ceil((deviceSize.x - gameSize.x) * 0.5);
@@ -517,6 +517,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
 
     if (instance != null)
     {
+      mustAwait = false;
       instance.horizontalAlign = enabled ? LEFT : CENTER;
       instance.verticalAlign = enabled ? TOP : CENTER;
       instance.onMeasure(FlxG.stage.stageWidth, FlxG.stage.stageHeight);
