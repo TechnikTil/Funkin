@@ -356,7 +356,7 @@ class PauseSubState extends MusicBeatSubState
   public override function onFocusLost():Void
   {
     super.onFocusLost();
-    pauseMusic.pause();
+    if (Preferences.autoPause) pauseMusic.pause();
   }
 
   /**
@@ -365,7 +365,7 @@ class PauseSubState extends MusicBeatSubState
   public override function onFocus():Void
   {
     super.onFocus();
-    pauseMusic.resume();
+    if (Preferences.autoPause) pauseMusic.resume();
   }
 
   /**
