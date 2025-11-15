@@ -351,6 +351,24 @@ class PauseSubState extends MusicBeatSubState
   }
 
   /**
+   * Called when the game loses focus. Used to temporarily pause the sound.
+   */
+  public override function onFocusLost():Void
+  {
+    super.onFocusLost();
+    pauseMusic.pause();
+  }
+
+  /**
+   * Called when the game loses focus. Used to temporarily pause the sound.
+   */
+  public override function onFocus():Void
+  {
+    super.onFocus();
+    pauseMusic.resume();
+  }
+
+  /**
    * Render the semi-transparent black background.
    */
   function buildBackground():Void
