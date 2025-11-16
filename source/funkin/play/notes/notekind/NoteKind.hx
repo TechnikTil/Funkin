@@ -62,25 +62,27 @@ class NoteKind implements INoteScriptedClass
 
   /**
    * Retrieve all notes of this kind
+   * @param visibleCheck If true, only visible notes will be returned
    * @return Array<NoteSprite>
    */
-  function getNotes():Array<NoteSprite>
+  function getNotes(visibleCheck:Bool = false):Array<NoteSprite>
   {
     var allNotes:Array<NoteSprite> = PlayState.instance.playerStrumline.notes.members.concat(PlayState.instance.opponentStrumline.notes.members);
     return allNotes.filter(function(note:NoteSprite) {
-      return note != null && note.noteData.kind == this.noteKind;
+      return note != null && note.noteData.kind == this.noteKind && (!visibleCheck || note.visible);
     });
   }
 
   /**
    * Retrieve all notes NOT of this kind
+   * @param visibleCheck If true, only visible notes will be returned
    * @return Array<NoteSprite>
    */
-  function getOtherNotes():Array<NoteSprite>
+  function getOtherNotes(visibleCheck:Bool = false):Array<NoteSprite>
   {
     var allNotes:Array<NoteSprite> = PlayState.instance.playerStrumline.notes.members.concat(PlayState.instance.opponentStrumline.notes.members);
     return allNotes.filter(function(note:NoteSprite) {
-      return note != null && note.noteData.kind != this.noteKind;
+      return note != null && note.noteData.kind != this.noteKind && (!visibleCheck || note.visible);
     });
   }
 
