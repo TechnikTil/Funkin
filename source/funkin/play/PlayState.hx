@@ -2913,7 +2913,10 @@ class PlayState extends MusicBeatSubState
       var input:Null<PreciseInputEvent> = inputPressQueue.shift();
       if (input == null) continue;
 
-      playerStrumline.pressKey(input.noteDirection);
+      // Whether this direction is already held by another key.
+      var isAlreadyHeld = playerStrumline.isKeyHeld(input.noteDirection);
+
+      playerStrumline.pressKey(input.noteDirection, input.keyCode);
 
       // Don't credit or penalize inputs in Bot Play.
       if (isBotPlayMode) continue;
@@ -2921,9 +2924,9 @@ class PlayState extends MusicBeatSubState
       var notesInDirection:Array<NoteSprite> = notesByDirection[input.noteDirection];
 
       #if FEATURE_GHOST_TAPPING
-      if ((!playerStrumline.mayGhostTap()) && notesInDirection.length == 0)
+      if ((!playerStrumline.mayGhostTap()) && notesInDirection.length == 0 && !isAlreadyHeld)
       #else
-      if (notesInDirection.length == 0)
+      if (notesInDirection.length == 0 && !isAlreadyHeld)
       #end
       {
         // Pressed a wrong key with no notes nearby.
@@ -2969,7 +2972,7 @@ class PlayState extends MusicBeatSubState
       // Play the strumline animation.
       playerStrumline.playStatic(input.noteDirection);
 
-      playerStrumline.releaseKey(input.noteDirection);
+      playerStrumline.releaseKey(input.noteDirection, input.keyCode);
     }
 
     playerStrumline.noteVibrations.tryNoteVibration();
