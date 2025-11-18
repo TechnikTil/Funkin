@@ -154,7 +154,6 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
 
     updateGameSize(FlxG.width, FlxG.height);
     updateDeviceSize(Width, Height);
-    updateDeviceCutout(Width, Height);
     #if mobile
     updateDeviceNotch(funkin.mobile.util.ScreenUtil.getNotchRect());
     #end
