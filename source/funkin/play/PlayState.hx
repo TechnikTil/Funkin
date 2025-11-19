@@ -334,9 +334,11 @@ class PlayState extends MusicBeatSubState
   public var isInCountdown:Bool = false;
 
   /**
-   * When opening a substate, whether the game should treat it as a pause.
+   * Determines whether opening a substate over this causes the game to pause.
+   * Enable it before opening a Pause menu or Game Over screen, and disable it
+   * for stuff like editors and overlays.
    */
-  public var shouldPause:Bool = false;
+  public var shouldSubstatePause:Bool = false;
 
   /**
    * Whether the game is currently in the Game Over state.
@@ -1330,7 +1332,7 @@ class PlayState extends MusicBeatSubState
 
         if (!event.eventCanceled)
         {
-          shouldPause = true;
+          shouldSubstatePause = true;
           persistentUpdate = false;
           persistentDraw = true;
 
@@ -1409,7 +1411,7 @@ class PlayState extends MusicBeatSubState
     }
 
     isGameOverState = true;
-    shouldPause = true;
+    shouldSubstatePause = true;
     // Transition to the game over substate.
     var gameOverSubState = new GameOverSubState(
       {
@@ -1484,7 +1486,7 @@ class PlayState extends MusicBeatSubState
      */
   public override function openSubState(subState:FlxSubState):Void
   {
-    if (shouldPause)
+    if (shouldSubstatePause)
     {
       // Pause the music.
       if (FlxG.sound.music != null)
@@ -1563,9 +1565,9 @@ class PlayState extends MusicBeatSubState
      */
   public override function closeSubState():Void
   {
-    if (shouldPause)
+    if (shouldSubstatePause)
     {
-      shouldPause = false;
+      shouldSubstatePause = false;
       var event:ScriptEvent = new ScriptEvent(RESUME, true);
 
       dispatchEvent(event);
