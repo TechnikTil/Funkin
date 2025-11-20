@@ -1312,7 +1312,12 @@ class PlayState extends MusicBeatSubState
     #end
   }
 
-  function pause(mode:PauseMode = Standard):Void
+  /**
+     * Pause the game.
+     * @param mode Which set of pause menu options to display (distinguishes between standard, charting, and cutscene)
+     * @param lostFocus Whether the game paused because the window lost focus
+     */
+  function pause(mode:PauseMode = Standard, lostFocus:Bool = false):Void
   {
     if (!mayPauseGame || justUnpaused || isGamePaused || isPlayerDying) return;
 
@@ -1320,11 +1325,11 @@ class PlayState extends MusicBeatSubState
     {
       case Conversation:
         preparePauseUI();
-        openPauseSubState(Conversation, camPause, () -> currentConversation?.pauseMusic());
+        openPauseSubState(Conversation, camPause, lostFocus, () -> currentConversation?.pauseMusic());
 
       case Cutscene:
         preparePauseUI();
-        openPauseSubState(Cutscene, camPause, () -> VideoCutscene.pauseVideo());
+        openPauseSubState(Cutscene, camPause, lostFocus, () -> VideoCutscene.pauseVideo());
 
       default: // also known as standard
         if (!isInCountdown || isInCutscene) return;
@@ -1356,7 +1361,7 @@ class PlayState extends MusicBeatSubState
               boyfriendPos = currentStage.getBoyfriend().getScreenPosition();
             }
 
-            openPauseSubState(isChartingMode ? Charting : Standard, camPause);
+            openPauseSubState(isChartingMode ? Charting : Standard, camPause, lostFocus);
           }
 
           #if FEATURE_DISCORD_RPC
@@ -1383,9 +1388,9 @@ class PlayState extends MusicBeatSubState
     #end
   }
 
-  function openPauseSubState(mode:PauseMode, cam:FlxCamera, ?onPause:Void->Void):Void
+  function openPauseSubState(mode:PauseMode, cam:FlxCamera, lostFocus:Bool = false, ?onPause:Void->Void):Void
   {
-    final pauseSubState = new PauseSubState({mode: mode}, onPause);
+    final pauseSubState = new PauseSubState({mode: mode, lostFocus: lostFocus}, onPause);
     FlxTransitionableState.skipNextTransIn = true;
     FlxTransitionableState.skipNextTransOut = true;
     pauseSubState.camera = cam;
@@ -1748,15 +1753,15 @@ class PlayState extends MusicBeatSubState
     {
       if (currentConversation != null)
       {
-        pause(Conversation);
+        pause(Conversation, true);
       }
       else if (VideoCutscene.isPlaying())
       {
-        pause(Cutscene);
+        pause(Cutscene, true);
       }
       else
       {
-        pause();
+        pause(true);
       }
     }
     super.onFocusLost();

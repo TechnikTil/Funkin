@@ -37,6 +37,11 @@ typedef PauseSubStateParams =
    * Which mode to start in. Dictates what entries are displayed.
    */
   ?mode:PauseMode,
+
+  /**
+   * Whether the game paused because the window lost focus.
+   */
+  ?lostFocus:Bool
 };
 
 /**
@@ -151,6 +156,11 @@ class PauseSubState extends MusicBeatSubState
    */
   var currentMode:PauseMode;
 
+  /**
+   * Whether the game paused because the window lost focus.
+   */
+  var lostFocus:Bool = false;
+
   // ===============
   // Graphics Variables
   // ===============
@@ -231,6 +241,7 @@ class PauseSubState extends MusicBeatSubState
   {
     super();
     this.currentMode = params?.mode ?? Standard;
+    this.lostFocus = params?.lostFocus ?? false;
     this.onPause = onPause;
   }
 
@@ -255,6 +266,8 @@ class PauseSubState extends MusicBeatSubState
     super.create();
 
     startPauseMusic();
+
+    if (lostFocus && Preferences.autoPause) pauseMusic.pause();
 
     buildBackground();
 
