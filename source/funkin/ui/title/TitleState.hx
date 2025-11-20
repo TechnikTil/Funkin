@@ -392,6 +392,9 @@ class TitleState extends MusicBeatState
 
     FlxG.camera.flash(FlxColor.WHITE, 1);
     FunkinSound.playOnce(Paths.sound('confirmMenu'), 0.7);
+
+    // Stop the attract timer so you can listen to the whole song!
+    attractTimer.cancel();
   }
 
   function createCoolText(textArray:Array<String>)
