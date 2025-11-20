@@ -1833,7 +1833,8 @@ class FreeplayState extends MusicBeatSubState
       dj?.onPlayerAction(); // dj?.resetAFKTimer();
       changeDiff(-1);
       generateSongList(currentFilter, true, false);
-    } else if (rightPressed)
+    }
+    else if (rightPressed)
     {
       dj?.onPlayerAction(); // dj?.resetAFKTimer();
       changeDiff(1);
@@ -2203,6 +2204,8 @@ class FreeplayState extends MusicBeatSubState
     super.destroy();
     // remove and destroy freeplay camera
     FlxG.cameras.remove(funnyCam);
+    // Cancel all song preview timers just in case a preview loads after we exit.
+    clearPreviews();
   }
 
   function goBack():Void
