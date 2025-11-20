@@ -153,6 +153,11 @@ class InitState extends FlxState
       // Set the game to a lower frame rate while it is in the background.
       FlxG.game.focusLostFramerate = 30;
 
+      // Persist controls inputs between states.
+      // Without this, the game would release your keybinds when you switch states,
+      // and then act like you released and re-pressed them the frame after.
+      FlxG.inputs.resetOnStateSwitch = false;
+
       // Makes Flixel use frame times instead of locked movements per frame for things like tweens
       FlxG.fixedTimestep = false;
 
