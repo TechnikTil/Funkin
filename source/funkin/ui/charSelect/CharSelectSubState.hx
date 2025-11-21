@@ -918,7 +918,7 @@ class CharSelectSubState extends MusicBeatSubState
     }
 
     var currentCharacter:String = availableChars[getCurrentSelected()] ?? Constants.DEFAULT_CHARACTER;
-    if (availableChars.exists(getCurrentSelected()) && Save.instance.charactersSeen.value.contains(currentCharacter))
+    if (availableChars.exists(getCurrentSelected()) && PlayerRegistry.instance.isCharacterSeen(currentCharacter))
     {
       var charId:String = availableChars.get(getCurrentSelected()) ?? Constants.DEFAULT_CHARACTER;
       if (charId != null) curChar = charId;
