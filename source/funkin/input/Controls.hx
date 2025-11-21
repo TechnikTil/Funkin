@@ -28,26 +28,10 @@ class Controls extends FlxActionSet
   var _ui_left = new FunkinAction(Action.UI_LEFT);
   var _ui_right = new FunkinAction(Action.UI_RIGHT);
   var _ui_down = new FunkinAction(Action.UI_DOWN);
-  var _ui_upP = new FunkinAction(Action.UI_UP_P);
-  var _ui_leftP = new FunkinAction(Action.UI_LEFT_P);
-  var _ui_rightP = new FunkinAction(Action.UI_RIGHT_P);
-  var _ui_downP = new FunkinAction(Action.UI_DOWN_P);
-  var _ui_upR = new FunkinAction(Action.UI_UP_R);
-  var _ui_leftR = new FunkinAction(Action.UI_LEFT_R);
-  var _ui_rightR = new FunkinAction(Action.UI_RIGHT_R);
-  var _ui_downR = new FunkinAction(Action.UI_DOWN_R);
   var _note_up = new FunkinAction(Action.NOTE_UP);
   var _note_left = new FunkinAction(Action.NOTE_LEFT);
   var _note_right = new FunkinAction(Action.NOTE_RIGHT);
   var _note_down = new FunkinAction(Action.NOTE_DOWN);
-  var _note_upP = new FunkinAction(Action.NOTE_UP_P);
-  var _note_leftP = new FunkinAction(Action.NOTE_LEFT_P);
-  var _note_rightP = new FunkinAction(Action.NOTE_RIGHT_P);
-  var _note_downP = new FunkinAction(Action.NOTE_DOWN_P);
-  var _note_upR = new FunkinAction(Action.NOTE_UP_R);
-  var _note_leftR = new FunkinAction(Action.NOTE_LEFT_R);
-  var _note_rightR = new FunkinAction(Action.NOTE_RIGHT_R);
-  var _note_downR = new FunkinAction(Action.NOTE_DOWN_R);
   var _accept = new FunkinAction(Action.ACCEPT);
   var _back = new FunkinAction(Action.BACK);
   var _pause = new FunkinAction(Action.PAUSE);
@@ -505,7 +489,7 @@ class Controls extends FlxActionSet
    * @param func
    * @return ->Void)
    */
-  function forEachBound(control:Control, func:FlxActionDigital->FlxInputState->Void)
+  function forEachBound(control:Control, func:FunkinAction->FlxInputState->Void)
   {
     switch (control)
     {
@@ -1402,8 +1386,6 @@ class FunkinAction extends FlxActionDigital
    */
   public function checkFiltered(?filterTrigger:FlxInputState, ?filterDevice:FlxInputDevice):Bool
   {
-    // The normal
-
     // Make sure we only update the inputs once per frame.
     var key = '${filterTrigger}:${filterDevice}';
     var cacheEntry = cache.get(key);
