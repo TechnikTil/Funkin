@@ -209,22 +209,62 @@ class Controls extends FlxActionSet
   public var ACCEPT(get, never):Bool;
 
   inline function get_ACCEPT()
-    return _accept.check();
+    return _accept.checkPressed();
+
+  public var ACCEPT_P(get, never):Bool;
+
+  inline function get_ACCEPT_P()
+    return _accept.checkJustPressed();
+
+  public var ACCEPT_R(get, never):Bool;
+
+  inline function get_ACCEPT_R()
+    return _accept.checkJustReleased();
 
   public var BACK(get, never):Bool;
 
   inline function get_BACK()
-    return _back.check();
+    return _back.checkPressed();
+
+  public var BACK_P(get, never):Bool;
+
+  inline function get_BACK_P()
+    return _back.checkJustPressed();
+
+  public var BACK_R(get, never):Bool;
+
+  inline function get_BACK_R()
+    return _back.checkJustReleased();
 
   public var PAUSE(get, never):Bool;
 
   inline function get_PAUSE()
-    return _pause.check();
+    return _pause.checkPressed();
+
+  public var PAUSE_P(get, never):Bool;
+
+  inline function get_PAUSE_P()
+    return _pause.checkJustPressed();
+
+  public var PAUSE_R(get, never):Bool;
+
+  inline function get_PAUSE_R()
+    return _pause.checkJustReleased();
 
   public var RESET(get, never):Bool;
 
   inline function get_RESET()
-    return _reset.check();
+    return _reset.checkPressed();
+
+  public var RESET_P(get, never):Bool;
+
+  inline function get_RESET_P()
+    return _reset.checkJustPressed();
+
+  public var RESET_R(get, never):Bool;
+
+  inline function get_RESET_R()
+    return _reset.checkJustReleased();
 
   public var WINDOW_FULLSCREEN(get, never):Bool;
 
@@ -526,13 +566,21 @@ class Controls extends FlxActionSet
         func(_note_down, JUST_PRESSED);
         func(_note_down, JUST_RELEASED);
       case ACCEPT:
+        func(_accept, PRESSED);
         func(_accept, JUST_PRESSED);
+        func(_accept, JUST_RELEASED);
       case BACK:
+        func(_back, PRESSED);
         func(_back, JUST_PRESSED);
+        func(_back, JUST_RELEASED);
       case PAUSE:
+        func(_pause, PRESSED);
         func(_pause, JUST_PRESSED);
+        func(_pause, JUST_RELEASED);
       case RESET:
+        func(_reset, PRESSED);
         func(_reset, JUST_PRESSED);
+        func(_reset, JUST_RELEASED);
       #if FEATURE_SCREENSHOTS
       case WINDOW_SCREENSHOT:
         func(_window_screenshot, JUST_PRESSED);
