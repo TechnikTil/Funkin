@@ -581,66 +581,44 @@ class PauseSubState extends MusicBeatSubState
   {
     if (!allowInput) return;
 
-    // Doing this just so it'd look better i guess.
-    final upP:Bool = controls.UI_UP_P;
-    final downP:Bool = controls.UI_DOWN_P;
+    // early return here if we are modifying our offsets stuff w/ shift + up/down
+    if (handleModifyingOffsets()) return;
 
-    #if !mobile
-    final up:Bool = controls.UI_UP;
-    final down:Bool = controls.UI_DOWN;
-    var offset:Int = Preferences.globalOffset ?? 0;
-    if (FlxG.keys.pressed.SHIFT && (up || down))
-    {
-      lastOffsetPress += FlxG.elapsed;
-      if (!fastOffset)
-      {
-        // If the last offset press was more than 0.5 seconds ago, reset the fast offset.
-        if (lastOffsetPress > 0.5)
-        {
-          fastOffset = true;
-          lastOffsetPress = 0;
-        }
+    handleDebugInputs();
 
-        if (upP || downP)
-        {
-          offset += (upP || up) ? 1 : -1;
-
-          offsetText.text = 'Global Offset: ${offset}ms';
-        }
-      }
-      else
-      {
-        offset += (upP || up) ? 1 : -1;
-
-        offsetText.text = 'Global Offset: ${offset}ms';
-      }
-
-      if (offset > 1500) offset = 1500;
-      if (offset < -1500) offset = -1500;
-
-      Preferences.globalOffset = offset;
-
-      return;
-    }
-    else
-    {
-      // Reset the fast offset if the user is not holding SHIFT.
-      fastOffset = false;
-      lastOffsetPress = 0;
-    }
-    #end
-
-    if (upP)
+    if (controls.UI_UP_P)
     {
       changeSelection(-1);
     }
-    if (downP)
+    if (controls.UI_DOWN_P)
     {
       changeSelection(1);
     }
 
+    // we only want justOpened to be true for 1 single frame, when we first get into the pause menu substate
+    // we early return here so we don't need to check `if (!justOpened)` everywhere
+    if (justOpened)
+    {
+      justOpened = false;
+      return;
+    }
+
+    handleTouchInputs();
+
+    if (controls.ACCEPT_P && currentMenuEntries.length > 0)
+    {
+      currentMenuEntries[currentEntry].callback(this);
+    }
+    else if (controls.PAUSE_P)
+    {
+      resume(this);
+    }
+  }
+
+  function handleTouchInputs():Void
+  {
     #if FEATURE_TOUCH_CONTROLS
-    if (!SwipeUtil.justSwipedAny && !justOpened && currentMenuEntries.length > 0)
+    if (!SwipeUtil.justSwipedAny && currentMenuEntries.length > 0)
     {
       for (i in 0...menuEntryText.members.length)
       {
@@ -660,17 +638,62 @@ class PauseSubState extends MusicBeatSubState
       }
     }
     #end
+  }
 
-    if (controls.ACCEPT_P && currentMenuEntries.length > 0 && !justOpened)
+  /**
+   * used to both modify/change offsets, but also to early return so we don't interfere with other inputs while doing so
+   * TODO: refactor to use state design pattern to handle inputs, see MainMenuState
+   * @return Bool true if we are currently modifying our offsets (by holding shift and pressing UP or DOWN)
+   */
+  function handleModifyingOffsets():Bool
+  {
+    #if !mobile
+    var offset:Int = Preferences.globalOffset ?? 0;
+    if (FlxG.keys.pressed.SHIFT && (controls.UI_UP || UI_DOWN))
     {
-      currentMenuEntries[currentEntry].callback(this);
+      lastOffsetPress += FlxG.elapsed;
+      if (!fastOffset)
+      {
+        // If the last offset press was more than 0.5 seconds ago, reset the fast offset.
+        if (lastOffsetPress > 0.5)
+        {
+          fastOffset = true;
+          lastOffsetPress = 0;
+        }
+
+        if (controls.UI_UP_P || controls.UI_DOWN_P)
+        {
+          offset += (controls.UI_UP_P || controls.UI_UP) ? 1 : -1;
+
+          offsetText.text = 'Global Offset: ${offset}ms';
+        }
+      }
+      else
+      {
+        offset += (controls.UI_UP_P || controls.UI_UP) ? 1 : -1;
+
+        offsetText.text = 'Global Offset: ${offset}ms';
+      }
+
+      if (offset > 1500) offset = 1500;
+      if (offset < -1500) offset = -1500;
+
+      Preferences.globalOffset = offset;
+
+      return true;
     }
-    else if (controls.PAUSE_P && !justOpened)
+    else
     {
-      resume(this);
+      // Reset the fast offset if the user is not holding SHIFT.
+      fastOffset = false;
+      lastOffsetPress = 0;
     }
-    // we only want justOpened to be true for 1 single frame, when we first get into the pause menu substate
-    justOpened = false;
+    #end
+    return false;
+  }
+
+  function handleDebugInputs():Void
+  {
     #if FEATURE_DEBUG_FUNCTIONS
     // to pause the game and get screenshots easy, press H on pause menu!
     if (FlxG.keys.justPressed.H)
