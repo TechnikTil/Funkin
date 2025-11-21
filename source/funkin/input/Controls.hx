@@ -126,26 +126,6 @@ class Controls extends FlxActionSet
   inline function get_UI_DOWN_R()
     return _ui_down.checkJustReleased();
 
-  public var UI_UP_GAMEPAD(get, never):Bool;
-
-  inline function get_UI_UP_GAMEPAD()
-    return _ui_up.checkPressedGamepad();
-
-  public var UI_LEFT_GAMEPAD(get, never):Bool;
-
-  inline function get_UI_LEFT_GAMEPAD()
-    return _ui_left.checkPressedGamepad();
-
-  public var UI_RIGHT_GAMEPAD(get, never):Bool;
-
-  inline function get_UI_RIGHT_GAMEPAD()
-    return _ui_right.checkPressedGamepad();
-
-  public var UI_DOWN_GAMEPAD(get, never):Bool;
-
-  inline function get_UI_DOWN_GAMEPAD()
-    return _ui_down.checkPressedGamepad();
-
   public var NOTE_UP(get, never):Bool;
 
   inline function get_NOTE_UP()
