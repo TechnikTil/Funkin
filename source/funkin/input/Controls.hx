@@ -1212,8 +1212,6 @@ class FunkinAction extends FlxActionDigital
   public var namePressed(default, null):Null<String>;
   public var nameReleased(default, null):Null<String>;
 
-  var cache:Map<String, {timestamp:Int, value:Bool}> = [];
-
   public function new(?name:String = "", ?namePressed:String, ?nameReleased:String)
   {
     super(name);
@@ -1296,14 +1294,8 @@ class FunkinAction extends FlxActionDigital
 
   public function checkMultiFiltered(?filterTriggers:Array<FlxInputState>, ?filterDevices:Array<FlxInputDevice>):Bool
   {
-    if (filterTriggers == null)
-    {
-      filterTriggers = [PRESSED, JUST_PRESSED];
-    }
-    if (filterDevices == null)
-    {
-      filterDevices = [];
-    }
+    filterTriggers ??= [PRESSED, JUST_PRESSED];
+    filterDevices ??= [];
 
     // Perform checkFiltered for each combination.
     for (i in filterTriggers)
@@ -1334,32 +1326,28 @@ class FunkinAction extends FlxActionDigital
    * @param action The action to check for.
    * @param filterTrigger Optionally filter by trigger condition (`JUST_PRESSED`, `PRESSED`, `JUST_RELEASED`, `RELEASED`).
    * @param filterDevice Optionally filter by device (`KEYBOARD`, `MOUSE`, `GAMEPAD`, `OTHER`).
+   * @return bool if our input has been triggered
    */
   public function checkFiltered(?filterTrigger:FlxInputState, ?filterDevice:FlxInputDevice):Bool
   {
     // Make sure we only update the inputs once per frame.
-    var key = '${filterTrigger}:${filterDevice}';
-    var cacheEntry = cache.get(key);
+    if (_timestamp == FlxG.game.ticks) return triggered; // run no more than once per frame
 
-    if (cacheEntry != null && cacheEntry.timestamp == FlxG.game.ticks)
+    _x = null;
+    _y = null;
+
+    _timestamp = FlxG.game.ticks;
+    triggered = false;
+
+    var i = inputs?.length ?? 0;
+    while (i-- > 0) // Iterate backwards, since we may remove items
     {
-      return cacheEntry.value;
-    }
-
-    // Use a for loop instead so we can remove inputs while iterating.
-
-    // We don't return early because we need to call check() on ALL inputs.
-    var result = false;
-    var len = inputs != null ? inputs.length : 0;
-    for (i in 0...len)
-    {
-      var j = len - i - 1;
-      var input = inputs[j];
+      var input = inputs[i];
 
       // Filter out dead inputs.
       if (input.destroyed)
       {
-        inputs.splice(j, 1);
+        inputs.remove(input);
         continue;
       }
 
@@ -1381,14 +1369,11 @@ class FunkinAction extends FlxActionDigital
       // Check whether the input has triggered.
       if (input.check(this))
       {
-        result = true;
+        triggered = true;
       }
     }
 
-    // We need to cache this result.
-    cache.set(key, {timestamp: FlxG.game.ticks, value: result});
-
-    return result;
+    return triggered;
   }
 }
 
