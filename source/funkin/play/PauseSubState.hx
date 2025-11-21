@@ -661,11 +661,11 @@ class PauseSubState extends MusicBeatSubState
     }
     #end
 
-    if (controls.ACCEPT && currentMenuEntries.length > 0)
+    if (controls.ACCEPT_P && currentMenuEntries.length > 0 && !justOpened)
     {
       currentMenuEntries[currentEntry].callback(this);
     }
-    else if (controls.PAUSE && !justOpened)
+    else if (controls.PAUSE_P && !justOpened)
     {
       resume(this);
     }

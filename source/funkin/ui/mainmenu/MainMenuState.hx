@@ -608,7 +608,7 @@ class MainMenuState extends MusicBeatState
     }
     #end
 
-    if (controls.BACK) goBack();
+    if (controls.BACK_P) goBack();
   }
 
   function goOptions():Void

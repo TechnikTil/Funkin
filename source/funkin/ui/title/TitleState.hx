@@ -238,7 +238,7 @@ class TitleState extends MusicBeatState
     // Pressing BACK on the title screen should close the game.
     // This lets you exit without leaving fullscreen mode.
     // Only applicable on desktop and Android.
-    if (#if android FlxG.android.justReleased.BACK || #end controls.BACK)
+    if (#if android FlxG.android.justReleased.BACK || #end controls.BACK_P)
     {
       openfl.Lib.application.window.close();
     }

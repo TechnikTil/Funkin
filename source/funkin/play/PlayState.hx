@@ -1163,7 +1163,7 @@ class PlayState extends MusicBeatSubState
     #end
 
     // Attempt to pause the game.
-    if ((controls.PAUSE || androidPause || pauseButtonCheck)) pause();
+    if ((controls.PAUSE_P || androidPause || pauseButtonCheck)) pause();
 
     #if mobile
     if (justUnpaused)
