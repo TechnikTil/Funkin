@@ -3314,7 +3314,7 @@ class PlayState extends MusicBeatSubState
       {
         currentConversation.advanceConversation();
       }
-      else if ((controls.PAUSE || androidPause || pauseButtonCheck) && !justUnpaused)
+      else if ((controls.PAUSE_P || androidPause || pauseButtonCheck) && !justUnpaused)
       {
         pause(Conversation);
       }
@@ -3322,7 +3322,7 @@ class PlayState extends MusicBeatSubState
     else if (VideoCutscene.isPlaying())
     {
       // This is a video cutscene.
-      if ((controls.PAUSE || androidPause || pauseButtonCheck) && !justUnpaused)
+      if ((controls.PAUSE_P || androidPause || pauseButtonCheck) && !justUnpaused)
       {
         pause(Cutscene);
       }
