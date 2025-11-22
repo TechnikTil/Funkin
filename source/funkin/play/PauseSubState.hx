@@ -649,7 +649,7 @@ class PauseSubState extends MusicBeatSubState
   {
     #if !mobile
     var offset:Int = Preferences.globalOffset ?? 0;
-    if (FlxG.keys.pressed.SHIFT && (controls.UI_UP || UI_DOWN))
+    if (FlxG.keys.pressed.SHIFT && (controls.UI_UP || controls.UI_DOWN))
     {
       lastOffsetPress += FlxG.elapsed;
       if (!fastOffset)
