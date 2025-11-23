@@ -191,8 +191,8 @@ class ResultState extends MusicBeatSubState
     add(soundSystem);
 
     // Fetch playable character data. Default to BF on the results screen if we can't find it.
-    playerCharacterId = PlayerRegistry.instance.getCharacterOwnerId(params.characterId) ?? params.characterId;
-    playerCharacter = PlayerRegistry.instance.fetchEntry(playerCharacterId ?? 'bf');
+    playerCharacterId = PlayerRegistry.instance.getCharacterOwnerId(params.characterId) ?? 'bf';
+    playerCharacter = PlayerRegistry.instance.fetchEntry(playerCharacterId);
 
     trace('Got playable character: ${playerCharacter?.getName()}');
     // Query JSON data based on the rank, then use that to build the animation(s) the player sees.
