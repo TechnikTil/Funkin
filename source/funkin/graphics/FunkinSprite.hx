@@ -380,7 +380,7 @@ class FunkinSprite extends FlxAnimate
    */
   public function hasAnimation(id:String):Bool
   {
-    var animationList:Array<String> = this.animation.getNameList();
+    var animationList:Array<String> = this.animation?.getNameList() ?? [];
     if (animationList.contains(id))
     {
       return true;
@@ -424,7 +424,7 @@ class FunkinSprite extends FlxAnimate
    */
   public function getCurrentAnimation():String
   {
-    return this.animation.curAnim?.name ?? '';
+    return this.animation?.curAnim?.name ?? '';
   }
 
   /**
@@ -461,7 +461,7 @@ class FunkinSprite extends FlxAnimate
   public function listAnimations():Array<String>
   {
     var frameLabels:Array<String> = getFrameLabelList();
-    var animationList:Array<String> = this.animation.getNameList();
+    var animationList:Array<String> = this.animation?.getNameList() ?? [];
 
     return frameLabels.concat(animationList);
   }
