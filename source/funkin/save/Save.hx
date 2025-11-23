@@ -385,6 +385,14 @@ class Save implements ConsoleClass
   /// UTIL FUNCITONS
 
   /**
+   * Call this to make sure the save data is written to disk.
+   */
+  public function flush():Void
+  {
+    Save.system.flush();
+  }
+
+  /**
    * When we've seen a character unlock, add it to the list of characters seen.
    * @param character
    */
