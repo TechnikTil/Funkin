@@ -146,17 +146,29 @@ class ModuleHandler
       // The module needs to be active to receive events.
       if (module != null && module.active)
       {
-        if (module.state != null)
-        {
-          // Only call the event if the current state is what the module's state is.
-          if (!(Type.getClass(FlxG.state) == module.state) && !(Type.getClass(FlxG.state?.subState) == module.state))
-          {
-            continue;
-          }
-        }
+        // Only call the event if the module's state is active.
+        if (!isStateActive(module.state)) continue;
+
         ScriptEventDispatcher.callEvent(module, event);
       }
     }
+  }
+
+  static function isStateActive(stateToFind:Null<Class<Dynamic>>):Bool
+  {
+    if (stateToFind == null) return true;
+
+    var statesReading:Array<Class<Dynamic>> = [Type.getClass(FlxG.state)];
+    while (statesReading.length > 0)
+    {
+      var state:Null<Class<Dynamic>> = statesReading.shift();
+      if (state == null) continue;
+
+      if (state == stateToFind) return true;
+      else if (state.subState != null) statesReading.push(Type.getClass(state.subState));
+    }
+
+    return false;
   }
 
   public static inline function callOnCreate():Void
