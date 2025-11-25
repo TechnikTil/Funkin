@@ -3587,6 +3587,20 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   }
 
   /**
+   * Function called when the game window loses focus.
+   */
+  public override function onFocusLost():Void
+  {
+    super.onFocusLost();
+
+    // Stop the song upon tabbing out.
+    if (Preferences.autoPause)
+    {
+      stopAudioPlayback();
+    }
+  }
+
+  /**
    * Beat hit while the song is playing.
    */
   override function beatHit():Bool
