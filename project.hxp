@@ -1466,6 +1466,10 @@ class Project extends HXProject
     addAssetPath("assets/week7", "assets/week7", "week7", ["*"], exclude, shouldEmbed, "assets");
     addAssetLibrary("weekend1", shouldEmbed, shouldPreload);
     addAssetPath("assets/weekend1", "assets/weekend1", "weekend1", ["*"], exclude, shouldEmbed, "assets");
+    addAssetLibrary("sserafim", shouldEmbed, shouldPreload);
+    addAssetPath("assets/sserafim", "assets/sserafim", "sserafim", ["*"], exclude, shouldEmbed, "assets");
+
+
 
     // Art asset library (where README and CHANGELOG pull from)
     var shouldEmbedArt = false;

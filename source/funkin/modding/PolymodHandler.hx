@@ -505,6 +505,7 @@ class PolymodHandler
         'week6' => 'week6',
         'week7' => 'week7',
         'weekend1' => 'weekend1',
+        'sserafim' => 'sserafim'
       ],
       coreAssetRedirect: CORE_FOLDER,
     }
