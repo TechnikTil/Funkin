@@ -1940,6 +1940,11 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var menubarItemViewSubtitles:MenuCheckBox;
 
   /**
+   * The `View -> Waveforms` menu item.
+   */
+  var menubarItemViewWaveforms:MenuCheckBox;
+
+  /**
    * The `View -> Increase Difficulty` menu item.
    */
   var menubarItemDifficultyUp:MenuItem;
@@ -3239,6 +3244,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     menubarItemViewSubtitles.onClick = event -> showSubtitles = menubarItemViewSubtitles.selected;
     menubarItemViewSubtitles.selected = showSubtitles;
+
+    menubarItemViewWaveforms.onClick = event -> audioWaveforms.visible = menubarItemViewWaveforms.selected;
+    menubarItemViewWaveforms.selected = audioWaveforms.visible;
 
     menubarItemDifficultyUp.onClick = _ -> incrementDifficulty(1);
     menubarItemDifficultyDown.onClick = _ -> incrementDifficulty(-1);
