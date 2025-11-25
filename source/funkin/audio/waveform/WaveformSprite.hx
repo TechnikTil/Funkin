@@ -87,6 +87,15 @@ class WaveformSprite extends MeshRender
     return time;
   }
 
+  override function set_visible(value:Bool):Bool
+  {
+    if (visible == value) return value;
+
+    visible = value;
+    isWaveformDirty = true;
+    return visible;
+  }
+
   /**
    * The duration, in seconds, that the waveform represents.
    * The section of waveform from `time` to `time + duration` and `width` are used to determine how many samples each pixel represents.
