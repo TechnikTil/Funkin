@@ -1,5 +1,6 @@
 package funkin.ui.debug.charting.toolboxes;
 
+import funkin.ui.debug.charting.commands.SwitchDifficultyCommand;
 #if FEATURE_CHART_EDITOR
 import funkin.data.song.SongData.SongChartData;
 import funkin.data.song.SongData.SongMetadata;
@@ -285,9 +286,10 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
         if (variation != null && difficulty != null)
         {
           trace('Changing difficulty to "$variation:$difficulty"');
-          chartEditorState.selectedVariation = variation;
-          chartEditorState.selectedDifficulty = difficulty;
-          chartEditorState.refreshToolbox(ChartEditorState.CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
+
+          chartEditorState.performCommand(new SwitchDifficultyCommand(chartEditorState.selectedDifficulty, difficulty, chartEditorState.selectedVariation,
+            variation));
+
           refreshTreeSelection();
         }
       // case 'song':
