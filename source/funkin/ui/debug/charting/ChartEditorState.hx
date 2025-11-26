@@ -73,6 +73,7 @@ import funkin.ui.debug.charting.commands.RemoveStackedNotesCommand;
 import funkin.ui.debug.charting.commands.SelectAllItemsCommand;
 import funkin.ui.debug.charting.commands.SelectItemsCommand;
 import funkin.ui.debug.charting.commands.SetItemSelectionCommand;
+import funkin.ui.debug.charting.commands.SwitchDifficultyCommand;
 import funkin.ui.debug.charting.components.ChartEditorEventSprite;
 import funkin.ui.debug.charting.components.ChartEditorHoldNoteSprite;
 import funkin.ui.debug.charting.components.ChartEditorMeasureTicks;
@@ -6548,6 +6549,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       resultChartData.notes.remove(difficulty);
     }
 
+    // Remove the variation if it is empty.
     if (songMetadata.size() > 1)
     {
       if (variation != Constants.DEFAULT_VARIATION && variationMetadata.playData.difficulties.length == 0)
@@ -6559,11 +6561,13 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (variation == selectedVariation)
       {
         var firstVariation = songMetadata.keyValues()[0];
+        // Directly set the variation, since you can't undo removing the difficulty.
         if (firstVariation != null) selectedVariation = firstVariation;
         variationMetadata = songMetadata.get(selectedVariation);
       }
     }
 
+    // Directly set the difficulty rather than using a command, since you can't undo removing the difficulty.
     if (selectedDifficulty == difficulty
       || !variationMetadata.playData.difficulties.contains(selectedDifficulty)) selectedDifficulty = variationMetadata.playData.difficulties[0];
 
@@ -6612,10 +6616,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         // Go to the previous variation, then last difficulty in that variation.
         var currentVariationIndex:Int = availableVariations.indexOf(selectedVariation);
         var prevVariation = availableVariations[currentVariationIndex - 1];
-        selectedVariation = prevVariation;
-
         var prevDifficulty = availableDifficulties[availableDifficulties.length - 1];
-        selectedDifficulty = prevDifficulty;
+
+        performCommand(new SwitchDifficultyCommand(selectedDifficulty, prevDifficulty, selectedVariation, prevVariation));
 
         Conductor.instance.mapTimeChanges(this.currentSongMetadata.timeChanges);
         updateTimeSignature();
@@ -6627,7 +6630,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       {
         // Go to previous difficulty in this variation.
         var prevDifficulty = availableDifficulties[currentDifficultyIndex - 1];
-        selectedDifficulty = prevDifficulty;
+        performCommand(new SwitchDifficultyCommand(selectedDifficulty, prevDifficulty, selectedVariation, selectedVariation));
 
         this.refreshToolbox(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
         this.refreshToolbox(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
@@ -6643,10 +6646,9 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         // Go to next variation, then first difficulty in that variation.
         var currentVariationIndex:Int = availableVariations.indexOf(selectedVariation);
         var nextVariation = availableVariations[currentVariationIndex + 1];
-        selectedVariation = nextVariation;
-
         var nextDifficulty = availableDifficulties[0];
-        selectedDifficulty = nextDifficulty;
+
+        performCommand(new SwitchDifficultyCommand(selectedDifficulty, nextDifficulty, selectedVariation, nextVariation));
 
         this.refreshToolbox(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
         this.refreshToolbox(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
@@ -6655,7 +6657,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       {
         // Go to next difficulty in this variation.
         var nextDifficulty = availableDifficulties[currentDifficultyIndex + 1];
-        selectedDifficulty = nextDifficulty;
+        performCommand(new SwitchDifficultyCommand(selectedDifficulty, nextDifficulty, selectedVariation, selectedVariation));
 
         this.refreshToolbox(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
         this.refreshToolbox(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
