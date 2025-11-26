@@ -1739,6 +1739,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     noteTooltipsDirty = true;
     notePreviewViewportBoundsDirty = true;
 
+    // Switching difficulties should automatically clear the selection.
+    currentNoteSelection = [];
+    currentEventSelection = [];
+
     switchToCurrentInstrumental();
     postLoadInstrumental();
 
@@ -1761,6 +1765,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     notePreviewDirty = true;
     noteTooltipsDirty = true;
     notePreviewViewportBoundsDirty = true;
+
+    // Switching difficulties should automatically clear the selection.
+    currentNoteSelection = [];
+    currentEventSelection = [];
 
     return selectedDifficulty;
   }
