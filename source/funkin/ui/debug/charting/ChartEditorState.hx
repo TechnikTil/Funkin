@@ -6494,6 +6494,46 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     difficultySelectDirty = true; // Force the Difficulty toolbox to update.
   }
 
+  function cloneDifficulty(variation:String, difficulty:String, newVariation:String, newDifficulty:String, scrollSpeed:Float = 1.0):Void
+  {
+    var newVariationMetadata:Null<SongMetadata> = songMetadata.get(newVariation);
+    if (newVariationMetadata == null) return;
+
+    var oldChartData:Null<SongChartData> = songChartData.get(variation);
+    if (oldChartData == null)
+    {
+      // If we can't access the difficulty to copy, just create a blank one.
+      createDifficulty(newVariation, newDifficulty, scrollSpeed);
+      return;
+    };
+
+    var newNoteData:Null<Array<SongNoteData>> = oldChartData.notes.get(difficulty)?.clone();
+    if (newNoteData == null || newNoteData.length == 0)
+    {
+      // If we can't access the difficulty to copy, just create a blank one.
+      createDifficulty(newVariation, newDifficulty, scrollSpeed);
+      return;
+    };
+
+    // Actually add the new difficulty.
+
+    newVariationMetadata.playData.difficulties.push(newDifficulty);
+
+    var newChartData = songChartData.get(newVariation);
+    if (newChartData == null)
+    {
+      newChartData = new SongChartData([newDifficulty => scrollSpeed], [], [newDifficulty => newNoteData]);
+      songChartData.set(newVariation, newChartData);
+    }
+    else
+    {
+      newChartData.scrollSpeed.set(newDifficulty, scrollSpeed);
+      newChartData.notes.set(newDifficulty, newNoteData);
+    }
+
+    difficultySelectDirty = true; // Force the Difficulty toolbox to update.
+  }
+
   function removeDifficulty(variation:String, difficulty:String):Void
   {
     var variationMetadata:Null<SongMetadata> = songMetadata.get(variation);

@@ -71,6 +71,14 @@ class ChartEditorDifficultyToolbox extends ChartEditorBaseToolbox
       chartEditorState.openAddDifficultyDialog(true);
     };
 
+    difficultyToolboxCloneDifficulty.onClick = function(_:UIEvent) {
+      chartEditorState.openCloneDifficultyDialog(false, true);
+    };
+
+    difficultyToolboxMoveDifficulty.onClick = function(_:UIEvent) {
+      chartEditorState.openCloneDifficultyDialog(true, true);
+    };
+
     difficultyToolboxRemoveDifficulty.onClick = function(_:UIEvent) {
       var currentVariation:String = chartEditorState.selectedVariation;
       var currentDifficulty:String = chartEditorState.selectedDifficulty;
