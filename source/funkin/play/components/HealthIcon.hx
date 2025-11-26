@@ -224,7 +224,12 @@ class HealthIcon extends FunkinSprite
   {
     super.update(elapsed);
 
-    if (bopEvery != 0) this.angle = MathUtil.smoothLerpPrecision(this.angle, 0, elapsed, 0.512);
+    if (bopEvery != 0)
+    {
+      var dt:Float = elapsed * 60;
+
+      this.angle = MathUtil.smoothLerpPrecision(this.angle, 0, dt, 0.512);
+    }
 
     this.updatePosition();
   }
