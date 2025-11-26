@@ -1336,12 +1336,17 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function get_availableDifficulties():Array<String>
   {
-    var m:Null<SongMetadata> = songMetadata.get(selectedVariation);
+    return getAvailableDifficulties(selectedVariation);
+  }
+
+  function getAvailableDifficulties(variation:String):Array<String>
+  {
+    var m:Null<SongMetadata> = songMetadata.get(variation);
     return m?.playData?.difficulties ?? [Constants.DEFAULT_DIFFICULTY];
   }
 
   /**
-   * Retrieves the list of difficulties for ALL variations of the current song.
+   * Retrieves the list of (suffixed) difficulties for ALL variations of the current song.
    */
   var allDifficulties(get, never):Array<String>;
 
@@ -6624,8 +6629,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         // Go to the previous variation, then last difficulty in that variation.
         var currentVariationIndex:Int = availableVariations.indexOf(selectedVariation);
         var prevVariation = availableVariations[currentVariationIndex - 1];
-        var prevDifficulty = availableDifficulties[availableDifficulties.length - 1];
+        var prevVariationDifficulties:Array<String> = getAvailableDifficulties(prevVariation);
+        var prevDifficulty = prevVariationDifficulties[prevVariationDifficulties.length - 1];
 
+        trace('${selectedVariation}:${selectedDifficulty} -> ${prevVariation}:${prevDifficulty}');
         performCommand(new SwitchDifficultyCommand(selectedDifficulty, prevDifficulty, selectedVariation, prevVariation));
 
         Conductor.instance.mapTimeChanges(this.currentSongMetadata.timeChanges);
@@ -6638,6 +6645,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       {
         // Go to previous difficulty in this variation.
         var prevDifficulty = availableDifficulties[currentDifficultyIndex - 1];
+        trace('${selectedVariation}:${selectedDifficulty} -> ${selectedVariation}:${prevDifficulty}');
         performCommand(new SwitchDifficultyCommand(selectedDifficulty, prevDifficulty, selectedVariation, selectedVariation));
 
         this.refreshToolbox(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
@@ -6654,8 +6662,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
         // Go to next variation, then first difficulty in that variation.
         var currentVariationIndex:Int = availableVariations.indexOf(selectedVariation);
         var nextVariation = availableVariations[currentVariationIndex + 1];
-        var nextDifficulty = availableDifficulties[0];
+        var nextVariationDifficulties:Array<String> = getAvailableDifficulties(nextVariation);
+        var nextDifficulty = nextVariationDifficulties[0];
 
+        trace('${selectedVariation}:${selectedDifficulty} -> ${nextVariation}:${nextDifficulty}');
         performCommand(new SwitchDifficultyCommand(selectedDifficulty, nextDifficulty, selectedVariation, nextVariation));
 
         this.refreshToolbox(CHART_EDITOR_TOOLBOX_METADATA_LAYOUT);
@@ -6665,6 +6675,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       {
         // Go to next difficulty in this variation.
         var nextDifficulty = availableDifficulties[currentDifficultyIndex + 1];
+        trace('${selectedVariation}:${selectedDifficulty} -> ${selectedVariation}:${nextDifficulty}');
         performCommand(new SwitchDifficultyCommand(selectedDifficulty, nextDifficulty, selectedVariation, selectedVariation));
 
         this.refreshToolbox(CHART_EDITOR_TOOLBOX_DIFFICULTY_LAYOUT);
