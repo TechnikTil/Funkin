@@ -1189,14 +1189,17 @@ class PlayState extends MusicBeatSubState
     if (health > Constants.HEALTH_MAX) health = Constants.HEALTH_MAX;
     if (health < Constants.HEALTH_MIN) health = Constants.HEALTH_MIN;
 
-    // Apply camera zoom + multipliers.
-    if (subState == null && cameraZoomRate > 0.0) // && !isInCutscene)
-    {
-      cameraBopMultiplier = FlxMath.lerp(1.0, cameraBopMultiplier, 0.95); // Lerp bop multiplier back to 1.0x
-      var zoomPlusBop = currentCameraZoom * cameraBopMultiplier; // Apply camera bop multiplier.
-      if (!debugUnbindCameraZoom) FlxG.camera.zoom = zoomPlusBop; // Actually apply the zoom to the camera.
+    var decayRate:Float = 0.95;
+    var dt:Float = elapsed * 60; //
 
-      camHUD.zoom = FlxMath.lerp(defaultHUDCameraZoom, camHUD.zoom, 0.95);
+    if (subState == null && cameraZoomRate > 0.0)
+    {
+      cameraBopMultiplier = FlxMath.lerp(1.0, cameraBopMultiplier, Math.pow(decayRate, dt));
+
+      var zoomPlusBop = currentCameraZoom * cameraBopMultiplier;
+      if (!debugUnbindCameraZoom) FlxG.camera.zoom = zoomPlusBop;
+
+      camHUD.zoom = FlxMath.lerp(defaultHUDCameraZoom, camHUD.zoom, Math.pow(decayRate, dt));
     }
 
     if (currentStage != null && currentStage.getBoyfriend() != null)
