@@ -4,6 +4,7 @@ import flixel.util.FlxDirectionFlags;
 import flixel.FlxObject;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
+import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.sound.FlxSound;
 import flixel.system.debug.watch.Tracker.TrackerProfile;
@@ -843,22 +844,8 @@ class CharSelectSubState extends MusicBeatSubState
       if (controls.BACK_P) goBack();
     }
 
-    if (cursorX < -1)
-    {
-      cursorX = 1;
-    }
-    if (cursorX > 1)
-    {
-      cursorX = -1;
-    }
-    if (cursorY < -1)
-    {
-      cursorY = 1;
-    }
-    if (cursorY > 1)
-    {
-      cursorY = -1;
-    }
+    cursorX = FlxMath.wrap(cursorX, -1, 1);
+    cursorY = FlxMath.wrap(cursorY, -1, 1);
 
     var currentCharacter:String = availableChars[getCurrentSelected()] ?? Constants.DEFAULT_CHARACTER;
     if (availableChars.exists(getCurrentSelected()) && PlayerRegistry.instance.isCharacterSeen(currentCharacter))
