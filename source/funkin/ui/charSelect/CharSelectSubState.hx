@@ -42,22 +42,15 @@ import funkin.util.TouchUtil;
 @:nullSafety
 class CharSelectSubState extends MusicBeatSubState
 {
-  // what the actual hell
-  // having a hard time trying to make my changes work so i chose to be less stubborn and just remove them for now. - Zack
-  // Left this here so somebody can remind me
-  var cursor:FunkinSprite;
+  var cursors:CharSelectCursors;
 
-  var cursorBlue:FunkinSprite;
-  var cursorDarkBlue:FunkinSprite;
-  var grpCursors:FlxTypedGroup<FunkinSprite>;
-  var cursorConfirmed:FunkinSprite;
-  var cursorDenied:FunkinSprite;
   var cursorX:Int = 0;
   var cursorY:Int = 0;
   var cursorFactor:Float = 110;
   var cursorOffsetX:Float = -16;
   var cursorOffsetY:Float = -48;
   var cursorLocIntended:FlxPoint = new FlxPoint(0, 0);
+
   var playerChill:CharSelectPlayer;
   var playerChillOut:CharSelectPlayer;
   var gfChill:CharSelectGF;
@@ -104,7 +97,7 @@ class CharSelectSubState extends MusicBeatSubState
 
     cutoutSize = FullScreenScaleMode.gameCutoutSize.x / 2;
 
-    grpCursors = new FlxTypedGroup<FunkinSprite>();
+    cursors = new CharSelectCursors();
     grpHitboxes = new FlxTypedGroup<FlxObject>();
 
     gfChill = new CharSelectGF(cutoutSize, 0);
@@ -116,12 +109,6 @@ class CharSelectSubState extends MusicBeatSubState
     chooseDipshit = new FunkinSprite(cutoutSize + 426, -13);
 
     nametag = new Nametag(rememberedChar);
-
-    cursor = new FunkinSprite(0, 0);
-    cursorBlue = new FunkinSprite(0, 0);
-    cursorDarkBlue = new FunkinSprite(0, 0);
-    cursorConfirmed = new FunkinSprite(0, 0);
-    cursorDenied = new FunkinSprite(0, 0);
 
     charHitbox = new FlxObject(FlxG.width * 0.65, FlxG.height * 0.2, 300, 500);
 
@@ -314,35 +301,7 @@ class CharSelectSubState extends MusicBeatSubState
     FlxG.debugger.addTrackerProfile(new TrackerProfile(FunkinSprite, ["x", "y", "alpha", "scale", "blend"]));
     FlxG.debugger.addTrackerProfile(new TrackerProfile(FlxSound, ["pitch", "volume"]));
 
-    add(grpCursors);
-
-    cursor.loadGraphic(Paths.image('charSelect/charSelector'));
-    cursor.color = 0xFFFFFF00;
-
-    cursorBlue.loadGraphic(Paths.image('charSelect/charSelector'));
-    cursorBlue.color = 0xFF3EBBFF;
-
-    cursorDarkBlue.loadGraphic(Paths.image('charSelect/charSelector'));
-    cursorDarkBlue.color = 0xFF3C74F7;
-
-    cursorBlue.blend = BlendMode.SCREEN;
-    cursorDarkBlue.blend = BlendMode.SCREEN;
-
-    cursorConfirmed.scrollFactor.set();
-    cursorConfirmed.frames = Paths.getSparrowAtlas("charSelect/charSelectorConfirm");
-    cursorConfirmed.animation.addByPrefix("idle", "cursor ACCEPTED instance 1", 24, true);
-    cursorConfirmed.visible = false;
-    add(cursorConfirmed);
-
-    cursorDenied.scrollFactor.set();
-    cursorDenied.frames = Paths.getSparrowAtlas("charSelect/charSelectorDenied");
-    cursorDenied.animation.addByPrefix("idle", "cursor DENIED instance 1", 24, false);
-    cursorDenied.visible = false;
-    add(cursorDenied);
-
-    grpCursors.add(cursorDarkBlue);
-    grpCursors.add(cursorBlue);
-    grpCursors.add(cursor);
+    add(cursors);
 
     charHitbox.active = false;
     charHitbox.scrollFactor.set();
@@ -397,12 +356,6 @@ class CharSelectSubState extends MusicBeatSubState
       member.y += 300;
       FlxTween.tween(member, {y: member.y - 300}, 1, {ease: FlxEase.expoOut});
     }
-
-    cursor.scrollFactor.set();
-    cursorBlue.scrollFactor.set();
-    cursorDarkBlue.scrollFactor.set();
-
-    FlxTween.color(cursor, 0.2, 0xFFFFFF00, 0xFFFFCC00, {type: PINGPONG});
 
     FlxG.debugger.addTrackerProfile(new TrackerProfile(CharSelectSubState, ["curChar", "grpXSpread", "grpYSpread"]));
     FlxG.debugger.track(this);
@@ -594,9 +547,6 @@ class CharSelectSubState extends MusicBeatSubState
     }
 
     var xThing = (copy - index - 2) * -1;
-    // Look, I'd write better code but I had better aneurysms, my bad - Cheems
-    // felt - Zack
-    // Krue - Abnormal
     cursorY = yThing;
     cursorX = xThing;
 
@@ -733,10 +683,7 @@ class CharSelectSubState extends MusicBeatSubState
     }
     #end
 
-    FlxTween.tween(cursor, {alpha: 0}, 0.8, {ease: FlxEase.expoOut});
-    FlxTween.tween(cursorBlue, {alpha: 0}, 0.8, {ease: FlxEase.expoOut});
-    FlxTween.tween(cursorDarkBlue, {alpha: 0}, 0.8, {ease: FlxEase.expoOut});
-    FlxTween.tween(cursorConfirmed, {alpha: 0}, 0.8, {ease: FlxEase.expoOut});
+    FlxTween.tween(cursors, {alpha: 0}, 0.8, {ease: FlxEase.expoOut});
 
     FlxTween.tween(barthing, {y: barthing.y + 80}, 0.8, {ease: FlxEase.backIn});
     FlxTween.tween(nametag, {y: nametag.y + 80}, 0.8, {ease: FlxEase.backIn});
@@ -811,7 +758,7 @@ class CharSelectSubState extends MusicBeatSubState
           {
             cursorX = indexCX;
             cursorY = indexCY;
-            cursorDenied.visible = false;
+            cursors.resetDeny();
             selectSound.play(true);
           }
           else if (TouchUtil.justPressed)
@@ -868,7 +815,7 @@ class CharSelectSubState extends MusicBeatSubState
       if (controls.UI_UP_P)
       {
         cursorY -= 1;
-        cursorDenied.visible = false;
+        cursors.resetDeny();
 
         holdTmrUp = 0;
 
@@ -877,14 +824,14 @@ class CharSelectSubState extends MusicBeatSubState
       if (controls.UI_DOWN_P)
       {
         cursorY += 1;
-        cursorDenied.visible = false;
+        cursors.resetDeny();
         holdTmrDown = 0;
         selectSound.play(true);
       }
       if (controls.UI_LEFT_P)
       {
         cursorX -= 1;
-        cursorDenied.visible = false;
+        cursors.resetDeny();
 
         holdTmrLeft = 0;
         selectSound.play(true);
@@ -892,7 +839,7 @@ class CharSelectSubState extends MusicBeatSubState
       if (controls.UI_RIGHT_P)
       {
         cursorX += 1;
-        cursorDenied.visible = false;
+        cursors.resetDeny();
         holdTmrRight = 0;
         selectSound.play(true);
       }
@@ -926,8 +873,7 @@ class CharSelectSubState extends MusicBeatSubState
       if (allowInput && pressedSelect && (controls.BACK_P #if FEATURE_TOUCH_CONTROLS || (mobileDeny && TouchUtil.justReleased) #end))
       {
         mobileDeny = false;
-        cursorConfirmed.visible = false;
-        grpCursors.visible = true;
+        cursors.unconfirm();
 
         dispatchEvent(new CharacterSelectScriptEvent(CHARACTER_DESELECTED, curChar));
 
@@ -967,10 +913,7 @@ class CharSelectSubState extends MusicBeatSubState
         spamLeft = false;
         spamRight = false;
 
-        cursorConfirmed.visible = true;
-        cursorConfirmed.animation.play("idle", true);
-
-        grpCursors.visible = false;
+        cursors.confirm();
 
         FlxG.sound.play(Paths.sound('CS_confirm'));
 
@@ -1007,50 +950,30 @@ class CharSelectSubState extends MusicBeatSubState
 
       if (allowInput && (controls.ACCEPT_P || mobileAccept))
       {
-        cursorDenied.visible = true;
-
         playerChill.anim.play("cannot select Label", true);
-
         lockedSound.play(true);
-
         HapticUtil.vibrate(0, 0.2);
 
-        cursorDenied.animation.play('idle', true);
-        cursorDenied.animation.onFinish.add((_) -> {
-          cursorDenied.visible = false;
-        });
+        cursors.deny();
       }
     }
 
     updateLockAnims();
 
-    if (autoFollow == true)
+    if (autoFollow)
     {
       camFollow.screenCenter();
       camFollow.x += cursorX * 10;
       camFollow.y += cursorY * 10;
     }
 
-    cursorLocIntended.x = (cursorFactor * cursorX) + (FlxG.width / 2) - cursor.width / 2;
-    cursorLocIntended.y = (cursorFactor * cursorY) + (FlxG.height / 2) - cursor.height / 2;
+    cursorLocIntended.x = (cursorFactor * cursorX) + (FlxG.width / 2) - cursors.main.width / 2;
+    cursorLocIntended.y = (cursorFactor * cursorY) + (FlxG.height / 2) - cursors.main.height / 2;
 
     cursorLocIntended.x += cursorOffsetX;
     cursorLocIntended.y += cursorOffsetY;
 
-    cursor.x = MathUtil.snap(MathUtil.smoothLerpPrecision(cursor.x, cursorLocIntended.x, elapsed, 0.1), cursorLocIntended.x, 1);
-    cursor.y = MathUtil.snap(MathUtil.smoothLerpPrecision(cursor.y, cursorLocIntended.y, elapsed, 0.1), cursorLocIntended.y, 1);
-
-    cursorBlue.x = MathUtil.smoothLerpPrecision(cursorBlue.x, cursor.x, elapsed, 0.202);
-    cursorBlue.y = MathUtil.smoothLerpPrecision(cursorBlue.y, cursor.y, elapsed, 0.202);
-
-    cursorDarkBlue.x = MathUtil.smoothLerpPrecision(cursorDarkBlue.x, cursorLocIntended.x, elapsed, 0.404);
-    cursorDarkBlue.y = MathUtil.smoothLerpPrecision(cursorDarkBlue.y, cursorLocIntended.y, elapsed, 0.404);
-
-    cursorConfirmed.x = cursor.x - 2;
-    cursorConfirmed.y = cursor.y - 4;
-
-    cursorDenied.x = cursor.x - 2;
-    cursorDenied.y = cursor.y - 4;
+    cursors.lerpToLocation(cursorLocIntended);
   }
 
   function goBack():Void
@@ -1125,7 +1048,7 @@ class CharSelectSubState extends MusicBeatSubState
       if (selectSound.pitch > 5) selectSound.pitch = 5;
       selectSound.play(true);
 
-      cursorDenied.visible = false;
+      cursors.resetDeny();
 
       if (spamUp)
       {
