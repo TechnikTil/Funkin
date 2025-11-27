@@ -1,5 +1,6 @@
 package funkin.ui.charSelect;
 
+import flixel.util.FlxDirectionFlags;
 import flixel.FlxObject;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
@@ -13,7 +14,6 @@ import flixel.util.FlxColor;
 import funkin.audio.FunkinSound;
 import funkin.data.freeplay.player.PlayerData.PlayerCharSelectData;
 import funkin.data.freeplay.player.PlayerRegistry;
-import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.shaders.BlueFade;
 import funkin.modding.events.ScriptEvent;
@@ -75,7 +75,6 @@ class CharSelectSubState extends MusicBeatSubState
   var introSound:FunkinSound = new FunkinSound();
   var staticSound:FunkinSound = new FunkinSound();
 
-  // var charSelectCam:FunkinCamera;
   var selectedBizz:Array<BitmapFilter> = [
     new DropShadowFilter(0, 0, 0xFFFFFF, 1, 2, 2, 19, 1, false, false, false),
     new DropShadowFilter(5, 45, 0x000000, 1, 2, 2, 1, 1, false, false, false)
@@ -721,10 +720,7 @@ class CharSelectSubState extends MusicBeatSubState
   var holdTmrDown:Float = 0;
   var holdTmrLeft:Float = 0;
   var holdTmrRight:Float = 0;
-  var spamUp:Bool = false;
-  var spamDown:Bool = false;
-  var spamLeft:Bool = false;
-  var spamRight:Bool = false;
+  var spamDirections:FlxDirectionFlags = NONE;
 
   var mobileDeny:Bool = false;
   var mobileAccept:Bool = false;
@@ -781,36 +777,36 @@ class CharSelectSubState extends MusicBeatSubState
       if (controls.UI_UP_R)
       {
         holdTmrUp = 0;
-        spamUp = false;
+        spamDirections = spamDirections.without(UP);
       }
 
       if (controls.UI_DOWN) holdTmrDown += elapsed;
       if (controls.UI_DOWN_R)
       {
         holdTmrDown = 0;
-        spamDown = false;
+        spamDirections = spamDirections.without(DOWN);
       }
 
       if (controls.UI_LEFT) holdTmrLeft += elapsed;
       if (controls.UI_LEFT_R)
       {
         holdTmrLeft = 0;
-        spamLeft = false;
+        spamDirections = spamDirections.without(LEFT);
       }
 
       if (controls.UI_RIGHT) holdTmrRight += elapsed;
       if (controls.UI_RIGHT_R)
       {
         holdTmrRight = 0;
-        spamRight = false;
+        spamDirections = spamDirections.without(RIGHT);
       }
 
       var initSpam = 0.5;
 
-      if (holdTmrUp >= initSpam) spamUp = true;
-      if (holdTmrDown >= initSpam) spamDown = true;
-      if (holdTmrLeft >= initSpam) spamLeft = true;
-      if (holdTmrRight >= initSpam) spamRight = true;
+      if (holdTmrUp >= initSpam) spamDirections = spamDirections.with(UP);
+      if (holdTmrDown >= initSpam) spamDirections = spamDirections.with(DOWN);
+      if (holdTmrLeft >= initSpam) spamDirections = spamDirections.with(LEFT);
+      if (holdTmrRight >= initSpam) spamDirections = spamDirections.with(RIGHT);
 
       if (controls.UI_UP_P)
       {
@@ -908,10 +904,7 @@ class CharSelectSubState extends MusicBeatSubState
       if (allowInput && !pressedSelect && (controls.ACCEPT_P || mobileAccept))
       {
         mobileDeny = false;
-        spamUp = false;
-        spamDown = false;
-        spamLeft = false;
-        spamRight = false;
+        spamDirections = NONE;
 
         cursors.confirm();
 
@@ -928,9 +921,11 @@ class CharSelectSubState extends MusicBeatSubState
 
         FlxTween.tween(FlxG.sound.music, {pitch: 0.1}, 1, {ease: FlxEase.quadInOut});
         FlxTween.tween(FlxG.sound.music, {volume: 0.0}, 1.5, {ease: FlxEase.quadInOut});
+
         playerChill.anim.play("select");
         gfChill.anim.play("confirm", true);
         gfChill.anim.curAnim.looped = true;
+
         pressedSelect = true;
         selectTimer.start(1.5, (_) -> {
           goToFreeplay();
@@ -1043,29 +1038,29 @@ class CharSelectSubState extends MusicBeatSubState
 
   function spamOnStep():Void
   {
-    if (spamUp || spamDown || spamLeft || spamRight)
+    if (spamDirections.hasAny(ANY))
     {
       if (selectSound.pitch > 5) selectSound.pitch = 5;
       selectSound.play(true);
 
       cursors.resetDeny();
 
-      if (spamUp)
+      if (spamDirections.has(UP))
       {
         cursorY -= 1;
         holdTmrUp = 0;
       }
-      if (spamDown)
+      if (spamDirections.has(DOWN))
       {
         cursorY += 1;
         holdTmrDown = 0;
       }
-      if (spamLeft)
+      if (spamDirections.has(LEFT))
       {
         cursorX -= 1;
         holdTmrLeft = 0;
       }
-      if (spamRight)
+      if (spamDirections.has(RIGHT))
       {
         cursorX += 1;
         holdTmrRight = 0;
