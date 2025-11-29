@@ -43,6 +43,11 @@ import funkin.util.TouchUtil;
 @:nullSafety
 class CharSelectSubState extends MusicBeatSubState
 {
+  /**
+   * The default index for the cursor.
+   */
+  final DEFAULT_CURSOR_INDEX:Int = 4;
+
   var cursors:CharSelectCursors;
 
   var cursorX:Int = 0;
@@ -235,14 +240,17 @@ class CharSelectSubState extends MusicBeatSubState
       {
         if (charId == rememberedChar)
         {
-          setCursorPosition(pos);
+          setCursorPosition(pos, true);
           break;
         }
       }
       @:bypassAccessor curChar = rememberedChar;
     }
     else
+    {
       setupPlayerChill(Constants.DEFAULT_CHARACTER);
+      setCursorPosition(DEFAULT_CURSOR_INDEX, true);
+    }
 
     var speakers:FunkinSprite = FunkinSprite.createTextureAtlas(cutoutSize - 10, 0, "charSelect/charSelectSpeakers",
       {
@@ -895,7 +903,7 @@ class CharSelectSubState extends MusicBeatSubState
 
         cursors.confirm();
 
-        FlxG.sound.play(Paths.sound('CS_confirm'));
+        FunkinSound.playOnce(Paths.sound('CS_confirm'));
 
         dispatchEvent(new CharacterSelectScriptEvent(CHARACTER_CONFIRMED, curChar));
 
@@ -1124,8 +1132,7 @@ class CharSelectSubState extends MusicBeatSubState
     return gridPosition;
   }
 
-  // Moved this code into a function because is now used twice
-  function setCursorPosition(index:Int)
+  function setCursorPosition(index:Int, instant:Bool = false):Void
   {
     var copy = 3;
     var yThing = -1;
@@ -1141,6 +1148,17 @@ class CharSelectSubState extends MusicBeatSubState
     // Look, I'd write better code but I had better aneurysms, my bad - Cheems
     cursorY = yThing;
     cursorX = xThing;
+
+    if (instant)
+    {
+      cursorLocIntended.x = (cursorFactor * cursorX) + (FlxG.width / 2) - cursors.main.width / 2;
+      cursorLocIntended.y = (cursorFactor * cursorY) + (FlxG.height / 2) - cursors.main.height / 2;
+
+      cursorLocIntended.x += cursorOffsetX;
+      cursorLocIntended.y += cursorOffsetY;
+
+      cursors.snapToLocation(cursorLocIntended);
+    }
   }
 
   function set_curChar(value:String):String
