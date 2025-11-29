@@ -62,16 +62,6 @@ size_t WINAPI_GetProcessMemoryWorkingSetSize()
 	return 0;
 }
 
-size_t WINAPI_GetProcessMemoryWorkingSetSize()
-{
-	PROCESS_MEMORY_COUNTERS_EX pmc;
-
-	if (GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc)))
-		return pmc.WorkingSetSize;
-
-	return 0;
-}
-
 void WINAPI_SetDarkMode(void* handle, bool enable)
 {
   HWND hwnd = (HWND)handle;
