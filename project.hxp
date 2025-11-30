@@ -2119,23 +2119,15 @@ class Project extends HXProject
         {
           Sys.println("- " + libraryName.replace(",", ".") + " (Development Build)".blue().bold());
           Sys.println(("   Path:     " + haxe.io.Path.removeTrailingSlashes(devPath)).blue());
-          Sys.println(("   Current:  " + currentVersion).red());
 
-          if (libType == "haxelib")
-          {
-            Sys.println(("   Expected: " + expectedVersion).green() + (" (This version must match a future haxelib release.)").yellow().bold());
-          }
-          else if (libType == "git")
-          {
-            Sys.println(("   Expected: " + expectedVersion).green() + (" (Update the commit hash in hmm.json when you bump the repository.)").yellow().bold());
-          }
         }
         else
         {
           Sys.println("- " + libraryName.replace(",", "."));
-          Sys.println(("   Current:  " + currentVersion).red());
-          Sys.println(("   Expected: " + expectedVersion).green());
         }
+
+        Sys.println(("   Current:  " + currentVersion).red());
+        Sys.println(("   Expected: " + expectedVersion).green());
       }
 
       Sys.println('');
