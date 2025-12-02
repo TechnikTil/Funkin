@@ -4485,33 +4485,50 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     var highlightedHoldNote:Null<ChartEditorHoldNoteSprite> = null;
 
     // Find the first note that is at the cursor position.
-    if (overlapsGrid) highlightedNote = renderedNotes.members.find(function(note:ChartEditorNoteSprite):Bool {
-      // If note.alive is false, the note is dead and awaiting recycling.
-      return note.alive && FlxG.mouse.overlaps(note);
-    });
+    if (overlapsGrid && FlxG.mouse.overlaps(renderedNotes))
+    {
+      highlightedNote = renderedNotes.members.find(function(note:ChartEditorNoteSprite):Bool {
+        // If note.alive is false, the note is dead and awaiting recycling.
+        return note.alive && FlxG.mouse.overlaps(note);
+      });
+    }
 
     if (highlightedNote == null)
     {
-      overlapsRenderedNotes = false; // Cursor is not overlapping an note
-      if (overlapsGrid) highlightedEvent = renderedEvents.members.find(function(event:ChartEditorEventSprite):Bool {
+      // Cursor is not overlapping an note
+      overlapsRenderedNotes = false;
+    }
+
+    // Find the first event that is at the cursor position.
+    // Skip this if we're already highlighting a note.
+    if (overlapsGrid && !overlapsRenderedNotes && FlxG.mouse.overlaps(renderedEvents))
+    {
+      highlightedEvent = renderedEvents.members.find(function(event:ChartEditorEventSprite):Bool {
         // If event.alive is false, the event is dead and awaiting recycling.
         return event.alive && FlxG.mouse.overlaps(event);
       });
     }
 
-    if (highlightedNote == null && highlightedEvent == null)
+    if (highlightedEvent == null)
     {
-      overlapsRenderedEvents = false; // Cursor is not overlapping an event
+      // Cursor is not overlapping an event
+      overlapsRenderedEvents = false;
+    }
+
+    // Find the first hold note that is at the cursor position.
+    // Skip this if we're already highlighting a note or event.
+    if (overlapsGrid && !(overlapsRenderedNotes || overlapsRenderedEvents) && FlxG.mouse.overlaps(renderedHoldNotes))
+    {
       if (overlapsGrid) highlightedHoldNote = renderedHoldNotes.members.find(function(holdNote:ChartEditorHoldNoteSprite):Bool {
         // If holdNote.alive is false, the holdNote is dead and awaiting recycling.
         return holdNote.alive && FlxG.mouse.overlaps(holdNote);
       });
     }
-    else if (highlightedEvent == null) overlapsRenderedEvents = false;
 
     if (highlightedHoldNote == null)
     {
-      overlapsRenderedHoldNotes = false; // Cursor is overlapping nothing
+      // Cursor is not overlapping a hold note
+      overlapsRenderedHoldNotes = false;
     }
 
     // Cursor position relative to the grid.
@@ -4785,89 +4802,89 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           // We clicked on the grid without moving the mouse.
 
           if (pressingControl())
+          {
+            if (highlightedNote != null && highlightedNote.noteData != null)
             {
-              if (highlightedNote != null && highlightedNote.noteData != null)
+              // Control click to select/deselect an individual note.
+              if (isNoteSelected(highlightedNote.noteData))
               {
-                // Control click to select/deselect an individual note.
-                if (isNoteSelected(highlightedNote.noteData))
-                {
-                  performCommand(new DeselectItemsCommand([highlightedNote.noteData], []));
-                }
-                else
-                {
-                  performCommand(new SelectItemsCommand([highlightedNote.noteData], []));
-                }
-              }
-              else if (highlightedEvent != null && highlightedEvent.eventData != null)
-              {
-                // Control click to select/deselect an individual note.
-                if (isEventSelected(highlightedEvent.eventData))
-                {
-                  performCommand(new DeselectItemsCommand([], [highlightedEvent.eventData]));
-                }
-                else
-                {
-                  performCommand(new SelectItemsCommand([], [highlightedEvent.eventData]));
-                }
-              }
-              else if (highlightedHoldNote != null && highlightedHoldNote.noteData != null)
-              {
-                // Control click to select/deselect an individual note.
-                if (isNoteSelected(highlightedNote.noteData))
-                {
-                  performCommand(new DeselectItemsCommand([highlightedHoldNote.noteData], []));
-                }
-                else
-                {
-                  performCommand(new SelectItemsCommand([highlightedHoldNote.noteData], []));
-                }
+                performCommand(new DeselectItemsCommand([highlightedNote.noteData], []));
               }
               else
               {
-                // Do nothing if you control-clicked on an empty space.
+                performCommand(new SelectItemsCommand([highlightedNote.noteData], []));
+              }
+            }
+            else if (highlightedEvent != null && highlightedEvent.eventData != null)
+            {
+              // Control click to select/deselect an individual note.
+              if (isEventSelected(highlightedEvent.eventData))
+              {
+                performCommand(new DeselectItemsCommand([], [highlightedEvent.eventData]));
+              }
+              else
+              {
+                performCommand(new SelectItemsCommand([], [highlightedEvent.eventData]));
+              }
+            }
+            else if (highlightedHoldNote != null && highlightedHoldNote.noteData != null)
+            {
+              // Control click to select/deselect an individual note.
+              if (isNoteSelected(highlightedNote.noteData))
+              {
+                performCommand(new DeselectItemsCommand([highlightedHoldNote.noteData], []));
+              }
+              else
+              {
+                performCommand(new SelectItemsCommand([highlightedHoldNote.noteData], []));
               }
             }
             else
             {
-              if (highlightedNote != null && highlightedNote.noteData != null)
-              {
-                // Click a note to select it.
-                performCommand(new SetItemSelectionCommand([highlightedNote.noteData], []));
-              }
-              else if (highlightedEvent != null && highlightedEvent.eventData != null)
-              {
-                // Click an event to select it.
-                performCommand(new SetItemSelectionCommand([], [highlightedEvent.eventData]));
-              }
-              else if (highlightedHoldNote != null && highlightedHoldNote.noteData != null)
-              {
-                // Click a hold note to select it.
-                performCommand(new SetItemSelectionCommand([highlightedHoldNote.noteData], []));
-              }
-              else
-              {
-                // Click on an empty space to deselect everything.
-                var shouldDeselect:Bool = !wasCursorOverHaxeUI && (currentNoteSelection.length > 0 || currentEventSelection.length > 0);
-                if (shouldDeselect)
-                {
-                  performCommand(new DeselectAllItemsCommand());
-                }
-              }
+              // Do nothing if you control-clicked on an empty space.
             }
           }
           else
           {
-            // If we clicked and released outside the grid.
-
-            if (!pressingControl())
+            if (highlightedNote != null && highlightedNote.noteData != null)
             {
-              // Deselect all items.
+              // Click a note to select it.
+              performCommand(new SetItemSelectionCommand([highlightedNote.noteData], []));
+            }
+            else if (highlightedEvent != null && highlightedEvent.eventData != null)
+            {
+              // Click an event to select it.
+              performCommand(new SetItemSelectionCommand([], [highlightedEvent.eventData]));
+            }
+            else if (highlightedHoldNote != null && highlightedHoldNote.noteData != null)
+            {
+              // Click a hold note to select it.
+              performCommand(new SetItemSelectionCommand([highlightedHoldNote.noteData], []));
+            }
+            else
+            {
+              // Click on an empty space to deselect everything.
               var shouldDeselect:Bool = !wasCursorOverHaxeUI && (currentNoteSelection.length > 0 || currentEventSelection.length > 0);
               if (shouldDeselect)
               {
                 performCommand(new DeselectAllItemsCommand());
               }
             }
+          }
+        }
+        else
+        {
+          // If we clicked and released outside the grid.
+
+          if (!pressingControl())
+          {
+            // Deselect all items.
+            var shouldDeselect:Bool = !wasCursorOverHaxeUI && (currentNoteSelection.length > 0 || currentEventSelection.length > 0);
+            if (shouldDeselect)
+            {
+              performCommand(new DeselectAllItemsCommand());
+            }
+          }
         }
       }
     }
@@ -5079,82 +5096,82 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
           // We clicked on the grid without moving the mouse.
 
           if (pressingControl())
+          {
+            // Control click to select/deselect an individual note.
+            if (highlightedNote != null && highlightedNote.noteData != null)
             {
-              // Control click to select/deselect an individual note.
-              if (highlightedNote != null && highlightedNote.noteData != null)
+              if (isNoteSelected(highlightedNote.noteData))
               {
-                if (isNoteSelected(highlightedNote.noteData))
-                {
-                  performCommand(new DeselectItemsCommand([highlightedNote.noteData], []));
-                }
-                else
-                {
-                  performCommand(new SelectItemsCommand([highlightedNote.noteData], []));
-                }
-              }
-              else if (highlightedEvent != null && highlightedEvent.eventData != null)
-              {
-                if (isEventSelected(highlightedEvent.eventData))
-                {
-                  performCommand(new DeselectItemsCommand([], [highlightedEvent.eventData]));
-                }
-                else
-                {
-                  performCommand(new SelectItemsCommand([], [highlightedEvent.eventData]));
-                }
-              }
-              else if (highlightedHoldNote != null && highlightedHoldNote.noteData != null)
-              {
-                if (isNoteSelected(highlightedNote.noteData))
-                {
-                  performCommand(new DeselectItemsCommand([highlightedHoldNote.noteData], []));
-                }
-                else
-                {
-                  performCommand(new SelectItemsCommand([highlightedHoldNote.noteData], []));
-                }
+                performCommand(new DeselectItemsCommand([highlightedNote.noteData], []));
               }
               else
               {
-                // Do nothing when control clicking nothing.
+                performCommand(new SelectItemsCommand([highlightedNote.noteData], []));
+              }
+            }
+            else if (highlightedEvent != null && highlightedEvent.eventData != null)
+            {
+              if (isEventSelected(highlightedEvent.eventData))
+              {
+                performCommand(new DeselectItemsCommand([], [highlightedEvent.eventData]));
+              }
+              else
+              {
+                performCommand(new SelectItemsCommand([], [highlightedEvent.eventData]));
+              }
+            }
+            else if (highlightedHoldNote != null && highlightedHoldNote.noteData != null)
+            {
+              if (isNoteSelected(highlightedNote.noteData))
+              {
+                performCommand(new DeselectItemsCommand([highlightedHoldNote.noteData], []));
+              }
+              else
+              {
+                performCommand(new SelectItemsCommand([highlightedHoldNote.noteData], []));
               }
             }
             else
             {
-              if (highlightedNote != null && highlightedNote.noteData != null)
+              // Do nothing when control clicking nothing.
+            }
+          }
+          else
+          {
+            if (highlightedNote != null && highlightedNote.noteData != null)
+            {
+              if (isNoteSelected(highlightedNote.noteData))
               {
-                if (isNoteSelected(highlightedNote.noteData))
-                {
-                  // Clicked a selected event, start dragging.
-                  dragTargetNote = highlightedNote;
-                }
-                else
-                {
-                  // If you click an unselected note, and aren't holding Control, deselect everything else.
-                  performCommand(new SetItemSelectionCommand([highlightedNote.noteData], []));
-                }
-              }
-              else if (highlightedEvent != null && highlightedEvent.eventData != null)
-              {
-                if (isEventSelected(highlightedEvent.eventData))
-                {
-                  // Clicked a selected event, start dragging.
-                  dragTargetEvent = highlightedEvent;
-                }
-                else
-                {
-                  // If you click an unselected event, and aren't holding Control, deselect everything else.
-                  performCommand(new SetItemSelectionCommand([], [highlightedEvent.eventData]));
-                }
-              }
-              else if (highlightedHoldNote != null && highlightedHoldNote.noteData != null)
-              {
-                // Clicked a hold note, start dragging TO EXTEND NOTE LENGTH.
-                currentPlaceNoteData = highlightedHoldNote.noteData;
+                // Clicked a selected event, start dragging.
+                dragTargetNote = highlightedNote;
               }
               else
               {
-                // Click a blank space to place a note and select it.
+                // If you click an unselected note, and aren't holding Control, deselect everything else.
+                performCommand(new SetItemSelectionCommand([highlightedNote.noteData], []));
+              }
+            }
+            else if (highlightedEvent != null && highlightedEvent.eventData != null)
+            {
+              if (isEventSelected(highlightedEvent.eventData))
+              {
+                // Clicked a selected event, start dragging.
+                dragTargetEvent = highlightedEvent;
+              }
+              else
+              {
+                // If you click an unselected event, and aren't holding Control, deselect everything else.
+                performCommand(new SetItemSelectionCommand([], [highlightedEvent.eventData]));
+              }
+            }
+            else if (highlightedHoldNote != null && highlightedHoldNote.noteData != null)
+            {
+              // Clicked a hold note, start dragging TO EXTEND NOTE LENGTH.
+              currentPlaceNoteData = highlightedHoldNote.noteData;
+            }
+            else
+            {
+              // Click a blank space to place a note and select it.
 
               if (cursorGridPos == eventColumn)
               {
