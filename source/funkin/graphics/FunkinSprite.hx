@@ -92,6 +92,17 @@ typedef AtlasSpriteSettings =
    */
   @:optional
   var applyStageMatrix:Bool;
+
+  /**
+   * If enabled, the sprite will render as one texture instead of rendering multiple limbs.
+   * This is useful for stuff like changing alpha, and shaders that require the whole sprite.
+   *
+   * Only enable this if your sprite either:
+   * - Changes alpha to something other than 1.0
+   * - Has a shader or blend mode
+   */
+  @:optional
+  var useRenderTexture:Bool;
 }
 
 /**
@@ -329,7 +340,8 @@ class FunkinSprite extends FlxAnimate
         cacheKey: settings?.cacheKey ?? null,
         uniqueInCache: settings?.uniqueInCache ?? false,
         onSymbolCreate: settings?.onSymbolCreate ?? null,
-        applyStageMatrix: settings?.applyStageMatrix ?? false
+        applyStageMatrix: settings?.applyStageMatrix ?? false,
+        useRenderTexture: settings?.useRenderTexture ?? false
       };
 
     var assetLibrary:String = assetLibrary ?? "";
@@ -351,6 +363,7 @@ class FunkinSprite extends FlxAnimate
     }
 
     this.applyStageMatrix = validatedSettings.applyStageMatrix ?? false;
+    this.useRenderTexture = validatedSettings.useRenderTexture ?? false;
 
     frames = FlxAnimateFrames.fromAnimate(graphicKey, validatedSettings.spritemaps, validatedSettings.metadataJson, validatedSettings.cacheKey,
       validatedSettings.uniqueInCache, {
