@@ -464,7 +464,8 @@ class CharacterDataParser
       swfMode: true,
       cacheOnLoad: false,
       filterQuality: 1,
-      applyStageMatrix: false
+      applyStageMatrix: false,
+      useRenderTexture: false
     };
 
   /**
