@@ -730,6 +730,7 @@ class CharSelectSubState extends MusicBeatSubState
   var holdTmrLeft:Float = 0;
   var holdTmrRight:Float = 0;
   var spamDirections:FlxDirectionFlags = NONE;
+  var initSpam = 0.5;
 
   var mobileDeny:Bool = false;
   var mobileAccept:Bool = false;
@@ -782,41 +783,6 @@ class CharSelectSubState extends MusicBeatSubState
       }
       #end
 
-      if (controls.UI_UP) holdTmrUp += elapsed;
-      if (controls.UI_UP_R)
-      {
-        holdTmrUp = 0;
-        spamDirections = spamDirections.without(UP);
-      }
-
-      if (controls.UI_DOWN) holdTmrDown += elapsed;
-      if (controls.UI_DOWN_R)
-      {
-        holdTmrDown = 0;
-        spamDirections = spamDirections.without(DOWN);
-      }
-
-      if (controls.UI_LEFT) holdTmrLeft += elapsed;
-      if (controls.UI_LEFT_R)
-      {
-        holdTmrLeft = 0;
-        spamDirections = spamDirections.without(LEFT);
-      }
-
-      if (controls.UI_RIGHT) holdTmrRight += elapsed;
-      if (controls.UI_RIGHT_R)
-      {
-        holdTmrRight = 0;
-        spamDirections = spamDirections.without(RIGHT);
-      }
-
-      var initSpam = 0.5;
-
-      if (holdTmrUp >= initSpam) spamDirections = spamDirections.with(UP);
-      if (holdTmrDown >= initSpam) spamDirections = spamDirections.with(DOWN);
-      if (holdTmrLeft >= initSpam) spamDirections = spamDirections.with(LEFT);
-      if (holdTmrRight >= initSpam) spamDirections = spamDirections.with(RIGHT);
-
       if (controls.UI_UP_P)
       {
         cursorY -= 1;
@@ -848,6 +814,39 @@ class CharSelectSubState extends MusicBeatSubState
         holdTmrRight = 0;
         selectSound.play(true);
       }
+
+      if (controls.UI_UP) holdTmrUp += elapsed;
+      if (controls.UI_UP_R || !controls.UI_UP)
+      {
+        holdTmrUp = 0;
+        spamDirections = spamDirections.without(UP);
+      }
+
+      if (controls.UI_DOWN) holdTmrDown += elapsed;
+      if (controls.UI_DOWN_R || !controls.UI_DOWN)
+      {
+        holdTmrDown = 0;
+        spamDirections = spamDirections.without(DOWN);
+      }
+
+      if (controls.UI_LEFT) holdTmrLeft += elapsed;
+      if (controls.UI_LEFT_R || !controls.UI_LEFT)
+      {
+        holdTmrLeft = 0;
+        spamDirections = spamDirections.without(LEFT);
+      }
+
+      if (controls.UI_RIGHT) holdTmrRight += elapsed;
+      if (controls.UI_RIGHT_R || !controls.UI_RIGHT)
+      {
+        holdTmrRight = 0;
+        spamDirections = spamDirections.without(RIGHT);
+      }
+
+      if (holdTmrUp >= initSpam) spamDirections = spamDirections.with(UP);
+      if (holdTmrDown >= initSpam) spamDirections = spamDirections.with(DOWN);
+      if (holdTmrLeft >= initSpam) spamDirections = spamDirections.with(LEFT);
+      if (holdTmrRight >= initSpam) spamDirections = spamDirections.with(RIGHT);
 
       if (controls.BACK_P) goBack();
     }
