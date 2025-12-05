@@ -46,10 +46,8 @@ class ChartEditorThemeHandler
   public static final GRID_MEASURE_DIVIDER_COLOR_DARK:FlxColor = 0xFFC4C4C4;
   static final GRID_MEASURE_DIVIDER_WIDTH:Float = ChartEditorState.GRID_SELECTION_BORDER_WIDTH;
 
-  // Horizontal divider between beats.
-  static final GRID_BEAT_DIVIDER_COLOR_LIGHT:FlxColor = 0xFFC1C1C1;
-  static final GRID_BEAT_DIVIDER_COLOR_DARK:FlxColor = 0xFF848484;
-  static final GRID_BEAT_DIVIDER_WIDTH:Float = ChartEditorState.GRID_SELECTION_BORDER_WIDTH;
+  public static final MEASTURE_TICKS_BACKING_COLOR_LIGHT:FlxColor = 0xFFC1C1C1;
+  public static final MEASTURE_TICKS_BACKING_COLOR_DARK:FlxColor = 0xFF484848;
 
   // Border on the square highlighting selected notes.
   static final SELECTION_SQUARE_BORDER_COLOR_LIGHT:FlxColor = 0xFF339933;
@@ -212,7 +210,7 @@ class ChartEditorThemeHandler
     var ticksWidth:Int = Std.int(ChartEditorState.GRID_SIZE * Conductor.instance.stepsPerMeasure); // 10 minor ticks wide.
     var ticksHeight:Int = Std.int(ChartEditorState.GRID_SIZE); // 1 grid squares tall.
     state.offsetTickBitmap = new BitmapData(ticksWidth, ticksHeight, true);
-    state.offsetTickBitmap.fillRect(new Rectangle(0, 0, ticksWidth, ticksHeight), GRID_BEAT_DIVIDER_COLOR_DARK);
+    state.offsetTickBitmap.fillRect(new Rectangle(0, 0, ticksWidth, ticksHeight), 0xFFC4C4C4);
 
     // Draw the major ticks.
     var leftTickX:Float = 0;

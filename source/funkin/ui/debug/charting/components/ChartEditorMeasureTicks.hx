@@ -93,9 +93,9 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
   {
     var backingColor:FlxColor = switch (chartEditorState.currentTheme)
     {
-      case Light: ChartEditorThemeHandler.GRID_COLOR_1_LIGHT;
-      case Dark: ChartEditorThemeHandler.GRID_COLOR_1_DARK;
-      default: ChartEditorThemeHandler.GRID_COLOR_1_LIGHT;
+      case Light: ChartEditorThemeHandler.MEASTURE_TICKS_BACKING_COLOR_LIGHT;
+      case Dark: ChartEditorThemeHandler.MEASTURE_TICKS_BACKING_COLOR_DARK;
+      default: ChartEditorThemeHandler.MEASTURE_TICKS_BACKING_COLOR_LIGHT;
     };
     var dividerColor:FlxColor = switch (chartEditorState.currentTheme)
     {
