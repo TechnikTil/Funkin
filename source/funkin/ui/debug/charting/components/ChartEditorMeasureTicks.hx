@@ -209,7 +209,7 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
       trace('Placing measure number. $relativeMeasureTimeInPixels -> $targetMeasure');
 
       // Measures are base ZERO gah!
-      final OFFSET = 8;
+      final OFFSET = 2;
       measureNumber.text = '${targetMeasure + 1}';
       measureNumber.y = relativeMeasureTimeInPixels + OFFSET;
       measureNumber.x = this.x;
