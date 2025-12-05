@@ -188,54 +188,54 @@ class ChartEditorAudioHandler
 
     if (state.audioVocalTrackGroup == null) state.audioVocalTrackGroup = new VoicesGroup();
 
-    if (vocalTrack != null)
+    // early return
+    if (vocalTrack == null) return false;
+
+    switch (charType)
     {
-      switch (charType)
-      {
-        case BF:
-          state.audioVocalTrackGroup.addPlayerVoice(vocalTrack);
+      case BF:
+        state.audioVocalTrackGroup.addPlayerVoice(vocalTrack);
 
-          var waveformData:Null<WaveformData> = vocalTrack.waveformData;
+        var waveformData:Null<WaveformData> = vocalTrack.waveformData;
 
-          if (waveformData != null)
-          {
-            var waveformSprite:WaveformSprite = initWaveformSprite(waveformData, state);
-            waveformSprite.x = 840;
-            state.audioWaveforms.add(waveformSprite);
-          }
-          else
-          {
-            trace(' WARNING '.bold().bg_yellow() + ' Failed to parse waveform data for vocal track.');
-          }
+        if (waveformData != null)
+        {
+          var waveformSprite:WaveformSprite = initWaveformSprite(waveformData, state);
+          waveformSprite.x = 840;
+          state.audioWaveforms.add(waveformSprite);
+        }
+        else
+        {
+          trace(' WARNING '.bold().bg_yellow() + ' Failed to parse waveform data for vocal track.');
+        }
 
-          state.audioVocalTrackGroup.playerVoicesOffset = state.currentVocalOffsetPlayer;
-          return true;
-        case DAD:
-          state.audioVocalTrackGroup.addOpponentVoice(vocalTrack);
+        state.audioVocalTrackGroup.playerVoicesOffset = state.currentVocalOffsetPlayer;
+        return true;
+      case DAD:
+        state.audioVocalTrackGroup.addOpponentVoice(vocalTrack);
 
-          var waveformData:Null<WaveformData> = vocalTrack.waveformData;
+        var waveformData:Null<WaveformData> = vocalTrack.waveformData;
 
-          if (waveformData != null)
-          {
-            var waveformSprite:WaveformSprite = initWaveformSprite(waveformData, state);
-            waveformSprite.x = 360;
-            state.audioWaveforms.add(waveformSprite);
-          }
-          else
-          {
-            trace(' WARNING '.bold().bg_yellow() + ' Failed to parse waveform data for vocal track.');
-          }
+        if (waveformData != null)
+        {
+          var waveformSprite:WaveformSprite = initWaveformSprite(waveformData, state);
+          waveformSprite.x = 360;
+          state.audioWaveforms.add(waveformSprite);
+        }
+        else
+        {
+          trace(' WARNING '.bold().bg_yellow() + ' Failed to parse waveform data for vocal track.');
+        }
 
-          state.audioVocalTrackGroup.opponentVoicesOffset = state.currentVocalOffsetOpponent;
+        state.audioVocalTrackGroup.opponentVoicesOffset = state.currentVocalOffsetOpponent;
 
-          return true;
-        case OTHER:
-          state.audioVocalTrackGroup.add(vocalTrack);
-          // TODO: Add offset for other characters.
-          return true;
-        default:
-          // Do nothing.
-      }
+        return true;
+      case OTHER:
+        state.audioVocalTrackGroup.add(vocalTrack);
+        // TODO: Add offset for other characters.
+        return true;
+      default:
+        // Do nothing.
     }
 
     return false;
