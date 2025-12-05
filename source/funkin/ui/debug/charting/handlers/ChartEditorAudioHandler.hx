@@ -199,14 +199,8 @@ class ChartEditorAudioHandler
 
           if (waveformData != null)
           {
-            var duration:Float = Conductor.instance.getStepTimeInMs(16) * 0.001;
-            var waveformSprite:WaveformSprite = new WaveformSprite(waveformData, VERTICAL, FlxColor.WHITE);
+            var waveformSprite:WaveformSprite = initWaveformSprite(waveformData, state);
             waveformSprite.x = 840;
-            waveformSprite.y = Math.max(state.gridTiledSprite?.y ?? 0.0, ChartEditorState.GRID_INITIAL_Y_POS - ChartEditorState.GRID_TOP_PAD);
-            waveformSprite.height = (ChartEditorState.GRID_SIZE) * 16;
-            waveformSprite.width = (ChartEditorState.GRID_SIZE) * 2;
-            waveformSprite.time = 0;
-            waveformSprite.duration = duration;
             state.audioWaveforms.add(waveformSprite);
           }
           else
@@ -223,14 +217,8 @@ class ChartEditorAudioHandler
 
           if (waveformData != null)
           {
-            var duration:Float = Conductor.instance.getStepTimeInMs(16) * 0.001;
-            var waveformSprite:WaveformSprite = new WaveformSprite(waveformData, VERTICAL, FlxColor.WHITE);
+            var waveformSprite:WaveformSprite = initWaveformSprite(waveformData, state);
             waveformSprite.x = 360;
-            waveformSprite.y = Math.max(state.gridTiledSprite?.y ?? 0.0, ChartEditorState.GRID_INITIAL_Y_POS - ChartEditorState.GRID_TOP_PAD);
-            waveformSprite.height = (ChartEditorState.GRID_SIZE) * 16;
-            waveformSprite.width = (ChartEditorState.GRID_SIZE) * 2;
-            waveformSprite.time = 0;
-            waveformSprite.duration = duration;
             state.audioWaveforms.add(waveformSprite);
           }
           else
@@ -251,6 +239,18 @@ class ChartEditorAudioHandler
     }
 
     return false;
+  }
+
+  // initializes a waveform sprite with buncho non-charType specific things
+  static function initWaveformSprite(waveformData:WaveformData, state:ChartEditorState):WaveformSprite
+  {
+    var waveformSprite:WaveformSprite = new WaveformSprite(waveformData, VERTICAL, FlxColor.WHITE);
+    waveformSprite.y = Math.max(state.gridTiledSprite?.y ?? 0.0, ChartEditorState.GRID_INITIAL_Y_POS - ChartEditorState.GRID_TOP_PAD);
+    waveformSprite.height = (ChartEditorState.GRID_SIZE) * 16;
+    waveformSprite.width = (ChartEditorState.GRID_SIZE) * 2;
+    waveformSprite.time = 0;
+    waveformSprite.duration = Conductor.instance.getStepTimeInMs(16) * 0.001;
+    return waveformSprite;
   }
 
   public static function stopExistingVocals(state:ChartEditorState):Void
