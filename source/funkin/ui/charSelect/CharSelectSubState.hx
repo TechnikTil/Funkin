@@ -315,15 +315,12 @@ class CharSelectSubState extends MusicBeatSubState
     charHitbox.scrollFactor.set();
 
     selectSound.loadEmbedded(Paths.sound('CS_select'));
-    selectSound.pitch = 1;
     selectSound.volume = 0.7;
 
     FlxG.sound.defaultSoundGroup.add(selectSound);
     FlxG.sound.list.add(selectSound);
 
     unlockSound.loadEmbedded(Paths.sound('CS_unlock'));
-    unlockSound.pitch = 1;
-
     unlockSound.volume = 0;
     unlockSound.play(true);
 
@@ -331,18 +328,13 @@ class CharSelectSubState extends MusicBeatSubState
     FlxG.sound.list.add(unlockSound);
 
     lockedSound.loadEmbedded(Paths.sound('CS_locked'));
-    lockedSound.pitch = 1;
-
     lockedSound.volume = 1.;
 
     FlxG.sound.defaultSoundGroup.add(lockedSound);
     FlxG.sound.list.add(lockedSound);
 
     staticSound.loadEmbedded(Paths.sound('static loop'));
-    staticSound.pitch = 1;
-
     staticSound.looped = true;
-
     staticSound.volume = 0.6;
 
     FlxG.sound.defaultSoundGroup.add(staticSound);
@@ -423,7 +415,6 @@ class CharSelectSubState extends MusicBeatSubState
 
     introSound = new FunkinSound();
     introSound.loadEmbedded(Paths.sound('CS_Lights'));
-    introSound.pitch = 1;
     introSound.volume = 0;
 
     FlxG.sound.defaultSoundGroup.add(introSound);
@@ -744,9 +735,6 @@ class CharSelectSubState extends MusicBeatSubState
     Conductor.instance.update();
 
     mobileAccept = false;
-
-    if (controls.UI_UP_R || controls.UI_DOWN_R || controls.UI_LEFT_R || controls.UI_RIGHT_R #if FEATURE_TOUCH_CONTROLS || TouchUtil.justReleased #end)
-      selectSound.pitch = 1;
 
     if (allowInput && !pressedSelect)
     {
