@@ -386,12 +386,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       if (isViewDownscroll)
       {
         gridTiledSprite.y = -scrollPositionInPixels + (GRID_INITIAL_Y_POS);
-        measureTicks.y = gridTiledSprite.y;
       }
       else
       {
         gridTiledSprite.y = -scrollPositionInPixels + (GRID_INITIAL_Y_POS);
-        measureTicks.y = gridTiledSprite.y;
 
         for (member in audioWaveforms.members)
         {
@@ -2174,11 +2172,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   var notePreviewViewportBitmap:Null<BitmapData> = null;
 
   /**
-   * The IMAGE used for the measure ticks. Updated by ChartEditorThemeHandler.
-   */
-  var measureTickBitmap:Null<BitmapData> = null;
-
-  /**
    * The IMAGE used for the offset ticks. Updated by ChartEditorThemeHandler.
    */
   var offsetTickBitmap:Null<BitmapData> = null;
@@ -2735,10 +2728,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     measureTicks = new ChartEditorMeasureTicks(this);
     var measureTicksWidth = (GRID_SIZE);
     measureTicks.x = gridTiledSprite.x - measureTicksWidth;
-    measureTicks.y = MENU_BAR_HEIGHT + GRID_TOP_PAD;
     measureTicks.zIndex = 20;
-
     add(measureTicks);
+
+    handleMeasureTickPosition();
   }
 
   function buildNotePreview():Void
@@ -6431,6 +6424,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     if (gridTiledSprite != null)
     {
       gridTiledSprite.height = songLengthInPixels;
+      measureTicks.setHeight(gridTiledSprite.height);
     }
 
     // Remove any notes past the end of the song.
@@ -6786,32 +6780,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   /**
    * Updates the measure tick bitmap forcibly to make sure it's correct.
    */
-  function updateTimeSignature():Void
-  {
-    this.updateMeasureTicks(true);
-    gridTiledSprite.loadGraphic(gridBitmap);
-  }
+  function updateTimeSignature():Void {}
 
   /**
    * Handle positioning the measure ticks sprite.
    */
   function handleMeasureTickPosition():Void
   {
-    this.updateMeasureTicks();
-    var currentMeasureTime = Conductor.instance.getMeasureTimeInMs(Math.floor(Conductor.instance.getTimeInMeasures(scrollPositionInMs)));
-    var currentMeasurePos = currentMeasureTime < 0 ? 0 : Conductor.instance.getTimeInSteps(currentMeasureTime) * GRID_SIZE;
-    measureTicks.y = gridTiledSprite?.y + currentMeasurePos;
-    // Make sure the measure tick bitmap does not past the grid itself.
-    var totalMeasureTicksHeight:Float = currentMeasurePos + measureTickBitmap.height;
-    if (totalMeasureTicksHeight >= songLengthInPixels)
-    {
-      var spillOver:Float = totalMeasureTicksHeight - songLengthInPixels;
-      measureTicks.setClipRect(new FlxRect(0, 0, measureTickBitmap.width, measureTickBitmap.height - spillOver));
-    }
-    else
-    {
-      measureTicks.setClipRect(null);
-    }
+    // var currentMeasureTime = Conductor.instance.getMeasureTimeInMs(Math.floor(Conductor.instance.getTimeInMeasures(scrollPositionInMs)));
+    // var currentMeasurePos = currentMeasureTime < 0 ? 0 : Conductor.instance.getTimeInSteps(currentMeasureTime) * GRID_SIZE;
+    measureTicks.y = gridTiledSprite?.y;
   }
 
   /**
