@@ -84,6 +84,7 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
       return;
     }
     var changedInst:Bool = false;
+    @:privateAccess
     if (!busy)
     {
       if (parent.controls.BACK_P #if mobile || TouchUtil.pressAction(parent.backButton) #end)
