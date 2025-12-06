@@ -2673,11 +2673,6 @@ class FreeplayState extends MusicBeatSubState
     capsuleOnConfirmDefault(cap);
   }
 
-  public function getControls():Controls
-  {
-    return controls;
-  }
-
   function openInstrumentalList(cap:SongMenuItem, instrumentalIds:Array<String>):Void
   {
     uiStateMachine.transition(Interacting);
