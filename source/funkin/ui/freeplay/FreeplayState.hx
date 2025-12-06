@@ -157,7 +157,7 @@ class FreeplayState extends MusicBeatSubState
    */
   var currentVariation:String = Constants.DEFAULT_VARIATION;
 
-  public var fpScoreDisplay:FreeplayScore;
+  var fpScoreDisplay:FreeplayScore;
 
   var txtCompletion:AtlasText;
   var lerpCompletion:Float = 0;
