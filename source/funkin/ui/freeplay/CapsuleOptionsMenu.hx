@@ -121,7 +121,7 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
     if (leftArrow.moveShitDownTimer != null) leftArrow.moveShitDownTimer.cancel();
     if (rightArrow.moveShitDownTimer != null) rightArrow.moveShitDownTimer.cancel();
     capsuleMenuBG.animation.onFinish.add(function(_) {
-      parent.cleanupCapsuleOptionsMenu();
+      parent.cleanupInstSelectMenu();
       queueDestroy = true;
     });
   }
