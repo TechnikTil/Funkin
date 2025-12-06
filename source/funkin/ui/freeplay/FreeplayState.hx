@@ -141,7 +141,7 @@ class FreeplayState extends MusicBeatSubState
    */
   public static final FADE_IN_DELAY:Float = 0.25;
 
-  var uiStateMachine:UIStateMachine = new UIStateMachine();
+  public var uiStateMachine:UIStateMachine = new UIStateMachine();
 
   var songs:Array<Null<FreeplaySongData>> = [];
 
@@ -1842,8 +1842,6 @@ class FreeplayState extends MusicBeatSubState
       var targetSongID = currentCapsule?.freeplayData?.data.id ?? 'unknown';
       if (targetSongID == 'unknown')
       {
-        letterSort.inputEnabled = false;
-
         var availableSongCapsules:Array<SongMenuItem> = grpCapsules.members.filter(function(cap:SongMenuItem) {
           // Dead capsules are ones which were removed from the list when changing filters.
           return cap.alive && cap.freeplayData != null;
@@ -1857,7 +1855,6 @@ class FreeplayState extends MusicBeatSubState
         {
           trace('No songs available!');
           uiStateMachine.transition(Idle);
-          letterSort.inputEnabled = true;
           FunkinSound.playOnce(Paths.sound('cancelMenu'));
           return;
         }
@@ -1894,7 +1891,6 @@ class FreeplayState extends MusicBeatSubState
       if (targetSongID == 'unknown')
       {
         trace('CHART RANDOM SONG');
-        letterSort.inputEnabled = false;
 
         var availableSongCapsules:Array<SongMenuItem> = grpCapsules.members.filter(function(cap:SongMenuItem) {
           // Dead capsules are ones which were removed from the list when changing filters.
@@ -1909,7 +1905,6 @@ class FreeplayState extends MusicBeatSubState
         {
           trace('No songs available!');
           uiStateMachine.transition(Idle);
-          letterSort.inputEnabled = true;
           FunkinSound.playOnce(Paths.sound('cancelMenu'));
           return;
         }
@@ -1927,18 +1922,14 @@ class FreeplayState extends MusicBeatSubState
       {
         FlxG.log.warn('WARN: could not find song with id (${targetSongID})');
         uiStateMachine.transition(Idle);
-        letterSort.inputEnabled = true;
         return;
       }
       var targetSong:Song = targetSongNullable;
-      var targetVariation:Null<String> = currentVariation;
-
       var targetDifficulty:Null<SongDifficulty> = targetSong.getDifficulty(currentDifficulty, currentVariation);
       if (targetDifficulty == null)
       {
         FlxG.log.warn('WARN: could not find difficulty with id (${currentDifficulty})');
         uiStateMachine.transition(Idle);
-        letterSort.inputEnabled = true;
         return;
       }
 
@@ -2554,18 +2545,11 @@ class FreeplayState extends MusicBeatSubState
       trace('No songs available!');
       uiStateMachine.transition(Idle);
 
-      #if NO_FEATURE_TOUCH_CONTROLS
-      letterSort.inputEnabled = true;
-      #end
       FunkinSound.playOnce(Paths.sound('cancelMenu'));
       return;
     }
 
     uiStateMachine.transition(Exiting);
-
-    #if NO_FEATURE_TOUCH_CONTROLS
-    letterSort.inputEnabled = false;
-    #end
     var instrumentalChoices:Array<String> = ['default', 'random'];
 
     #if !mobile
@@ -2588,9 +2572,6 @@ class FreeplayState extends MusicBeatSubState
   function capsuleOnConfirmRandom(availableSongCapsules:Array<SongMenuItem>, instChoice:String):Void
   {
     cleanupCapsuleOptionsMenu();
-    #if NO_FEATURE_TOUCH_CONTROLS
-    letterSort.inputEnabled = false;
-    #end
 
     var targetSongCap:SongMenuItem = FlxG.random.getObject(availableSongCapsules);
     // Seeing if I can do an animation...
@@ -2603,11 +2584,9 @@ class FreeplayState extends MusicBeatSubState
     {
       FlxG.log.warn('WARN: could not find song with id (${targetSongId})');
       uiStateMachine.transition(Idle);
-      #if NO_FEATURE_TOUCH_CONTROLS
-      letterSort.inputEnabled = true;
-      #end
       return;
     }
+
     var targetSong:Song = targetSongNullable;
     var targetDifficultyId:String = currentDifficulty;
     var targetVariation:Null<String> = currentVariation;
@@ -2617,9 +2596,7 @@ class FreeplayState extends MusicBeatSubState
     {
       FlxG.log.warn('WARN: could not find difficulty with id (${targetDifficultyId})');
       uiStateMachine.transition(Idle);
-      #if NO_FEATURE_TOUCH_CONTROLS
-      letterSort.inputEnabled = true;
-      #end
+
       return;
     }
 
@@ -2647,7 +2624,6 @@ class FreeplayState extends MusicBeatSubState
    */
   function capsuleOnOpenDefault(cap:SongMenuItem):Void
   {
-    letterSort.inputEnabled = false;
     var targetDifficultyId:String = currentDifficulty;
     var targetVariation:Null<String> = currentVariation;
     var targetSongId:String = cap?.freeplayData?.data.id ?? 'unknown';
@@ -2656,7 +2632,6 @@ class FreeplayState extends MusicBeatSubState
     {
       FlxG.log.warn('WARN: could not find song with id (${targetSongId})');
       uiStateMachine.transition(Idle);
-      letterSort.inputEnabled = true;
       return;
     }
     var targetSong:Song = targetSongNullable;
@@ -2669,7 +2644,6 @@ class FreeplayState extends MusicBeatSubState
     {
       FlxG.log.warn('WARN: could not find difficulty with id (${targetDifficultyId})');
       uiStateMachine.transition(Idle);
-      letterSort.inputEnabled = true;
       return;
     }
 
@@ -2723,7 +2697,6 @@ class FreeplayState extends MusicBeatSubState
   public function cleanupCapsuleOptionsMenu():Void
   {
     uiStateMachine.transition(Idle);
-    letterSort.inputEnabled = true;
 
     if (capsuleOptionsMenu != null)
     {
@@ -2738,9 +2711,6 @@ class FreeplayState extends MusicBeatSubState
   function capsuleOnConfirmDefault(cap:SongMenuItem, ?targetInstId:String):Void
   {
     uiStateMachine.transition(Exiting);
-    #if NO_FEATURE_TOUCH_CONTROLS
-    letterSort.inputEnabled = false;
-    #end
 
     dispatchEvent(new CapsuleScriptEvent(SONG_SELECTED, currentCapsule, currentDifficulty, currentVariation));
 
@@ -2753,11 +2723,9 @@ class FreeplayState extends MusicBeatSubState
     {
       FlxG.log.warn('WARN: could not find song with id (${targetSongId})');
       uiStateMachine.transition(Idle);
-      letterSort.inputEnabled = true;
       return;
     }
     var targetSong:Song = targetSongNullable;
-    var targetDifficultyId:String = currentDifficulty;
     var targetLevelId:Null<String> = cap?.freeplayData?.levelId;
 
     trace('target song: ${targetSongId} (${targetVariation})');
@@ -2769,7 +2737,6 @@ class FreeplayState extends MusicBeatSubState
     {
       FlxG.log.warn('WARN: could not find difficulty with id (${currentDifficulty})');
       uiStateMachine.transition(Idle);
-      letterSort.inputEnabled = true;
       return;
     }
 
