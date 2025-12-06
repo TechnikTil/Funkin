@@ -2553,12 +2553,12 @@ class FreeplayState extends MusicBeatSubState
     var instrumentalChoices:Array<String> = ['default', 'random'];
 
     #if !mobile
-    capsuleOptionsMenu = new CapsuleOptionsMenu(this, randomCapsule.targetPos.x + 175, randomCapsule.targetPos.y + 115, instrumentalChoices);
-    capsuleOptionsMenu.cameras = [funnyCam];
-    capsuleOptionsMenu.zIndex = 10000;
-    add(capsuleOptionsMenu);
+    instSelectMenu = new CapsuleOptionsMenu(this, randomCapsule.targetPos.x + 175, randomCapsule.targetPos.y + 115, instrumentalChoices);
+    instSelectMenu.cameras = [funnyCam];
+    instSelectMenu.zIndex = 10000;
+    add(instSelectMenu);
 
-    capsuleOptionsMenu.onConfirm = function(instChoice:String) {
+    instSelectMenu.onConfirm = function(instChoice:String) {
       capsuleOnConfirmRandom(availableSongCapsules, instChoice);
     }
     #else
@@ -2571,7 +2571,7 @@ class FreeplayState extends MusicBeatSubState
    */
   function capsuleOnConfirmRandom(availableSongCapsules:Array<SongMenuItem>, instChoice:String):Void
   {
-    cleanupCapsuleOptionsMenu();
+    cleanupInstSelectMenu();
 
     var targetSongCap:SongMenuItem = FlxG.random.getObject(availableSongCapsules);
     // Seeing if I can do an animation...
@@ -2677,26 +2677,26 @@ class FreeplayState extends MusicBeatSubState
   {
     uiStateMachine.transition(Interacting);
 
-    capsuleOptionsMenu = new CapsuleOptionsMenu(this, cap.targetPos.x + 175, cap.targetPos.y + 115, instrumentalIds);
-    capsuleOptionsMenu.cameras = [funnyCam];
-    capsuleOptionsMenu.zIndex = 10000;
-    add(capsuleOptionsMenu);
+    instSelectMenu = new CapsuleOptionsMenu(this, cap.targetPos.x + 175, cap.targetPos.y + 115, instrumentalIds);
+    instSelectMenu.cameras = [funnyCam];
+    instSelectMenu.zIndex = 10000;
+    add(instSelectMenu);
 
-    capsuleOptionsMenu.onConfirm = function(targetInstId:String) {
+    instSelectMenu.onConfirm = function(targetInstId:String) {
       capsuleOnConfirmDefault(cap, targetInstId);
     };
   }
 
-  var capsuleOptionsMenu:Null<CapsuleOptionsMenu> = null;
+  var instSelectMenu:Null<CapsuleOptionsMenu> = null;
 
-  public function cleanupCapsuleOptionsMenu():Void
+  public function cleanupInstSelectMenu():Void
   {
     uiStateMachine.transition(Idle);
 
-    if (capsuleOptionsMenu != null)
+    if (instSelectMenu != null)
     {
-      remove(capsuleOptionsMenu);
-      capsuleOptionsMenu = null;
+      remove(instSelectMenu);
+      instSelectMenu = null;
     }
   }
 
