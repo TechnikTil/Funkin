@@ -40,8 +40,10 @@ import funkin.play.components.HealthIcon;
 import funkin.play.components.PopUpStuff;
 import funkin.play.components.Subtitles;
 import funkin.play.cutscene.dialogue.Conversation;
-import funkin.play.cutscene.VanillaCutscenes;
+import funkin.play.cutscene.Cutscene;
+import funkin.play.cutscene.ScriptedCutscene;
 import funkin.play.cutscene.VideoCutscene;
+import funkin.play.cutscene.WinterHorrorlandCutscene;
 import funkin.play.notes.NoteDirection;
 import funkin.play.notes.notekind.NoteKindManager;
 import funkin.play.notes.notekind.NoteKind;
@@ -675,6 +677,16 @@ class PlayState extends MusicBeatSubState
   }
 
   /**
+   * Cutscenes for the start of the song.
+   */
+  public var startCutscenes:Array<Cutscene> = [];
+
+  /**
+   * Cutscenes for the end of the song.
+   */
+  public var endCutscenes:Array<Cutscene> = [];
+
+  /**
    * The threshold for resyncing the song.
    * If the vocals deviate from the instrumental by more than this amount, then `resyncVocals()` will be called.
    */
@@ -902,18 +914,27 @@ class PlayState extends MusicBeatSubState
     startingSong = true;
 
     // TODO: We hardcoded the transition into Winter Horrorland. Do this with a ScriptedSong instead.
+    /*if ((currentSong.id ?? '').toLowerCase() == 'winter-horrorland')
+      {
+        // VanillaCutscenes will call startCountdown later.
+        VanillaCutscenes.playHorrorStartCutscene();
+      }
+      else
+      {
+        // Call a script event to start the countdown.
+        // Songs with cutscenes should call event.cancel().
+        // As long as they call `PlayState.instance.startCountdown()` later, the countdown will start.
+        startCountdown();
+    }*/
+
+    startCutscenes = [ScriptedCutscene.init("TestCutscene", null)];
+
     if ((currentSong.id ?? '').toLowerCase() == 'winter-horrorland')
     {
-      // VanillaCutscenes will call startCountdown later.
-      VanillaCutscenes.playHorrorStartCutscene();
+      startCutscenes = [new WinterHorrorlandCutscene()];
     }
-    else
-    {
-      // Call a script event to start the countdown.
-      // Songs with cutscenes should call event.cancel().
-      // As long as they call `PlayState.instance.startCountdown()` later, the countdown will start.
-      startCountdown();
-    }
+
+    handleCutscenes(startCutscenes);
 
     // Create the pause button.
     #if mobile
@@ -2479,6 +2500,38 @@ class PlayState extends MusicBeatSubState
 
     // TODO: Maybe tween in the camera after any cutscenes.
     camHUD.visible = true;
+  }
+
+  public function handleCutscenes(cutscenes:Array<Cutscene>):Void
+  {
+    var cutscene:Null<Cutscene> = cutscenes.shift();
+    if (cutscene != null)
+    {
+      cutscene.onFinish.add(() -> {
+        handleCutscenes(cutscenes);
+      });
+      startCutscene(cutscene);
+    }
+    else
+    {
+      startCountdown();
+    }
+  }
+
+  public function startCutscene(cutscene:Cutscene):Void
+  {
+    isInCutscene = true;
+
+    cutscene.onFinish.add(() -> {
+      remove(cutscene);
+    });
+
+    cutscene.cameras = [camCutscene];
+    cutscene.zIndex = 1000;
+    add(cutscene);
+    refresh();
+
+    cutscene.startCutscene();
   }
 
   /**

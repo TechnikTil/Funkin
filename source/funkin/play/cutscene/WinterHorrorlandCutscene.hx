@@ -5,36 +5,27 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import funkin.audio.FunkinSound;
-import flixel.util.FlxTimer;
 import funkin.util.HapticUtil;
 
-/**
- * Static methods for playing cutscenes in the PlayState.
- * TODO: Un-hardcode this shit!!!!!1!
- */
-class VanillaCutscenes
+class WinterHorrorlandCutscene extends Cutscene
 {
-  static var blackScreen:FlxSprite;
-
   static final TWEEN_DURATION:Float = 2.0;
 
-  /**
-   * Plays the cutscene that appears at the start of Winter Horrorland.
-   * TODO: Move this to `winter-horrorland.hxc`
-   */
-  public static function playHorrorStartCutscene():Void
+  public function new()
   {
-    PlayState.instance.isInCutscene = true;
+    super(true);
+  }
+
+  override public function onCreate(event):Void
+  {
     PlayState.instance.camHUD.visible = false;
 
-    blackScreen = new FlxSprite(-200, -200).makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
-    blackScreen.scrollFactor.set(0, 0);
-    blackScreen.zIndex = 1000000;
-    PlayState.instance.add(blackScreen);
+    var blackScreen:FlxSprite = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+    this.add(blackScreen);
 
-    new FlxTimer().start(0.1, function(_) {
+    this.addTimer(0.1, function() {
       trace('Playing horrorland cutscene...');
-      PlayState.instance.remove(blackScreen);
+      this.remove(blackScreen);
 
       // Force set the camera position and zoom.
       PlayState.instance.cameraFollowPoint.setPosition(400, -2050);
@@ -53,7 +44,7 @@ class VanillaCutscenes
         // Start the countdown.
         trace('Zoom out done...');
         trace('Begin countdown (ends cutscene)');
-        PlayState.instance.startCountdown();
+        this.finish();
       });
     });
   }
