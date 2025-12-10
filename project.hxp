@@ -178,6 +178,17 @@ class Project extends HXProject
   ];
 
   //
+  // ASSET EMBEDDING
+  //
+
+  /**
+   * The songs whose audio files should be embedded inside the executable.
+   */
+  static final EMBED_SONGS_AUDIO:Array<String> = [
+    "spaghetti"
+  ];
+
+  //
   // BUILD FLAGS
   // Inverse build flags are automatically populated.
   //
@@ -1438,8 +1449,16 @@ class Project extends HXProject
     // Shared asset libraries
     addAssetLibrary("songs", shouldEmbed, shouldPreload);
     addAssetPath("assets/songs", "assets/songs", "songs", ["*"], exclude, shouldEmbed, "assets");
+
+    for (song in EMBED_SONGS_AUDIO)
+    {
+      removeAssetPath('assets/songs/$song');
+      addAssetPath('assets/songs/$song', 'assets/songs/$song', "songs", ["*"], exclude, true, "assets");
+    }
+
     addAssetLibrary("shared", shouldEmbed, shouldPreload);
     addAssetPath("assets/shared", "assets/shared", "shared", ["*"], exclude, shouldEmbed, "assets");
+
     if (FEATURE_VIDEO_PLAYBACK.isEnabled(this))
     {
       var shouldEmbedVideos = false;
