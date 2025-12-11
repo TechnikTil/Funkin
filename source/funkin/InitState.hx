@@ -99,27 +99,6 @@ class InitState extends FlxState
       funkin.util.WindowUtil.initTracy();
       #end
 
-      #if FEATURE_NEWGROUNDS
-      // Setup WebView
-      extension.webviewcore.WebView.onPageStarted.add(function(url:String):Void {
-        trace('Page started loading: $url');
-      });
-
-      extension.webviewcore.WebView.onPageFinished.add(function(url:String):Void {
-        trace('Page finished loading: $url');
-      });
-
-      extension.webviewcore.WebView.onUrlLoading.add(function(url:String):Void {
-        trace('Loading URL: $url');
-      });
-
-      extension.webviewcore.WebView.onProgressChanged.add(function(progress:Int):Void {
-        trace('Loading progress: $progress%');
-      });
-
-      extension.webviewcore.WebView.init();
-      #end
-
       #if FEATURE_HAPTICS
       // Setup Haptic feedback
       extension.haptics.Haptic.initialize();
