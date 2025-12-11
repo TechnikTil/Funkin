@@ -29,6 +29,13 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
   var leftArrow:InstrumentalSelector;
   var rightArrow:InstrumentalSelector;
 
+  public function setBusy(b:Bool):Void
+  {
+    busy = b;
+    leftArrow.busy = b;
+    rightArrow.busy = b;
+  }
+
   public function new(parent:FreeplayState, x:Float = 0, y:Float = 0, instIds:Array<String>):Void
   {
     super(x, y);
@@ -77,11 +84,11 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
       return;
     }
     var changedInst:Bool = false;
-    @:privateAccess
     if (!busy)
     {
       if (parent.controls.BACK_P #if mobile || TouchUtil.pressAction(parent.backButton) #end)
       {
+        setBusy(true);
         close();
         return;
       }
@@ -100,7 +107,7 @@ class CapsuleOptionsMenu extends FlxSpriteGroup
         || ((TouchUtil.pressAction(currentInstrumental))
           && !(TouchUtil.overlapsComplex(leftArrow) || TouchUtil.overlapsComplex(rightArrow))) #end)
       {
-        busy = true;
+        setBusy(true);
         onConfirm(instrumentalIds[currentInstrumentalIndex] ?? '');
       }
     }
@@ -146,6 +153,8 @@ class InstrumentalSelector extends FunkinSprite
 
   var parent:FreeplayState;
 
+  public var busy:Bool = false;
+
   var baseScale:Float = 0.6;
 
   public var moveShitDownTimer:Null<FlxTimer> = null;
@@ -173,10 +182,11 @@ class InstrumentalSelector extends FunkinSprite
 
   override function update(elapsed:Float):Void
   {
+    super.update(elapsed);
+
+    if (busy) return;
     if (flipX && controls.UI_RIGHT_P) moveShitDown();
     if (!flipX && controls.UI_LEFT_P) moveShitDown();
-
-    super.update(elapsed);
   }
 
   function moveShitDown():Void
