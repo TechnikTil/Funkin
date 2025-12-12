@@ -1201,15 +1201,7 @@ class PlayState extends MusicBeatSubState
     #if mobile
     if (justUnpaused)
     {
-      // pauseButton.alpha = 1;
-      // pauseCircle.alpha = 0.1;
-
-      FlxTween.cancelTweensOf(pauseButton);
-      FlxTween.cancelTweensOf(pauseCircle);
-
-      FlxTween.tween(pauseButton, {alpha: 1}, 0.25, {ease: FlxEase.quartOut});
-      FlxTween.tween(pauseCircle, {alpha: 0.1}, 0.25, {ease: FlxEase.quartOut});
-
+      tweenPauseButtonIn();
       if (!startingSong && hitbox != null) hitbox.visible = true;
     }
     #end
@@ -2304,6 +2296,19 @@ class PlayState extends MusicBeatSubState
     hitbox?.forEachAlive(function(hint:FunkinHint) {
       hint.deadZones.push(pauseButton);
     });
+
+    VideoCutscene.onVideoEnded.add(tweenPauseButtonIn);
+    VideoCutscene.onVideoResumed.add(tweenPauseButtonIn);
+    VideoCutscene.onVideoRestarted.add(tweenPauseButtonIn);
+  }
+
+  function tweenPauseButtonIn():Void
+  {
+    FlxTween.cancelTweensOf(pauseButton);
+    FlxTween.cancelTweensOf(pauseCircle);
+
+    FlxTween.tween(pauseButton, {alpha: 1}, 0.25, {ease: FlxEase.quartOut});
+    FlxTween.tween(pauseCircle, {alpha: 0.1}, 0.25, {ease: FlxEase.quartOut});
   }
   #end
 
