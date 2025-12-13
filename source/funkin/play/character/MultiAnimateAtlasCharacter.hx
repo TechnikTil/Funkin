@@ -6,7 +6,6 @@ import animate.FlxAnimateFrames;
 import funkin.modding.events.ScriptEvent;
 import funkin.data.animation.AnimationData;
 import funkin.data.character.CharacterData.CharacterRenderType;
-import flixel.math.FlxPoint;
 
 /**
  * This render type is the most complex, and is used by characters which use
@@ -18,8 +17,6 @@ import flixel.math.FlxPoint;
  */
 class MultiAnimateAtlasCharacter extends BaseCharacter
 {
-  var originalSizes(default, never):FlxPoint = new FlxPoint(0, 0);
-
   public function new(id:String)
   {
     super(id, CharacterRenderType.MultiAnimateAtlas);
@@ -45,8 +42,6 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
 
     trace('[MULTIATLASCHAR] Successfully loaded texture atlases for ${characterId} with ${_data.animations.length} animations.');
     super.onCreate(event);
-
-    originalSizes.set(this.width, this.height);
   }
 
   function loadAtlases():Void
@@ -115,16 +110,6 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
 
     var animNames = this.anim.getNameList();
     trace('[MULTIATLASCHAR] Successfully loaded ${animNames.length} animations for ${characterId}');
-  }
-
-  override function get_width():Float
-  {
-    return originalSizes.x;
-  }
-
-  override function get_height():Float
-  {
-    return originalSizes.y;
   }
 
   /**
