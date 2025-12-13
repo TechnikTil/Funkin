@@ -206,8 +206,6 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
       final REVIVE:Bool = true;
       var measureNumber = measureNumbers.recycle(makeMeasureNumber, false, REVIVE);
 
-      trace('Placing measure number. $relativeMeasureTimeInPixels -> $targetMeasure');
-
       // Measures are base ZERO gah!
       final OFFSET = 2;
       measureNumber.text = '${targetMeasure + 1}';
