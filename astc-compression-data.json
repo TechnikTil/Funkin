@@ -96,6 +96,14 @@
     {
       "asset": "assets/week1/images/erect/server.png",
       "blocksize": "8x8"
+    },
+    {
+      "asset": "assets/week7/images/erect/rando/spritemap1.png",
+      "blocksize": "6x6"
+    },
+    {
+      "asset": "assets/week7/images/erect/sniper/spritemap1.png",
+      "blocksize": "6x6"
     }
   ],
   "excludes": [
