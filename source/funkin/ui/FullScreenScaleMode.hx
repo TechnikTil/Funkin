@@ -118,7 +118,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
 
     instance = this;
 
-    // Required so we can check on which axies is the game wide.
+    // Required so we can check on which axis the game is wide on.
     if (FlxG.stage != null) updateGameSize(FlxG.stage.stageWidth, FlxG.stage.stageHeight);
 
     enabled = enable;
@@ -131,7 +131,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
    */
   override public function onMeasure(Width:Int, Height:Int):Void
   {
-    if (mustAwait)
+    if (mustAwait && enabled)
     {
       onMeasureAwait(Width, Height);
     }
@@ -359,7 +359,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
       case FlxHorizontalAlign.LEFT:
         0;
       case FlxHorizontalAlign.CENTER:
-        Math.ceil(finishingAwait ? (deviceSize.x - gameSize.x) : (deviceSize.x - (gameSize.x * scale.x)) * 0.5);
+        Math.ceil((finishingAwait && enabled) ? (deviceSize.x - gameSize.x) : (deviceSize.x - (gameSize.x #if desktop * scale.x #end)) * 0.5);
       case FlxHorizontalAlign.RIGHT:
         deviceSize.x - gameSize.x;
     }
@@ -372,7 +372,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
       case FlxVerticalAlign.TOP:
         0;
       case FlxVerticalAlign.CENTER:
-        Math.ceil(finishingAwait ? (deviceSize.y - gameSize.y) : (deviceSize.y - (gameSize.y * scale.y)) * 0.5);
+        Math.ceil((finishingAwait && enabled) ? (deviceSize.y - gameSize.y) : (deviceSize.y - (gameSize.y #if desktop * scale.y #end)) * 0.5);
       case FlxVerticalAlign.BOTTOM:
         deviceSize.y - gameSize.y;
     }
