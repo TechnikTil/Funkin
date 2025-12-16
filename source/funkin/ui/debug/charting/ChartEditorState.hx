@@ -3647,7 +3647,20 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // Stop the song upon tabbing out.
     if (Preferences.autoPause)
     {
-      stopAudioPlayback();
+      stopAudioPlayback(false);
+    }
+  }
+
+  /**
+   * Function called when the game window regains focus.
+   */
+  public override function onFocus():Void
+  {
+    super.onFocus();
+
+    if (!isPlaytesting)
+    {
+      fadeInWelcomeMusic(WELCOME_MUSIC_FADE_IN_DELAY, WELCOME_MUSIC_FADE_IN_DURATION);
     }
   }
 
@@ -3659,9 +3672,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     // dispatchEvent gets called here.
     if (!super.beatHit()) return false;
 
-    if (metronomeVolume > 0.0
-      && this.subState == null
-      && ((audioInstTrack != null && audioInstTrack.isPlaying) || audioVocalTrackGroup.playing))
+    if (metronomeVolume > 0.0 && !isPlaytesting && ((audioInstTrack != null && audioInstTrack.isPlaying) || audioVocalTrackGroup.playing))
     {
       var currentMeasureTime:Float = Conductor.instance.getMeasureTimeInMs(Conductor.instance.currentMeasure);
       var currentStepTime:Float = Conductor.instance.getStepTimeInMs(Conductor.instance.currentStep);
@@ -3671,7 +3682,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // Show the mouse cursor.
     // Just throwing this somewhere convenient and infrequently called because sometimes Flixel's debug thing hides the cursor.
-    if (this.subState == null) Cursor.show();
+    if (!isPlaytesting) Cursor.show();
 
     return true;
   }
