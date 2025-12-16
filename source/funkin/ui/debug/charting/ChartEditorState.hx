@@ -615,6 +615,16 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
    */
   var playtestSongScripts:Bool = true;
 
+  /**
+   * Whether we are CURRENTLY playtesting a chart.
+   */
+  var isPlaytesting(get, never):Bool;
+
+  function get_isPlaytesting():Bool
+  {
+    return this.subState != null && Std.isOfType(this.subState, PlayState);
+  }
+
   // Visuals
 
   /**
@@ -989,7 +999,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
   function set_notePreviewDirty(value:Bool):Bool
   {
-    // trace('Note preview dirtied!');
     return notePreviewDirty = value;
   }
 
@@ -2363,7 +2372,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   public override function reloadAssets()
   {
     // If PlayState isn't open, do a regular reload.
-    if (!Std.isOfType(this.subState, PlayState))
+    if (!isPlaytesting)
     {
       super.reloadAssets();
       return;
@@ -2988,14 +2997,14 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     // Setup character dropdowns.
     FlxMouseEvent.add(healthIconDad, function(_) {
-      if (!isCursorOverHaxeUI && this.subState == null)
+      if (!isCursorOverHaxeUI && !isPlaytesting)
       {
         this.openCharacterDropdown(CharacterType.DAD, true);
       }
     });
 
     FlxMouseEvent.add(healthIconBF, function(_) {
-      if (!isCursorOverHaxeUI && this.subState == null)
+      if (!isCursorOverHaxeUI && !isPlaytesting)
       {
         this.openCharacterDropdown(CharacterType.BF, true);
       }
