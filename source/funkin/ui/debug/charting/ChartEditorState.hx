@@ -2622,20 +2622,33 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     if (welcomeMusic.isPlaying) return;
 
+    if (!welcomeMusic.exists) setupWelcomeMusic();
+
     if (bgMusicTimer != null) bgMusicTimer.cancel();
     bgMusicTimer = new FlxTimer().start(extraWait, (_) -> {
       if (shouldPlayWelcomeMusic)
       {
+        trace(' CHART EDITOR '.bold().bg_bright_yellow() + ' Starting welcome music!');
         this.welcomeMusic.play();
         this.welcomeMusic.fadeIn(fadeInTime, 0, 1.0);
+      }
+      // Cleanup.
+      if (bgMusicTimer != null)
+      {
+        bgMusicTimer.cancel();
+        bgMusicTimer = null;
       }
     });
   }
 
   function stopWelcomeMusic():Void
   {
-    if (bgMusicTimer != null) bgMusicTimer.cancel();
-    // this.welcomeMusic.fadeOut(4, 0);
+    trace(' CHART EDITOR '.bold().bg_bright_yellow() + ' Stopping welcome music.');
+    if (bgMusicTimer != null)
+    {
+      bgMusicTimer.cancel();
+      bgMusicTimer = null;
+    }
     this.welcomeMusic.pause();
   }
 
@@ -3322,7 +3335,10 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     menubarItemThemeMusic.onChange = event -> {
       shouldPlayWelcomeMusic = event.value;
       // Don't restart the music when the menu is opened for the first time
-      if (!welcomeMusic.active || !shouldPlayWelcomeMusic) fadeInWelcomeMusic(WELCOME_MUSIC_FADE_IN_DELAY, WELCOME_MUSIC_FADE_IN_DURATION);
+      if (!welcomeMusic.active || !shouldPlayWelcomeMusic)
+      {
+        fadeInWelcomeMusic(WELCOME_MUSIC_FADE_IN_DELAY, WELCOME_MUSIC_FADE_IN_DURATION);
+      }
     };
     menubarItemThemeMusic.selected = shouldPlayWelcomeMusic;
 
@@ -6234,11 +6250,12 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     autoSave(true);
 
-    stopWelcomeMusic();
-    stopAudioPlayback();
-
     // Force pauses audio preview from OffsetsToolbox, if it exists.
     cast(this.getToolbox(CHART_EDITOR_TOOLBOX_OFFSETS_LAYOUT), ChartEditorOffsetsToolbox)?.pauseAudioPreview();
+
+    // Stop audio playback after note preview is stopped.
+    // `false` to force the welcome theme to stop too.
+    stopAudioPlayback(false);
 
     var startTimestamp:Float = 0;
     if (playtestStartTime) startTimestamp = scrollPositionInMs + playheadPositionInMs;
@@ -6315,7 +6332,6 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
 
     this.persistentUpdate = false;
     this.persistentDraw = false;
-    stopWelcomeMusic();
 
     Cursor.hide();
 
@@ -6994,13 +7010,25 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
     _eventTarget = null;
   }
 
-  function stopAudioPlayback(themeMusic:Bool = true):Void
+  /**
+   * Stop playback of the chart's instrumental and vocals.
+   * @param welcomeMusic If `true`, queue the welcome music to play after a timeout. `false` to force the welcome music to stop too.
+   */
+  function stopAudioPlayback(welcomeMusic:Bool = true):Void
   {
     if (audioInstTrack == null && audioVocalTrackGroup.length == 0) return;
 
     if (audioInstTrack != null) audioInstTrack.pause();
     audioVocalTrackGroup.pause();
-    if (themeMusic) fadeInWelcomeMusic(WELCOME_MUSIC_FADE_IN_DELAY, WELCOME_MUSIC_FADE_IN_DURATION);
+    if (welcomeMusic)
+    {
+      fadeInWelcomeMusic(WELCOME_MUSIC_FADE_IN_DELAY, WELCOME_MUSIC_FADE_IN_DURATION);
+    }
+    else
+    {
+      // Force the welcome music to stop too.
+      stopWelcomeMusic();
+    }
 
     playbarPlay.text = '>';
   }
