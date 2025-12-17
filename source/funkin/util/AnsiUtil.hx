@@ -55,6 +55,7 @@ enum abstract AnsiCode(String) from String to String
   public var BG_ORANGE = '\x1b[48;5;208m';
 
   // [48;2;RR;GG;BBm uses 24-bit color RGB
+  public var BG_PURPLE = '\x1b[48;2;121;37;199m';
   public var BG_NOTE_LEFT = '\x1b[48;2;255;34;170m';
   public var BG_NOTE_DOWN = '\x1b[48;2;0;238;255m';
   public var BG_NOTE_UP = '\x1b[48;2;0;204;0m';
@@ -339,6 +340,14 @@ class AnsiUtil
    */
   public static inline function bg_orange(str:String):String
     return apply(str, AnsiCode.BG_ORANGE);
+
+  /**
+   * Sets the background color to purple (256-color mode).
+   * @param str The input string to format.
+   * @return The formatted string.
+   */
+  public static inline function bg_purple(str:String):String
+    return apply(str, AnsiCode.BG_PURPLE);
 
   /**
    * Sets the background color to the color of a Left note.

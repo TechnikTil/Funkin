@@ -78,7 +78,6 @@ class PixelatedIcon extends FlxFilteredSprite
       this.animation.addByPrefix('confirm-hold', 'confirm-hold0', 10, true);
 
       this.animation.onFinish.add(function(name:String):Void {
-        trace('Finish pixel animation: ${name}');
         if (name == 'confirm') this.animation.play('confirm-hold');
       });
 

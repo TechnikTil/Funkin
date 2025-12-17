@@ -27,7 +27,7 @@ class RuntimeRainShader extends RuntimePostEffectShader
 
   function set_time(value:Float):Float
   {
-    this.setFloat('uTime', value);
+    // this.setFloat('uTime', value);
     return time = value;
   }
 
@@ -35,7 +35,7 @@ class RuntimeRainShader extends RuntimePostEffectShader
 
   function set_spriteMode(value:Bool):Bool
   {
-    this.setBool('uSpriteMode', value);
+    // this.setBool('uSpriteMode', value);
     return spriteMode = value;
   }
 
@@ -46,7 +46,7 @@ class RuntimeRainShader extends RuntimePostEffectShader
 
   function set_scale(value:Float):Float
   {
-    this.setFloat('uScale', value);
+    // this.setFloat('uScale', value);
     return scale = value;
   }
 
@@ -55,7 +55,7 @@ class RuntimeRainShader extends RuntimePostEffectShader
 
   function set_intensity(value:Float):Float
   {
-    this.setFloat('uIntensity', value);
+    // this.setFloat('uIntensity', value);
     return intensity = value;
   }
 
@@ -64,7 +64,7 @@ class RuntimeRainShader extends RuntimePostEffectShader
 
   function set_puddleY(value:Float):Float
   {
-    this.setFloat('uPuddleY', value);
+    // this.setFloat('uPuddleY', value);
     return puddleY = value;
   }
 
@@ -73,7 +73,7 @@ class RuntimeRainShader extends RuntimePostEffectShader
 
   function set_puddleScaleY(value:Float):Float
   {
-    this.setFloat('uPuddleScaleY', value);
+    // this.setFloat('uPuddleScaleY', value);
     return puddleScaleY = value;
   }
 
@@ -81,7 +81,7 @@ class RuntimeRainShader extends RuntimePostEffectShader
 
   function set_blurredScreen(value:BitmapData):BitmapData
   {
-    this.setBitmapData('uBlurredScreen', value);
+    // this.setBitmapData('uBlurredScreen', value);
     return blurredScreen = value;
   }
 
@@ -89,7 +89,7 @@ class RuntimeRainShader extends RuntimePostEffectShader
 
   function set_mask(value:BitmapData):BitmapData
   {
-    this.setBitmapData('uMask', value);
+    // this.setBitmapData('uMask', value);
     return mask = value;
   }
 
@@ -97,7 +97,7 @@ class RuntimeRainShader extends RuntimePostEffectShader
 
   function set_rainColor(color:FlxColor):FlxColor
   {
-    this.setFloatArray("uRainColor", [color.red / 255, color.green / 255, color.blue / 255]);
+    // this.setFloatArray("uRainColor", [color.red / 255, color.green / 255, color.blue / 255]);
     return rainColor = color;
   }
 
@@ -105,7 +105,7 @@ class RuntimeRainShader extends RuntimePostEffectShader
 
   function set_lightMap(value:BitmapData):BitmapData
   {
-    this.setBitmapData('uLightMap', value);
+    // this.setBitmapData('uLightMap', value);
     return lightMap = value;
   }
 
@@ -113,7 +113,7 @@ class RuntimeRainShader extends RuntimePostEffectShader
 
   function set_numLightsSwag(value:Int):Int
   {
-    this.setInt('numLights', value);
+    // this.setInt('numLights', value);
     return numLightsSwag = value;
   }
 
