@@ -2857,7 +2857,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
   {
     if (notePreviewViewport == null)
     {
-      trace(' WARNING '.bold().bg_yellow() + ' Tried to set note preview viewport bounds, but notePreviewViewport is null!');
+      trace(' WARNING '.warning() + ' Tried to set note preview viewport bounds, but notePreviewViewport is null!');
       return;
     }
 

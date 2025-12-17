@@ -135,11 +135,11 @@ class Main extends Sprite
     Handle.initAsync(function(success:Bool):Void {
       if (success)
       {
-        trace(' HXVLC '.bold().bg_white() + ' LibVLC instance initialized!');
+        trace(' HXVLC '.bold().bg_orange() + ' LibVLC instance initialized!');
       }
       else
       {
-        trace(' HXVLC '.bold().bg_white() + ' LibVLC instance failed to initialize!');
+        trace(' HXVLC '.bold().bg_orange() + ' LibVLC instance failed to initialize!');
       }
     });
     #end
