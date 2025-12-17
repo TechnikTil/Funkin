@@ -178,8 +178,6 @@ class ChartEditorEventDataToolbox extends ChartEditorBaseToolbox
     // Clear the frame.
     target.removeAllComponents();
 
-    chartEditorState.eventDataToPlace = {};
-
     recursiveChildAdd(target, schema);
   }
 
