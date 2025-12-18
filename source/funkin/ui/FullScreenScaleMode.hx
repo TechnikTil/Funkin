@@ -131,6 +131,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
    */
   override public function onMeasure(Width:Int, Height:Int):Void
   {
+    #if desktop
     if (mustAwait && enabled)
     {
       onMeasureAwait(Width, Height);
@@ -140,6 +141,9 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
       onMeasureInstant(Width, Height);
       mustAwait = true;
     }
+    #else
+    onMeasureInstant(Width, Height);
+    #end
   }
 
   /**
@@ -168,6 +172,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
    */
   public function onMeasurePostAwait():Void
   {
+    #if desktop
     if (awaitedSize.x == 0 && awaitedSize.y == 0) return;
 
     horizontalAlign = enabled ? LEFT : CENTER;
@@ -176,6 +181,7 @@ class FullScreenScaleMode extends flixel.system.scaleModes.BaseScaleMode
     FlxG.cameras.reset(new FunkinCamera('default'));
 
     awaitedSize.set(0, 0);
+    #end
   }
 
   /**
