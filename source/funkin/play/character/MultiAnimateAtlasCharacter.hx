@@ -67,8 +67,7 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
       var subAssetLibrary:String = Paths.getLibrary(asset);
       var subAssetPath:String = Paths.stripLibrary(asset);
 
-      var clone:FunkinSprite = FunkinSprite.createTextureAtlas(0, 0, subAssetPath, subAssetLibrary, cast _data.atlasSettings);
-      var subTexture:FlxAnimateFrames = clone.library;
+      var subTexture:FlxAnimateFrames = Paths.getAnimateAtlas(subAssetPath, subAssetLibrary, cast _data.atlasSettings);
 
       log('Concatenating texture atlas: ${asset}');
       subTexture.parent.destroyOnNoUse = false;
