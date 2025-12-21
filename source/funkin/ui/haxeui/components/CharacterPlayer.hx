@@ -183,8 +183,8 @@ class CharacterPlayer extends Box
     super.repositionChildren();
 
     if (character == null) return;
-    character.x = this.cachedScreenX;
-    character.y = this.cachedScreenY;
+    character.x = this.cachedScreenX + (-character.globalOffsets[0] * character.scale.x);
+    character.y = this.cachedScreenY + (-character.globalOffsets[1] * character.scale.y);
   }
 
   /**
