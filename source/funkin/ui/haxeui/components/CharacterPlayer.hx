@@ -178,20 +178,11 @@ class CharacterPlayer extends Box
     if (character != null) character.playAnimation(name, restart, ignoreOther, reversed);
   }
 
-  public static final animateCharactersYOffset:Float = 100.0;
-
   override function repositionChildren():Void
   {
     super.repositionChildren();
     character.x = this.cachedScreenX;
     character.y = this.cachedScreenY;
-
-    if (character.isAnimate)
-    {
-      final charSceenBounds = character.getScreenBounds();
-      character.x += charSceenBounds.width / 2;
-      character.y += charSceenBounds.height / 2 + animateCharactersYOffset;
-    }
   }
 
   /**
@@ -224,7 +215,7 @@ class CharacterPlayer extends Box
     if (character != null) character.onStepHit(event);
   }
 
-  public function onNoteIncoming(event:NoteScriptEvent)
+  public function onNoteIncoming(event:NoteScriptEvent):Void
   {
     if (character != null) character.onNoteIncoming(event);
   }
@@ -291,11 +282,6 @@ private class Layout extends DefaultLayout
     {
       return super.resizeChildren();
     }
-
-    // character.cornerPosition.set(0, 0);
-
-    // character.setGraphicSize(Std.int(innerWidth), Std.int(innerHeight));
-    // if (character._data.isPixel) character.setGraphicSize(Std.int(innerWidth * Constants.PIXEL_ART_SCALE), Std.int(innerHeight * Constants.PIXEL_ART_SCALE));
   }
 
   public override function calcAutoSize(exclusions:Array<Component> = null):Size
@@ -307,21 +293,10 @@ private class Layout extends DefaultLayout
       return super.calcAutoSize(exclusions);
     }
     var size:Size = new Size();
-    // size.width = (character.width * (character._data.isPixel ? Constants.PIXEL_ART_SCALE : 1)) + paddingLeft + paddingRight;
-    // size.height = (character.height * (character._data.isPixel ? Constants.PIXEL_ART_SCALE : 1)) + paddingTop + paddingBottom;
 
     final charSceenBounds = character.getScreenBounds();
-
-    if (character.isAnimate)
-    {
-      size.width = charSceenBounds.width;
-      size.height = charSceenBounds.height;
-    }
-    else
-    {
-      size.width = charSceenBounds.width + paddingLeft + paddingRight;
-      size.height = charSceenBounds.height + paddingTop + paddingBottom;
-    }
+    size.width = charSceenBounds.width + paddingLeft + paddingRight;
+    size.height = charSceenBounds.height + paddingTop + paddingBottom;
 
     return size;
   }
