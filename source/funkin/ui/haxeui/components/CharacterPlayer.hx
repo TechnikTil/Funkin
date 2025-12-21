@@ -282,6 +282,8 @@ private class Layout extends DefaultLayout
     {
       return super.resizeChildren();
     }
+
+    character.cornerPosition.set(0, 0);
   }
 
   public override function calcAutoSize(exclusions:Array<Component> = null):Size
