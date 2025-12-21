@@ -181,6 +181,8 @@ class CharacterPlayer extends Box
   override function repositionChildren():Void
   {
     super.repositionChildren();
+
+    if (character == null) return;
     character.x = this.cachedScreenX;
     character.y = this.cachedScreenY;
   }
