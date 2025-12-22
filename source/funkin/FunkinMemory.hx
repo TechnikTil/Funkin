@@ -466,6 +466,6 @@ class FunkinMemory
 
   static function log(message:String):Void
   {
-    trace(' MEMORY '.bg_note_right().bold() + ' ${message}');
+    trace(' MEMORY '.bg_bright_lilac().bold() + ' ${message}');
   }
 }
