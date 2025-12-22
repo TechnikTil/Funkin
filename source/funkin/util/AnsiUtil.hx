@@ -52,7 +52,24 @@ enum abstract AnsiCode(String) from String to String
 
   // 48 has two modes
   // [48;2;#m uses one of 256 colors
+  // Color names via https://hexdocs.pm/color_palette/ansi_color_codes.html
+  public var BG_SEA_GREEN = '\x1b[48;5;50m';
+  public var BG_PIST = '\x1b[48;5;112m';
+  public var BG_BRONZE = '\x1b[48;5;137m';
+  public var BG_BRIGHT_LAVENDER = '\x1b[48;5;141m';
+  public var BG_LIME = '\x1b[48;5;154m';
+  public var BG_MINT_GREEN = '\x1b[48;5;156m';
+  public var BG_HOPBUSH = '\x1b[48;5;169m';
+  public var BG_BRIGHT_LILAC = '\x1b[48;5;177m';
+  public var BG_GOLDENROD = '\x1b[48;5;178m';
+  public var BG_CORN = '\x1b[48;5;184m';
+  public var BG_TEA_GREEN = '\x1b[48;5;193m';
+  public var BG_LIGHT_RED = '\x1b[48;5;196m';
+  public var BG_STRAWBERRY = '\x1b[48;5;204m';
+  public var BG_SHOCKING_PINK = '\x1b[48;5;207m';
   public var BG_ORANGE = '\x1b[48;5;208m';
+  public var BG_SALMON = '\x1b[48;5;209m';
+  public var BG_LIGHT_PINK = '\x1b[48;5;213m';
 
   // [48;2;RR;GG;BBm uses 24-bit color RGB
   public var BG_PURPLE = '\x1b[48;2;121;37;199m';
@@ -125,7 +142,7 @@ class AnsiUtil
    * @return The formatted string.
    */
   public static inline function error(str:String):String
-    return AnsiUtil.bold(AnsiUtil.bg_red(str));
+    return AnsiUtil.bold(AnsiUtil.bg_note_right(str));
 
   /**
    * Makes the string display as WARNING text.
@@ -348,6 +365,14 @@ class AnsiUtil
    */
   public static inline function bg_purple(str:String):String
     return apply(str, AnsiCode.BG_PURPLE);
+
+  /**
+   * Sets the background color to bright lilac (256-color mode).
+   * @param str The input string to format.
+   * @return The formatted string.
+   */
+  public static inline function bg_bright_lilac(str:String):String
+    return apply(str, AnsiCode.BG_BRIGHT_LILAC);
 
   /**
    * Sets the background color to the color of a Left note.
