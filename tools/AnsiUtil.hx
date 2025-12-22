@@ -1,4 +1,4 @@
-package funkin.util;
+package tools;
 
 /**
  * Enum abstract representing ANSI codes for text colors, background colors, and text styles.
