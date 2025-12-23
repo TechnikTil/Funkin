@@ -2280,13 +2280,11 @@ class PlayState extends MusicBeatSubState
     pauseButton.updateHitbox();
     pauseButton.animation.play("idle");
     pauseButton.setPosition((FlxG.width - pauseButton.width) - 35, 35);
-    @:nullSafety(Off) // AAAAAAA why did camControls have to be nullable AAAAAAAAAA
-    pauseButton.cameras = [camControls];
+    if (camControls != null) pauseButton.cameras = [camControls];
 
     pauseCircle.scale.set(0.84, 0.8);
     pauseCircle.updateHitbox();
-    @:nullSafety(Off)
-    pauseCircle.cameras = [camControls];
+    if (camControls != null) pauseCircle.cameras = [camControls];
     pauseCircle.x = ((pauseButton.x + (pauseButton.width / 2)) - (pauseCircle.width / 2));
     pauseCircle.y = ((pauseButton.y + (pauseButton.height / 2)) - (pauseCircle.height / 2));
     pauseCircle.alpha = 0.1;
