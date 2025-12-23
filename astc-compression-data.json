@@ -90,6 +90,10 @@
       "blocksize": "4x4"
     },
     {
+      "asset": "assets/sserafim/images/sserafim-lipsync/spritemap1.png",
+      "blocksize": "4x4"
+    },
+    {
       "asset": "assets/week1/image/erect/bg.png",
       "blocksize": "8x8"
     },
@@ -148,6 +152,7 @@
     "assets/shared/images/resultScreen/results-bf/resultsSHIT/gf/spritemap1.png",
     "assets/shared/images/ui/chart-editor/",
     "assets/shared/images/ui/countdown/pixel/*",
+    "assets/sserafim/images/ref.png",
     "assets/week1/*",
     "assets/week1/images/erect/brightLightSmall.png",
     "assets/week1/images/erect/lightAbove.png",
