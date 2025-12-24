@@ -3789,7 +3789,7 @@ class ChartEditorState extends UIState // UIState derives from MusicBeatState
       }
     }
 
-    if (FlxG.keys.justPressed.SPACE && !isHaxeUIDialogOpen)
+    if (FlxG.keys.justPressed.SPACE && !(isHaxeUIDialogOpen || isHaxeUIFocused))
     {
       toggleAudioPlayback();
     }
