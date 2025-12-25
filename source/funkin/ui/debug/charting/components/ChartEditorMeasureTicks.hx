@@ -191,11 +191,6 @@ class ChartEditorMeasureTicks extends FlxTypedSpriteGroup<FlxSprite>
 
       final SCREEN_PADDING:Float = ChartEditorState.GRID_SIZE / 2;
 
-      // Above the visible area, keep going.
-      if (relativeMeasureTimeInPixels < 0 - SCREEN_PADDING)
-      {
-        continue;
-      }
       // Below the visible area, quit it.
       if (relativeMeasureTimeInPixels > FlxG.height + SCREEN_PADDING)
       {
