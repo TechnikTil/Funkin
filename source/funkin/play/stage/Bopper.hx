@@ -2,6 +2,7 @@ package funkin.play.stage;
 
 import flixel.FlxCamera;
 import flixel.math.FlxPoint;
+import flixel.math.FlxRect;
 import flixel.util.FlxTimer;
 import funkin.modding.IScriptedClass.IPlayStateScriptedClass;
 import funkin.modding.events.ScriptEvent;
@@ -329,6 +330,14 @@ class Bopper extends StageProp implements IPlayStateScriptedClass
   override function getScreenPosition(?result:FlxPoint, ?camera:FlxCamera):FlxPoint
   {
     var output:FlxPoint = super.getScreenPosition(result, camera);
+    output.x -= (animOffsets[0] - globalOffsets[0]) * this.scale.x;
+    output.y -= (animOffsets[1] - globalOffsets[1]) * this.scale.y;
+    return output;
+  }
+
+  override function getScreenBounds(?newRect:FlxRect, ?camera:FlxCamera):FlxRect
+  {
+    var output:FlxRect = super.getScreenBounds(newRect, camera);
     output.x -= (animOffsets[0] - globalOffsets[0]) * this.scale.x;
     output.y -= (animOffsets[1] - globalOffsets[1]) * this.scale.y;
     return output;
