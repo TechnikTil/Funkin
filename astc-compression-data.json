@@ -38,6 +38,10 @@
       "blocksize": "4x4"
     },
     {
+      "asset": "assets/shared/images/characters/sserafim/chaewon/spritemap1.png",
+      "blocksize": "4x4"
+    },
+    {
       "asset": "assets/shared/images/holdCoverBlue.png",
       "blocksize": "4x4"
     },
@@ -87,6 +91,10 @@
     },
     {
       "asset": "assets/shared/images/resultScreen/results-pico/resultsSHIT/spritemap1.png",
+      "blocksize": "4x4"
+    },
+    {
+      "asset": "assets/sserafim/images/sserafim-lipsync-yunjin/spritemap1.png",
       "blocksize": "4x4"
     },
     {
@@ -143,6 +151,10 @@
     "assets/shared/images/characters/picoPixel/*",
     "assets/shared/images/characters/senpai.png",
     "assets/shared/images/characters/spirit.png",
+    "assets/shared/images/characters/sserafim/eunchae/spritemap1.png",
+    "assets/shared/images/characters/sserafim/kazuha/spritemap1.png",
+    "assets/shared/images/characters/sserafim/sserafim-gf/spritemap1.png",
+    "assets/shared/images/characters/sserafim/yunjin/spritemap1.png",
     "assets/shared/images/healthBar.png",
     "assets/shared/images/resultScreen/*",
     "assets/shared/images/resultScreen/clearPercent/",
@@ -153,6 +165,8 @@
     "assets/shared/images/resultScreen/results-bf/resultsSHIT/gf/spritemap1.png",
     "assets/shared/images/ui/chart-editor/",
     "assets/shared/images/ui/countdown/pixel/*",
+    "assets/sserafim/images/cutscene/cutsceneMain/spritemap1.png",
+    "assets/sserafim/images/cutscene/ref.png",
     "assets/sserafim/images/ref.png",
     "assets/week1/*",
     "assets/week1/images/erect/brightLightSmall.png",
