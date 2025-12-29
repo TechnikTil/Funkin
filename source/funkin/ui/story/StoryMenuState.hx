@@ -175,7 +175,8 @@ class StoryMenuState extends MusicBeatState
 
     updateProps();
 
-    tracklistText = new FlxText(FlxG.width * 0.05, levelBackground.x + levelBackground.height + 100, 0, "Tracks", 32);
+    // x on tracklistText is set/updated later, we dont need to init it
+    tracklistText = new FlxText(0, levelBackground.x + levelBackground.height + 100, 0, "Tracks", 32);
     tracklistText.setFormat('VCR OSD Mono', 32);
     tracklistText.alignment = CENTER;
     tracklistText.color = 0xFFE55777;
@@ -721,7 +722,7 @@ class StoryMenuState extends MusicBeatState
     tracklistText.text += currentLevel.getSongDisplayNames(currentDifficultyId).join('\n');
 
     tracklistText.screenCenter(X);
-    tracklistText.x -= (FlxG.width * 0.35);
+    tracklistText.x -= (FlxG.width * 0.33);
 
     var levelScore:Null<SaveScoreData> = Save.instance.getLevelScore(currentLevelId, currentDifficultyId);
     highScore = levelScore?.score ?? 0;
