@@ -40,7 +40,11 @@ class Leaderboards
   public static function submitScore(leaderboard:Leaderboard, score:Int, ?tag:String):Void
   {
     // Silently reject submissions for unknown leaderboards.
-    if (leaderboard == Leaderboard.Unknown) return;
+    if (leaderboard == Leaderboard.Unknown)
+    {
+      trace(' NEWGROUNDS '.bold().bg_orange() + ' Unknown leaderboard, skipping score submission...');
+      return;
+    }
 
     if (NewgroundsClient.instance.isLoggedIn())
     {
@@ -51,10 +55,10 @@ class Leaderboards
           switch (outcome)
           {
             case SUCCESS:
-              trace(' NEWGROUNDS '.bold().bg_orange() + ' Submitted score!');
+              trace(' NEWGROUNDS '.bold().bg_orange() + ' Submitted leaderboard score!');
             case FAIL(error):
-              trace(' NEWGROUNDS '.bold().bg_orange() + ' Failed to submit score!');
-              trace(error);
+              trace(' NEWGROUNDS '.bold().bg_orange() + ' ERROR '.error() + ' Failed to submit leaderboard score!');
+              trace(' ERROR '.error() + error);
           }
         });
       }
@@ -86,8 +90,8 @@ class Leaderboards
             if (params != null && params.onComplete != null) params.onComplete(leaderboardData.scores);
 
           case FAIL(error):
-            trace(' NEWGROUNDS '.bold().bg_orange() + ' Failed to fetch scores!');
-            trace(error);
+            trace(' NEWGROUNDS '.bold().bg_orange() + ' ERROR '.error() + ' Failed to fetch scores!');
+            trace(' ERROR '.error() + error);
             if (params != null && params.onFail != null) params.onFail();
         }
       });
@@ -103,6 +107,7 @@ class Leaderboards
   public static function submitLevelScore(levelId:String, difficultyId:String, score:Int):Void
   {
     var tag = '${difficultyId}';
+    trace(' NEWGROUNDS '.bold().bg_orange() + 'Submitting score for level "${levelId}"...');
     Leaderboards.submitScore(Leaderboard.getLeaderboardByLevel(levelId), score, tag);
   }
 
@@ -116,6 +121,7 @@ class Leaderboards
   public static function submitSongScore(songId:String, difficultyId:String, score:Int):Void
   {
     var tag = '${difficultyId}';
+    trace(' NEWGROUNDS '.bold().bg_orange() + 'Submitting score for song "${songId}" (${difficultyId})...');
     Leaderboards.submitScore(Leaderboard.getLeaderboardBySong(songId, difficultyId), score, tag);
   }
 }
@@ -348,6 +354,7 @@ enum abstract Leaderboard(Int) from Int to Int
         return StoryWeek7;
       case "weekend1":
         return StoryWeekend1;
+      // Collab 1 has only one song.
       default:
         return Unknown;
     }
@@ -517,6 +524,8 @@ enum abstract Leaderboard(Int) from Int to Int
             return TwoHot;
           case "blazin":
             return Blazin;
+          case "spaghetti":
+            return Spaghetti;
           default:
             return Unknown;
         }
