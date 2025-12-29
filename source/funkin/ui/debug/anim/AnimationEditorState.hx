@@ -6,15 +6,17 @@ import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.display.FlxBackdrop;
 import funkin.audio.FunkinSound;
 import haxe.ui.backend.flixel.UIState;
-import haxe.ui.containers.dialogs.Dialog;
 import funkin.input.Cursor;
 import funkin.util.MouseUtil;
+import flixel.math.FlxMath;
+import funkin.util.WindowUtil;
 import funkin.ui.mainmenu.MainMenuState;
-import haxe.ui.containers.dialogs.MessageBox;
-import haxe.ui.containers.dialogs.Dialogs;
-import funkin.ui.debug.anim.components.AnimationEditorWelcomeDialog;
+import haxe.ui.focus.FocusManager;
+import funkin.ui.debug.anim.components.AnimationListSelect;
 import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.play.character.BaseCharacter;
+
+using funkin.ui.debug.anim.handlers.AnimationEditorDialogHandler;
 
 /**
  * The Animation Editor!!!
@@ -35,6 +37,11 @@ class AnimationEditorState extends UIState
   public var uiCamera:FunkinCamera;
 
   /**
+   * The current offset mode.
+   */
+  public var offsetMode:AnimationOffsetMode = LOCAL;
+
+  /**
    * The character thats currently being edited.
    */
   public var character:Null<BaseCharacter>;
@@ -45,9 +52,36 @@ class AnimationEditorState extends UIState
   public var onionSkin:Null<OnionSkin>;
 
   /**
-   * If a dialog is currently open.
+   * Whether the user is focused on an input in the Haxe UI, and inputs are being fed into it.
+   * If the user clicks off the input, focus will leave.
    */
-  public var inputsAllowed:Bool = false;
+  var isHaxeUIFocused(get, never):Bool;
+
+  function get_isHaxeUIFocused():Bool
+  {
+    return FocusManager.instance.focus != null;
+  }
+
+  /**
+   * If theres a dialog currently open, meaning that background interaction should be disabled.
+   */
+  public var isHaxeUIDialogOpen:Bool = false;
+
+  /**
+   * If control is currently pressed.
+   * "COMMAND" is usually used more for Macs, so this variable is made.
+   */
+  public var controlPressed(get, never):Bool;
+
+  function get_controlPressed():Bool
+  {
+    return #if mac FlxG.keys.pressed.WINDOWS #else FlxG.keys.pressed.CONTROL #end;
+  }
+
+  /**
+   * If the character has been edited in some way.
+   */
+  public var dirty(default, set):Bool = false;
 
   var bg:FlxBackdrop;
 
@@ -60,6 +94,7 @@ class AnimationEditorState extends UIState
 
     setupCameras();
 
+    updateWindowTitle();
     super.create();
 
     root.scrollFactor.set();
@@ -78,7 +113,7 @@ class AnimationEditorState extends UIState
     FlxG.sound.music.fadeIn(10, 0, 1);
 
     setupUIListeners();
-    openDialog(WELCOME);
+    this.openWelcomeDialog();
     refresh();
   }
 
@@ -96,8 +131,9 @@ class AnimationEditorState extends UIState
 
   function setupUIListeners():Void
   {
-    menubarItemOpenChar.onClick = _ -> openDialog(WELCOME);
-    menubarItemExit.onClick = _ -> quit(true);
+    menubarItemOpenChar.onClick = _ -> this.openWelcomeDialog();
+    menubarItemExit.onClick = _ -> quit();
+    bottomBarAnimText.onClick = _ -> openAnimSelect();
   }
 
   /**
@@ -118,6 +154,8 @@ class AnimationEditorState extends UIState
     character.debug = true;
     character.zIndex = 300;
     add(character);
+
+    dirty = false;
 
     refresh();
   }
@@ -141,6 +179,7 @@ class AnimationEditorState extends UIState
   override public function update(elapsed:Float):Void
   {
     handleInputs();
+    updateOffsetText();
 
     super.update(elapsed);
     if (gameCamera.zoom < 0.15) gameCamera.zoom = 0.15;
@@ -151,13 +190,10 @@ class AnimationEditorState extends UIState
    */
   public function handleInputs():Void
   {
-    if (!inputsAllowed) return;
-
-    // "COMMAND" is usually used more for Macs.
-    var control:Bool = #if mac FlxG.keys.pressed.WINDOWS #else FlxG.keys.pressed.CONTROL #end;
+    if (isHaxeUIFocused || isHaxeUIDialogOpen) return;
 
     // CTRL + Q = Quit to Menu
-    if (control && FlxG.keys.justPressed.Q) quit(true);
+    if (controlPressed && FlxG.keys.justPressed.Q) quit();
 
     // F = Toggle Onion Skin
     if (FlxG.keys.justPressed.F)
@@ -172,6 +208,17 @@ class AnimationEditorState extends UIState
       character.flipX = !character.flipX;
     }
 
+    handleAnimationInputs();
+
+    // Camera Movement with your mouse.
+    MouseUtil.mouseCamDrag();
+    MouseUtil.mouseWheelZoom();
+  }
+
+  public function handleAnimationInputs():Void
+  {
+    if (character == null) return;
+
     // ASWD = Play Character Animations
     // Optional SHIFT for miss animations
     var animButtons:Array<Bool> = [
@@ -185,64 +232,123 @@ class AnimationEditorState extends UIState
     {
       if (!button) continue;
       character.playSingAnimation(i, miss);
-      trace('Played ${i} (${miss ? 'miss' : 'sing'}) animation on character.');
     }
 
-    // Camera Movement with your mouse.
-    MouseUtil.mouseCamDrag();
-    MouseUtil.mouseWheelZoom();
+    // Q, E = Change index in Animation List.
+    if (FlxG.keys.justPressed.Q || FlxG.keys.justPressed.E)
+    {
+      var animations:Array<String> = character.animation?.getNameList() ?? [];
+      var index:Int = animations.indexOf(character.getCurrentAnimation());
+      index += (FlxG.keys.justPressed.Q ? -1 : 1);
+      index = FlxMath.wrap(index, 0, animations.length - 1);
+
+      character.playAnimation(animations[index], true);
+    }
   }
 
   /**
-   * Opens a dialog.
-   * @param name The dialog to open.
-   * @param closeable If the dialog should be closable.
+   * Updates any info displayed at the bottom of the editor.
    */
-  public function openDialog(name:AnimationEditorDialog, closeable:Bool = false):Void
+  public function updateOffsetText():Void
   {
-    var dialog:Dialog = switch (name)
+    if (character != null)
     {
-      case WELCOME:
-        new AnimationEditorWelcomeDialog(this);
+      bottomBarAnimText.text = character.getCurrentAnimation();
+      bottomBarOffsetText.text = '[${getOffsetArray().join(', ')}]';
     }
 
-    dialog.showDialog();
-    inputsAllowed = false;
-    dialog.closable = closeable;
-    dialog.onDialogClosed = (_) -> {
-      inputsAllowed = true;
-    };
+    bottomBarModeText.text = switch (offsetMode)
+    {
+      case LOCAL:
+        "Local";
+      case GLOBAL:
+        "Global";
+    }
   }
 
-  var dirty:Bool = true;
+  /**
+   * Gets the array containing the current offsets.
+   * This is great for editing.
+   * @return The array mentioned above.
+   */
+  public function getOffsetArray():Null<Array<Float>>
+  {
+    if (character == null) return null;
+
+    @:privateAccess
+    {
+      return switch (offsetMode)
+      {
+        case LOCAL:
+          character.animOffsets;
+        case GLOBAL:
+          character.globalOffsets;
+      }
+    }
+  }
+
+  /**
+   * Opens the animation name select.
+   */
+  public function openAnimSelect():Void
+  {
+    var animSelectDialog:AnimationListSelect = new AnimationListSelect(this);
+    animSelectDialog.x = 16;
+    animSelectDialog.y = FlxG.height - bottomBar.height - animSelectDialog.height - 10;
+    animSelectDialog.show();
+  }
 
   /**
    * Quits the editor.
    * @param exitPrompt If a prompt should be shown before closing.
    */
-  public function quit(?exitPrompt:Bool = false):Void
+  public function quit(?exitPrompt:Bool = true):Void
   {
     if (exitPrompt && dirty)
     {
-      var dialog:Dialog = Dialogs.messageBox("You are about to leave the editor without saving.\n\nAre you sure?", "Leave Editor", MessageBoxType.TYPE_YESNO,
-        true, function(button:DialogButton) {
-          inputsAllowed = true;
-          if (button == DialogButton.YES) quit(false);
-      });
-      inputsAllowed = false;
-      dialog.destroyOnClose = true;
+      this.openLeaveConfirmationDialog();
       return;
     }
 
     FlxG.switchState(() -> new MainMenuState());
+    resetWindowTitle();
+  }
+
+  /**
+   * Updates the Window Title.
+   */
+  public function updateWindowTitle():Void
+  {
+    var extra:String = '';
+
+    if (character != null)
+    {
+      extra = ' - ${character.characterName}';
+      if (dirty) extra += '*';
+    }
+
+    WindowUtil.setWindowTitle('Friday Night Funkin\' Animation Editor' + extra);
+  }
+
+  function resetWindowTitle():Void
+  {
+    WindowUtil.setWindowTitle('Friday Night Funkin\'');
+  }
+
+  function set_dirty(value:Bool):Bool
+  {
+    dirty = value;
+    updateWindowTitle();
+    return value;
   }
 }
 
 /**
- * Animation Editor Dialogs
+ * Animation Editor Offset Modes.
  */
-enum AnimationEditorDialog
+enum AnimationOffsetMode
 {
-  WELCOME;
+  LOCAL;
+  GLOBAL;
 }
 #end

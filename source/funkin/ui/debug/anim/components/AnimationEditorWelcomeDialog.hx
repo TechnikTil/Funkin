@@ -1,12 +1,8 @@
 package funkin.ui.debug.anim.components;
 
-#if FEATURE_STAGE_EDITOR
+#if FEATURE_ANIMATION_EDITOR
 import haxe.ui.containers.dialogs.Dialog;
-import haxe.ui.containers.dialogs.Dialogs;
-import haxe.ui.containers.dialogs.MessageBox.MessageBoxType;
 import haxe.ui.components.Link;
-import funkin.util.FileUtil;
-import flixel.FlxG;
 import funkin.data.character.CharacterData;
 import funkin.data.character.CharacterData.CharacterDataParser;
 
@@ -17,12 +13,9 @@ import funkin.data.character.CharacterData.CharacterDataParser;
 @:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/animation-editor/dialogs/welcome.xml"))
 class AnimationEditorWelcomeDialog extends Dialog
 {
-  var animState:AnimationEditorState;
-
   public function new(state:AnimationEditorState)
   {
     super();
-    animState = state;
 
     var characterIds:Array<String> = CharacterDataParser.listCharacterIds();
     characterIds.sort(funkin.util.SortUtil.alphabetically);
@@ -35,22 +28,15 @@ class AnimationEditorWelcomeDialog extends Dialog
       var link:Link = new Link();
       link.percentWidth = 100;
       link.text = charData.name;
-      link.onClick = (_) -> loadCharacter(charId);
+      link.onClick = (_) -> {
+        state.loadCharacter(charId);
+        hide();
+      };
 
       characters.addComponent(link);
     }
-  }
 
-  function loadCharacter(charId:String):Void
-  {
-    animState.loadCharacter(charId);
-    hide();
-  }
-
-  override public function hide():Void
-  {
-    super.hide();
-    destroy();
+    this.destroyOnClose = true;
   }
 }
 #end
