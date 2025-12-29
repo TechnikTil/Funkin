@@ -77,10 +77,11 @@ class ScrollSpeedEvent extends SongEvent
         PlayState.instance.tweenScrollSpeed(scroll, 0, null, strumlineNames);
       default:
         var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
-        var easeFunction:Null<Float->Float> = Reflect.field(FlxEase, ease + easeDir);
+        var easeFunctionName = '$ease$easeDir';
+        var easeFunction:Null<Float->Float> = Reflect.field(FlxEase, easeFunctionName);
         if (easeFunction == null)
         {
-          trace('Invalid ease function: $ease');
+          trace('Invalid ease function: $easeFunctionName');
           return;
         }
 

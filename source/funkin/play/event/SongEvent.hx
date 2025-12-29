@@ -18,7 +18,7 @@ class SongEvent
   /**
    * The default ease direction for events which use FlxEase.
    */
-  public static final DEFAULT_EASE_DIR:String = 'in';
+  public static final DEFAULT_EASE_DIR:String = 'In';
 
   /**
    * A regular expression to detect the current ease direction for ease function names from FlxEase.
