@@ -43,8 +43,10 @@
     },
     {
       "name": "extension-webviewcore",
-      "type": "haxelib",
-      "version": "1.0.0"
+      "type": "git",
+      "dir": null,
+      "ref": "d13109450d65c40678244ca23b1aa88ac18d77e6",
+      "url": "https://github.com/LimeExtensions/extension-webviewcore"
     },
     {
       "name": "flixel",
