@@ -8,7 +8,8 @@ import funkin.data.event.SongEventSchema;
 import funkin.data.event.SongEventSchema.SongEventFieldType;
 
 /**
- * This class represents a handler for scroll speed events.
+ * This class handles song events which change the scroll speed of the chart.
+ * This affects the speed at which the notes move towards the strums.
  *
  * Example: Scroll speed change of both strums from 1x to 1.3x:
  * ```
@@ -110,7 +111,7 @@ class ScrollSpeedEvent extends SongEvent
       {
         name: 'scroll',
         title: 'Target Value',
-        defaultValue: 1.0,
+        defaultValue: DEFAULT_SCROLL,
         min: 0.1,
         step: 0.1,
         type: SongEventFieldType.FLOAT,
@@ -119,7 +120,7 @@ class ScrollSpeedEvent extends SongEvent
       {
         name: 'duration',
         title: 'Duration',
-        defaultValue: 4.0,
+        defaultValue: DEFAULT_DURATION,
         min: 0,
         step: 0.5,
         type: SongEventFieldType.FLOAT,
@@ -128,7 +129,7 @@ class ScrollSpeedEvent extends SongEvent
       {
         name: 'ease',
         title: 'Easing Type',
-        defaultValue: 'linear',
+        defaultValue: SongEvent.DEFAULT_EASE,
         type: SongEventFieldType.ENUM,
         keys: [
           'Linear' => 'linear',
@@ -150,21 +151,21 @@ class ScrollSpeedEvent extends SongEvent
       {
         name: 'easeDir',
         title: 'Easing Direction',
-        defaultValue: 'In',
+        defaultValue: SongEvent.DEFAULT_EASE_DIR,
         type: SongEventFieldType.ENUM,
         keys: ['In' => 'In', 'Out' => 'Out', 'In/Out' => 'InOut']
       },
       {
         name: 'strumline',
         title: 'Target Strumline',
-        defaultValue: 'both',
+        defaultValue: DEFAULT_STRUMLINE,
         type: SongEventFieldType.ENUM,
         keys: ['Both' => 'both', 'Player' => 'player', 'Opponent' => 'opponent']
       },
       {
         name: 'absolute',
         title: 'Absolute',
-        defaultValue: false,
+        defaultValue: DEFAULT_ABSOLUTE,
         type: SongEventFieldType.BOOL,
       }
     ]);
