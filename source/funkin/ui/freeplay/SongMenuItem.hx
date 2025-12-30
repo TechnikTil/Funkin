@@ -723,9 +723,13 @@ class SongMenuItem extends FlxSpriteGroup
 
   function set_selected(value:Bool):Bool
   {
-    // cute one liners, lol!
+    final wasSelected:Bool = selected;
+
     selected = value;
-    updateSelected();
+    if (wasSelected != selected)
+    {
+      updateSelected();
+    }
     return selected;
   }
 
