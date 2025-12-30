@@ -324,7 +324,7 @@ enum abstract Medal(Int) from Int to Int
    * Eat It Up!
    * Beat Collab 1 in Story Mode (on any difficulty).
    */
-  public var StoryCollab1 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 87697 #else 999_999 #end;
+  public var StoryCollab1 = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 87697 #else 87714 #end;
 
   /**
    * Stay Funky

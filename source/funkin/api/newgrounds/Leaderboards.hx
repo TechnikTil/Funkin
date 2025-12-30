@@ -318,7 +318,7 @@ enum abstract Leaderboard(Int) from Int to Int
   public var Blazin = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 1000000 #else 14731 #end;
 
   // Collab 1
-  public var Spaghetti = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 15448 #else 1000000 #end;
+  public var Spaghetti = #if FEATURE_NEWGROUNDS_TESTING_MEDALS 15448 #else 15451 #end;
 
   /**
    * Get the numeric ID for the leaderboard on the Newgrounds site.
