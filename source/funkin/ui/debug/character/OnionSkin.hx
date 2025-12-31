@@ -1,4 +1,4 @@
-package funkin.ui.debug.anim;
+package funkin.ui.debug.character;
 
 import funkin.graphics.FunkinSprite;
 import funkin.play.character.BaseCharacter;

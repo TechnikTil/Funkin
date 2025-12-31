@@ -1,6 +1,6 @@
-package funkin.ui.debug.anim;
+package funkin.ui.debug.character;
 
-#if FEATURE_ANIMATION_EDITOR
+#if FEATURE_CHARACTER_EDITOR
 import funkin.graphics.FunkinCamera;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.display.FlxBackdrop;
@@ -12,19 +12,17 @@ import flixel.math.FlxMath;
 import funkin.util.WindowUtil;
 import funkin.ui.mainmenu.MainMenuState;
 import haxe.ui.focus.FocusManager;
-import funkin.ui.debug.anim.components.AnimationListSelect;
+import funkin.ui.debug.character.components.AnimationListSelect;
 import funkin.data.character.CharacterData.CharacterDataParser;
 import funkin.play.character.BaseCharacter;
 
-using funkin.ui.debug.anim.handlers.AnimationEditorDialogHandler;
+using funkin.ui.debug.character.handlers.AnimationEditorDialogHandler;
 
 /**
- * The Animation Editor!!!
- *
- * @author TechnikTil
+ * The long-awaited Character Editor.
  */
-@:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/animation-editor/main-view.xml"))
-class AnimationEditorState extends UIState
+@:build(haxe.ui.ComponentBuilder.build("assets/exclude/data/ui/character-editor/main-view.xml"))
+class CharacterEditorState extends UIState
 {
   /**
    * The camera that contains most HaxeUI elements.
@@ -327,7 +325,7 @@ class AnimationEditorState extends UIState
       if (dirty) extra += '*';
     }
 
-    WindowUtil.setWindowTitle('Friday Night Funkin\' Animation Editor' + extra);
+    WindowUtil.setWindowTitle('Friday Night Funkin\' Character Editor' + extra);
   }
 
   function resetWindowTitle():Void
@@ -344,7 +342,7 @@ class AnimationEditorState extends UIState
 }
 
 /**
- * Animation Editor Offset Modes.
+ * Character Editor Offset Modes.
  */
 enum AnimationOffsetMode
 {

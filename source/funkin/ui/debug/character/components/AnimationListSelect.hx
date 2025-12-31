@@ -1,6 +1,6 @@
-package funkin.ui.debug.anim.components;
+package funkin.ui.debug.character.components;
 
-#if FEATURE_ANIMATION_EDITOR
+#if FEATURE_CHARACTER_EDITOR
 import haxe.ui.containers.ListView;
 import haxe.ui.core.Screen;
 import haxe.ui.events.MouseEvent;
@@ -9,44 +9,41 @@ import haxe.ui.events.FocusEvent;
 /**
  * Tiny selection window for animations.
  */
-@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/animation-editor/dialogs/anim-list-select.xml"))
+@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/character-editor/dialogs/anim-list-select.xml"))
 class AnimationListSelect extends ListView
 {
-  var animState:AnimationEditorState;
+  var charState:CharacterEditorState;
 
   /**
    * Called when closing the window.
    */
   public var onClose:Null<Void->Void>;
 
-  public function new(state:AnimationEditorState)
+  public function new(state:CharacterEditorState)
   {
     super();
-    animState = state;
 
-    if (animState.character == null)
+    if (state.character == null)
     {
       hide();
       return;
     }
 
-    var names:Array<String> = animState.character.animation?.getNameList() ?? [];
+    var names:Array<String> = state.character.animation?.getNameList() ?? [];
 
     for (name in names)
       this.dataSource.add({text: name});
 
-    this.selectedIndex = names.indexOf(animState.character.getCurrentAnimation());
+    this.selectedIndex = names.indexOf(state.character.getCurrentAnimation());
 
     this.registerEvent(MouseEvent.CLICK, (e:MouseEvent) -> {
-      animState.character.playAnimation(names[this.selectedIndex], true);
+      state.character.playAnimation(names[this.selectedIndex], true);
       hide();
     });
 
     this.registerEvent(FocusEvent.FOCUS_OUT, (e:FocusEvent) -> {
       hide();
     });
-
-    this.focus = true;
   }
 
   override public function hide():Void

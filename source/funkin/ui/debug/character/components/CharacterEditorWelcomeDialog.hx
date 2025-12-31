@@ -1,6 +1,6 @@
-package funkin.ui.debug.anim.components;
+package funkin.ui.debug.character.components;
 
-#if FEATURE_ANIMATION_EDITOR
+#if FEATURE_CHARACTER_EDITOR
 import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.components.Link;
 import funkin.data.character.CharacterData;
@@ -10,10 +10,10 @@ import funkin.data.character.CharacterData.CharacterDataParser;
  * The dialog shown when opening the editor.
  * Gives the user a nice interface for selecting the character to edit.
  */
-@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/animation-editor/dialogs/welcome.xml"))
-class AnimationEditorWelcomeDialog extends Dialog
+@:build(haxe.ui.macros.ComponentMacros.build("assets/exclude/data/ui/character-editor/dialogs/welcome.xml"))
+class CharacterEditorWelcomeDialog extends Dialog
 {
-  public function new(state:AnimationEditorState)
+  public function new(state:CharacterEditorState)
   {
     super();
 
@@ -33,7 +33,7 @@ class AnimationEditorWelcomeDialog extends Dialog
         hide();
       };
 
-      characters.addComponent(link);
+      splashTemplateContainer.addComponent(link);
     }
 
     this.destroyOnClose = true;

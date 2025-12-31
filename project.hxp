@@ -462,10 +462,10 @@ class Project extends HXProject
   static final FEATURE_DEBUG_MENU:FeatureFlag = "FEATURE_DEBUG_MENU";
 
   /**
-   * `-FEATURE_ANIMATION_EDITOR`
-   * If this flag is enabled, the Animation Editor will be accessible from the debug menu.
+   * `-FEATURE_CHARACTER_EDITOR`
+   * If this flag is enabled, the Character Editor will be accessible from the debug menu.
    */
-  static final FEATURE_ANIMATION_EDITOR:FeatureFlag = "FEATURE_ANIMATION_EDITOR";
+  static final FEATURE_CHARACTER_EDITOR:FeatureFlag = "FEATURE_CHARACTER_EDITOR";
 
   /**
    * `-DFEATURE_CHART_EDITOR`
@@ -887,10 +887,10 @@ class Project extends HXProject
     // Should be true except on web and mobile builds.
     // Debug editors aren't built to work on web or mobile right now.
     FEATURE_DEBUG_MENU.apply(this, !(isWeb() || isMobile()));
-    FEATURE_ANIMATION_EDITOR.apply(this, !(isWeb() || isMobile()));
+    FEATURE_CHARACTER_EDITOR.apply(this, !(isWeb() || isMobile()));
     FEATURE_CHART_EDITOR.apply(this, !(isWeb() || isMobile()));
     FEATURE_STAGE_EDITOR.apply(this, !(isWeb() || isMobile()));
-    FEATURE_HAXEUI.apply(this, FEATURE_ANIMATION_EDITOR.isEnabled(this)
+    FEATURE_HAXEUI.apply(this, FEATURE_CHARACTER_EDITOR.isEnabled(this)
       || FEATURE_CHART_EDITOR.isEnabled(this)
       || FEATURE_STAGE_EDITOR.isEnabled(this));
 
@@ -1081,8 +1081,9 @@ class Project extends HXProject
 
     if (FEATURE_HAXEUI.isEnabled(this))
     {
-      if (FEATURE_ANIMATION_EDITOR.isEnabled(this))
+      if (FEATURE_CHARACTER_EDITOR.isEnabled(this))
       {
+        addHaxeMacro("include('funkin.ui.debug.character')");
         addHaxeMacro("include('funkin.ui.debug.anim')");
       }
 
@@ -1437,7 +1438,7 @@ class Project extends HXProject
       addAsset("assets/exclude/data/credits.json", "assets/data/credits.json", "default", shouldEmbed);
     }
 
-    if (!FEATURE_ANIMATION_EDITOR.isEnabled(this)) removeAssetPath('assets/preload/data/ui/animation-editor', "default");
+    if (!FEATURE_CHARACTER_EDITOR.isEnabled(this)) removeAssetPath('assets/preload/data/ui/animation-editor', "default");
 
     if (!FEATURE_CHART_EDITOR.isEnabled(this)) removeAssetPath('assets/preload/data/ui/chart-editor', "default");
 

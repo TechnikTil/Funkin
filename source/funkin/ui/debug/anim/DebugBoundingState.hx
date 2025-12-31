@@ -1,6 +1,6 @@
 package funkin.ui.debug.anim;
 
-#if FEATURE_ANIMATION_EDITOR
+#if FEATURE_CHARACTER_EDITOR
 import flixel.addons.display.FlxBackdrop;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.FlxCamera;

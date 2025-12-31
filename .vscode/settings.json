@@ -130,6 +130,11 @@
       "args": ["-debug", "-DSTAGEBUILD", "-DFEATURE_DEBUG_FUNCTIONS"]
     },
     {
+      "label": "Windows / Debug (Straight to Character Editor)",
+      "target": "windows",
+      "args": ["-debug", "-DCHAREDITOR", "-DFEATURE_DEBUG_FUNCTIONS"]
+    },
+    {
       "label": "Windows / Debug (Straight to Animation Editor)",
       "target": "windows",
       "args": ["-debug", "-DANIMDEBUG", "-DFEATURE_DEBUG_FUNCTIONS"]
