@@ -57,14 +57,16 @@ class MultiAnimateAtlasCharacter extends BaseCharacter
       }
     }
 
-    var baseAssetLibrary:String = Paths.getLibrary(_data.assetPath);
+    var baseAssetLibrary:Null<String> = Paths.getLibrary(_data.assetPath);
+    if (baseAssetLibrary == "preload") baseAssetLibrary = null;
     var baseAssetPath:String = Paths.stripLibrary(_data.assetPath);
 
     loadTextureAtlas(baseAssetPath, baseAssetLibrary, getAtlasSettings());
 
     for (asset in assetList)
     {
-      var subAssetLibrary:String = Paths.getLibrary(asset);
+      var subAssetLibrary:Null<String> = Paths.getLibrary(asset);
+      if (subAssetLibrary == "preload") subAssetLibrary = null;
       var subAssetPath:String = Paths.stripLibrary(asset);
 
       var subTexture:FlxAnimateFrames = Paths.getAnimateAtlas(subAssetPath, subAssetLibrary, cast _data.atlasSettings);
