@@ -2774,9 +2774,12 @@ class PlayState extends MusicBeatSubState
         // When the opponent drops a hold note.
         holdNote.handledMiss = true;
 
-        // We dropped a hold note.
-        // Play miss animation, but don't penalize.
-        if (currentStage != null) currentStage.getOpponent().playSingAnimation(holdNote.noteData.getDirection(), true);
+        if (holdNote.scoreable)
+        {
+          // We dropped a hold note.
+          // Play miss animation, but don't penalize.
+          if (currentStage != null) currentStage.getOpponent().playSingAnimation(holdNote.noteData.getDirection(), true);
+        }
       }
     }
 
@@ -2866,7 +2869,7 @@ class PlayState extends MusicBeatSubState
         // vocals.playerVolume = 0;
         // if (currentStage != null && currentStage.getBoyfriend() != null) currentStage.getBoyfriend().playSingAnimation(holdNote.noteData.getDirection(), true);
 
-        if (!isBotPlayMode)
+        if (!isBotPlayMode && holdNote.scoreable)
         {
           if (holdNote.sustainLength > Constants.HOLD_DROP_PENALTY_THRESHOLD_MS)
           {
