@@ -4,6 +4,22 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.1] - 2026-01-04
+
+### Added
+
+- Added a new "Non-scoreable" notekind to the Chart Editor that doesn't affect scores and ranks, or play miss animations.
+
+### Changed
+
+- Changed the order in which events are dispatched in PlayState. ([16f3e03](https://github.com/FunkinCrew/Funkin/commit/16f3e038d80c37d016c9d2b6cdd1012c94ef88b9)) - by @ComedyLost in [#6606](https://github.com/FunkinCrew/Funkin/pull/6606)
+
+### Fixed
+
+- The last note of SPAGHETTI no longer counts toward scoring, allowing players to earn Perfect ranks.
+
+
+
 ## [0.8.0] - 2025-12-31
 
 The LE SSERAFIM collab update!
