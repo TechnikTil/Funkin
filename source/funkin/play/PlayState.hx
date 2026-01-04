@@ -2847,7 +2847,7 @@ class PlayState extends MusicBeatSubState
       if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0)
       {
         // Grant the player health.
-        if (!isBotPlayMode)
+        if (!isBotPlayMode && holdNote.scoreable)
         {
           health += Constants.HEALTH_HOLD_BONUS_PER_SECOND * elapsed;
           songScore += Std.int(Constants.SCORE_HOLD_BONUS_PER_SECOND * elapsed);
