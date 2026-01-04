@@ -19,9 +19,4 @@ class NonScoreableNoteKind extends NoteKind
     event.note.visible = false;
     event.cancel();
   }
-
-  public override function onNoteHit(event:HitNoteScriptEvent):Void
-  {
-    event.cancel();
-  }
 }
