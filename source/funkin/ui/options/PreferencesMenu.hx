@@ -73,6 +73,7 @@ class PreferencesMenu extends Page<OptionsState.OptionsMenuPageName>
     menuCamera.minScrollY = 0;
 
     items.onChange.add(function(selected) {
+      camFollow.y = Math.max(selected.y, margin);
       itemDesc.text = preferenceDesc[items.selectedIndex];
     });
 
