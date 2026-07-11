@@ -166,8 +166,7 @@ class CharacterEditorState extends UIState
 
       MouseUtil.mouseWheelZoom();
 
-      // TODO: move this into an updateInput function
-      if (FlxG.keys.justPressed.F) menubarItemOnionSkin.selected = !menubarItemOnionSkin.selected;
+      updateInput();
     }
     @:privateAccess
     if (character != null)
@@ -194,6 +193,26 @@ class CharacterEditorState extends UIState
     if (animationSelector == null) animationSelector = new AnimationSelector(this);
     animationSelector.show();
     animationSelector.refresh();
+  }
+
+  function updateInput():Void
+  {
+    if (FlxG.keys.justPressed.F) menubarItemOnionSkin.selected = !menubarItemOnionSkin.selected;
+    if (FlxG.keys.justPressed.SPACE && character != null) character.playAnimation('idle', true);
+    if (FlxG.keys.justPressed.W || FlxG.keys.justPressed.S || FlxG.keys.justPressed.D || FlxG.keys.justPressed.A)
+    {
+      var suffix:String = '';
+      var targetLabel:String = '';
+
+      if (FlxG.keys.pressed.SHIFT) suffix = 'miss';
+
+      if (FlxG.keys.justPressed.W) targetLabel = 'singUP$suffix';
+      if (FlxG.keys.justPressed.S) targetLabel = 'singDOWN$suffix';
+      if (FlxG.keys.justPressed.A) targetLabel = 'singLEFT$suffix';
+      if (FlxG.keys.justPressed.D) targetLabel = 'singRIGHT$suffix';
+
+      character?.playAnimation(targetLabel, true);
+    }
   }
 
   /**
