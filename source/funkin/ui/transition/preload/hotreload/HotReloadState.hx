@@ -367,7 +367,7 @@ class HotReloadState extends MusicBeatState
       }
       else
       {
-        FlxG.switchState(() -> InitState.customTitleState);
+        FlxG.switchState(cast InitState.customTitleState);
       }
     }
   }

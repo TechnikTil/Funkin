@@ -31,6 +31,7 @@ import funkin.mobile.ui.options.ControlsSchemeMenu;
 import funkin.mobile.util.InAppPurchasesUtil;
 #end
 import flixel.util.FlxColor;
+import funkin.util.typeLimit.FunkinNextState;
 
 /**
  * The main options menu
@@ -49,7 +50,7 @@ class OptionsState extends MusicBeatState
   public var drumsBG:FunkinSound;
 
   public static var rememberedSelectedIndex:Int = 0;
-  public static var backState:Null<String> = null;
+  public static var backState:Null<FunkinNextState> = null;
 
   override function create():Void
   {
@@ -145,13 +146,7 @@ class OptionsState extends MusicBeatState
     // TODO: Animate this transition?
     if (backState != null)
     {
-      var state:MusicBeatState = MusicBeatState.scriptInit(backState);
-      if (state != null) FlxG.switchState(state);
-      else
-      {
-        FlxG.keys.enabled = false;
-        FlxG.switchState(() -> new MainMenuState());
-      }
+      FlxG.switchState(cast backState);
     }
     else
     {

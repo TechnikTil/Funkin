@@ -40,6 +40,7 @@ import funkin.util.TrackerUtil;
 import funkin.util.WindowUtil;
 import openfl.display.BitmapData;
 import funkin.ui.debug.playtest.ChartPlaytestMenu;
+import funkin.util.typeLimit.FunkinNextState;
 #if FEATURE_DISCORD_RPC
 import funkin.api.discord.DiscordClient;
 #end
@@ -65,7 +66,7 @@ class InitState extends FlxState
   @:noCompletion
   static var _coreInitialized:Bool = false;
 
-  public static var customTitleState:Null<FlxState> = null;
+  public static var customTitleState:Null<FunkinNextState> = null;
 
   /**
    * Perform a bunch of game setup, then immediately transition to the title screen.
@@ -441,7 +442,6 @@ class InitState extends FlxState
 
   public static function resetTitleState():Void
   {
-    if (customTitleState != null) customTitleState.destroy();
     customTitleState = null;
   }
 
@@ -542,7 +542,7 @@ class InitState extends FlxState
       #else
       if (customTitleState != null)
       {
-        FlxG.switchState(() -> customTitleState);
+        FlxG.switchState(cast customTitleState);
         return;
       }
 
