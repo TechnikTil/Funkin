@@ -103,7 +103,7 @@ class InitState extends FlxState
       funkin.util.WindowUtil.initTracy();
       #end
 
-      #if FEATURE_HAPTICS
+      #if extension_haptics
       // Setup Haptic feedback
       extension.haptics.Haptic.initialize();
       #end

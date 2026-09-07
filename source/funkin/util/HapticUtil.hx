@@ -1,7 +1,8 @@
 package funkin.util;
 
 import flixel.tweens.FlxTween;
-#if FEATURE_HAPTICS
+import funkin.util.TimerUtil.Sequence;
+#if extension_haptics
 import extension.haptics.Haptic;
 #end
 
@@ -33,7 +34,11 @@ class HapticUtil
    * @param amplitude The intensity of the vibration (0.0 to 1.0).
    * @param sharpness Controls the feel of vibration.
    */
-  public static function vibrate(period:Float = Constants.DEFAULT_VIBRATION_PERIOD, duration:Float = Constants.DEFAULT_VIBRATION_DURATION, amplitude:Float = Constants.DEFAULT_VIBRATION_AMPLITUDE, sharpness:Float = Constants.DEFAULT_VIBRATION_SHARPNESS, ?targetHapticsModes:Array<HapticsMode>):Void
+  public static function vibrate(period:Float = Constants.DEFAULT_VIBRATION_PERIOD,
+    duration:Float = Constants.DEFAULT_VIBRATION_DURATION,
+    amplitude:Float = Constants.DEFAULT_VIBRATION_AMPLITUDE,
+    sharpness:Float = Constants.DEFAULT_VIBRATION_SHARPNESS,
+    ?targetHapticsModes:Array<HapticsMode>):Void
   {
     #if FEATURE_HAPTICS
     if (!HapticUtil.hapticsAvailable) return;
@@ -42,6 +47,8 @@ class HapticUtil
     if (!hapticsModes.contains(Preferences.hapticsMode)) return;
 
     final amplitudeValue = (amplitude * Preferences.hapticsIntensityMultiplier).clamp(0, Constants.MAX_VIBRATION_AMPLITUDE);
+    var lowFrequency:Float = amplitudeValue * (1 - sharpness) * 0xFFFF;
+    var highFrequency:Float = amplitudeValue * sharpness * 0xFFFF;
 
     if (period > 0)
     {
@@ -58,11 +65,22 @@ class HapticUtil
         sharpnesses[i] = sharpness;
       }
 
+      new Sequence([for (i in 0...durations.length) {
+        time: i * durationPeriod,
+        callback: () -> FlxG.gamepads.lastActive?.rumble(lowFrequency, highFrequency, Math.round(durationPeriod * Constants.MS_PER_SEC))
+      }]);
+
+      #if extension_haptics
       Haptic.vibratePattern(durations, amplitudes, sharpnesses);
+      #end
     }
     else
     {
+      FlxG.gamepads.lastActive?.rumble(lowFrequency, highFrequency, Math.round(duration * Constants.MS_PER_SEC));
+
+      #if extension_haptics
       Haptic.vibrateOneShot(duration, amplitudeValue, sharpness);
+      #end
     }
     #end
   }

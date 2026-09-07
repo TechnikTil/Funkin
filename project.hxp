@@ -360,7 +360,6 @@ class Project extends HXProject
   /**
    * `-DFEATURE_HAPTICS`
    * If this flag is enabled, the game provide haptic feedback vibrations.
-   * Works for mobile targets (Android and iOS).
    */
   static final FEATURE_HAPTICS:FeatureFlag = "FEATURE_HAPTICS";
 
@@ -956,6 +955,7 @@ class Project extends HXProject
 
     // Should be true unless explicitly requested.
     HARDCODED_CREDITS.apply(this, true);
+    FEATURE_HAPTICS.apply(this, true);
 
     // Should be true unless explicitly requested.
     // Disable this once we rework the unlock progression system.
@@ -1051,7 +1051,6 @@ class Project extends HXProject
     FEATURE_TOUCH_HERE_TO_PLAY.apply(this, isWeb());
 
     // Should be true only on mobile builds.
-    FEATURE_HAPTICS.apply(this, isMobile());
     FEATURE_TOUCH_CONTROLS.apply(this, isMobile());
 
     // Should be true only on mobile release builds. Remember you can add the flag manually for testing.
@@ -1556,9 +1555,9 @@ class Project extends HXProject
       addHaxelib('FlxPartialSound'); // Partial sound
     }
 
-    if (FEATURE_HAPTICS.isEnabled(this))
+    if (isMobile() && FEATURE_HAPTICS.isEnabled(this))
     {
-      addHaxelib('extension-haptics'); // Haptic feedback
+      addHaxelib('extension-haptics'); // Mobile Haptic feedback
     }
 
     if (FEATURE_MOBILE_ADVERTISEMENTS.isEnabled(this))
